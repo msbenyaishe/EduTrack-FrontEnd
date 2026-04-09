@@ -62,5 +62,21 @@ export const teacherService = {
   deleteGroup: async (id) => {
     const res = await api.delete(`/groups/${id}`);
     return res.data;
+  },
+  removeStudentFromGroup: async (groupId, studentId) => {
+    const res = await api.delete(`/groups/${groupId}/students/${studentId}`);
+    return res.data;
+  },
+  assignModuleToGroup: async (data) => {
+    const res = await api.post('/modules/assign', data);
+    return res.data;
+  },
+  unassignModuleFromGroup: async (moduleId, groupId) => {
+    const res = await api.delete(`/modules/assign/${moduleId}/${groupId}`);
+    return res.data;
+  },
+  getGroupModules: async (groupId) => {
+    const res = await api.get(`/modules?group_id=${groupId}`);
+    return res.data;
   }
 };

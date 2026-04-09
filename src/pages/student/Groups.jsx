@@ -23,7 +23,7 @@ const StudentGroups = () => {
       setGroups(data);
     } catch (e) {
       setGroups([
-        { id: 1, name: 'L3 INFO Grp A', year: '2025', teacher: 'Mr. Smith', joined_at: '2025-02-10' },
+        { id: 1, name: 'L3 INFO Grp A', year: '2025', teacher_name: 'Mr. Smith', joined_at: '2025-02-10' },
       ]);
     } finally {
       setLoading(false);
@@ -41,9 +41,6 @@ const StudentGroups = () => {
       fetchGroups();
     } catch (e) {
       setJoinError(e.response?.data?.message || 'Invalid invite code or group already joined.');
-      // Mock join
-      setGroups([...groups, { id: Date.now(), name: 'New Joined Group', year: '2025', teacher: 'TBD', joined_at: new Date().toISOString() }]);
-      setShowModal(false);
     } finally {
       setJoining(false);
     }
@@ -82,11 +79,11 @@ const StudentGroups = () => {
                 <tr key={group.id}>
                   <td className="font-semibold flex items-center gap-2">
                     <Users size={16} className="text-primary-color" />
-                    {group.name}
+                    {group.name || 'Unnamed Group'}
                   </td>
-                  <td>{group.teacher}</td>
-                  <td>{group.year}</td>
-                  <td>{new Date(group.joined_at).toLocaleDateString()}</td>
+                  <td>{group.teacher_name || 'TBD'}</td>
+                  <td>{group.year || 'N/A'}</td>
+                  <td>{group.joined_at ? new Date(group.joined_at).toLocaleDateString() : 'N/A'}</td>
                   <td className="text-right">
                     <button 
                       className="btn btn-secondary" 
