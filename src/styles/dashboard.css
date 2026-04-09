@@ -1,0 +1,82 @@
+.layout-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--bg-main);
+}
+
+.layout-content {
+  flex: 1;
+  margin-left: 260px; /* Width of sidebar */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Dashboard specific common classes */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  font-size: 1.875rem;
+  letter-spacing: -0.025em;
+  margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  padding: 1.5rem;
+  gap: 1.25rem;
+}
+
+.stat-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.stat-icon.primary { background-color: var(--primary-light); color: var(--primary-color); }
+.stat-icon.success { background-color: #D1FAE5; color: #059669; }
+.stat-icon.warning { background-color: #FEF3C7; color: #D97706; }
+
+.stat-info { display: flex; flex-direction: column; }
+.stat-value { font-size: 1.875rem; font-weight: 700; color: var(--secondary-color); line-height: 1.2; }
+.stat-label { color: var(--text-muted); font-size: 0.875rem; font-weight: 500; }
+
+@media (max-width: 1024px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .layout-content {
+    margin-left: 0;
+  }
+  /* Would need logic to toggle sidebar visibility */
+}
