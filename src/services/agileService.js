@@ -22,6 +22,18 @@ export const agileService = {
     const res = await api.delete(`/agile/teams/${teamId}`);
     return res.data;
   },
+  updateTeam: async (teamId, name) => {
+    const res = await api.put(`/agile/teams/${teamId}`, { name });
+    return res.data;
+  },
+  addMember: async (teamId, studentId) => {
+    const res = await api.post('/agile/teams/member', { team_id: teamId, student_id: studentId });
+    return res.data;
+  },
+  removeMember: async (teamId, studentId) => {
+    const res = await api.delete(`/agile/teams/member/${teamId}/${studentId}`);
+    return res.data;
+  },
 
   // Sprints
   createSprint: async (data) => {

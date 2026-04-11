@@ -15,14 +15,34 @@ const StudentPFE = () => {
   const [showCreateTeam, setShowCreateTeam] = useState(false);
   const [newTeamName, setNewTeamName] = useState('');
 
+  const [myGroups, setMyGroups] = useState([]);
+  const [selectedGroupId, setSelectedGroupId] = useState(null);
+
   useEffect(() => {
-    fetchTeams();
+    loadInitialData();
   }, []);
 
-  const fetchTeams = async () => {
+  const loadInitialData = async () => {
     try {
-      // For now, still using 1, but we should eventually get the student's real group ID
-      const data = await pfeService.getTeams(1);
+      setLoading(true);
+      const groups = await studentService.getMyGroups();
+      setMyGroups(groups);
+      if (groups.length > 0) {
+        const firstGroupId = groups[0].id;
+        setSelectedGroupId(firstGroupId);
+        await fetchTeams(firstGroupId);
+      } else {
+        setLoading(false);
+      }
+    } catch (e) {
+      console.error(e);
+      setLoading(false);
+    }
+  };
+
+  const fetchTeams = async (groupId) => {
+    try {
+      const data = await pfeService.getTeams(groupId || selectedGroupId);
       setTeams(data);
       if (data.length > 0) {
         setFormData(prev => ({ ...prev, pfe_team_id: data[0].id }));
@@ -37,11 +57,15 @@ const StudentPFE = () => {
 
   const handleCreateTeam = async (e) => {
     e.preventDefault();
+    if (!selectedGroupId) {
+      alert("You need to be in a group to create a team.");
+      return;
+    }
     try {
-      await pfeService.createTeam({ group_id: 1, name: newTeamName });
+      await pfeService.createTeam({ group_id: selectedGroupId, name: newTeamName });
       setShowCreateTeam(false);
       setNewTeamName('');
-      fetchTeams();
+      fetchTeams(selectedGroupId);
     } catch (e) {
       alert('Failed to create PFE team.');
     }

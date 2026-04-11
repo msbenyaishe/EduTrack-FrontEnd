@@ -14,6 +14,7 @@
 .table th, .table td {
   padding: 1rem 1.5rem;
   border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
 }
 
 .table th {
@@ -103,4 +104,35 @@
 
 .modal-close:hover {
   color: var(--danger);
+}
+/* Icon buttons for actions */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  transition: all var(--transition-fast);
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+  transform: translateY(-1px);
+}
+
+.icon-btn-danger:hover {
+  background-color: #FEF2F2;
+  color: var(--danger);
+  border-color: #FECACA;
+}
+
+.table-cell-flex {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
