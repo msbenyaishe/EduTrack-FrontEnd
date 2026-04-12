@@ -7,8 +7,8 @@ import StudentLayout from '../layouts/StudentLayout';
 import PublicLayout from '../layouts/PublicLayout';
 import ProtectedRoute from '../components/ProtectedRoute';
 
-// Public/Auth Pages
-// import Home from '../pages/public/Home';
+// Public / auth
+import Landing from '../pages/public/Landing';
 import Login from '../pages/auth/Login';
 import Register from '../pages/auth/Register';
 
@@ -33,24 +33,15 @@ import StudentPFE from '../pages/student/PFE';
 import StudentInternships from '../pages/student/Internships';
 import StudentSubmissions from '../pages/student/Submissions';
 
-// Temporary placeholder component
-const Placeholder = ({ title }) => (
-  <div className="card" style={{ margin: 'var(--space-lg) auto', maxWidth: '28rem' }}>
-    <h2 className="font-bold text-center">{title}</h2>
-  </div>
-);
-
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route element={<PublicLayout />}>
-        {/* <Route path="/" element={<Home />} /> */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
-      </Route>
-
-      <Route element={<AuthLayout />}>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+      <Route path="/" element={<PublicLayout />}>
+        <Route index element={<Landing />} />
+        <Route element={<AuthLayout />}>
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+        </Route>
       </Route>
 
       {/* Teacher Routes */}
@@ -82,8 +73,7 @@ const AppRoutes = () => {
         </Route>
       </Route>
       
-      {/* Catch All */}
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 };

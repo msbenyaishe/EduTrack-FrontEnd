@@ -1,14 +1,3 @@
-.auth-layout {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--bg-main);
-  background: radial-gradient(circle at top right, var(--primary-light), transparent 40%),
-              radial-gradient(circle at bottom left, #E0E7FF, transparent 40%);
-  padding: 2rem;
-}
-
 .auth-container {
   width: 100%;
   max-width: 440px;
@@ -103,10 +92,10 @@
 }
 
 @media (max-width: 480px) {
-  .auth-layout {
-    padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right))
-      max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
-    align-items: flex-start;
+  .public-shell__main--auth {
+    align-items: stretch;
+    justify-content: flex-start;
+    padding-top: max(var(--space-lg), env(safe-area-inset-top));
   }
 
   .auth-card {

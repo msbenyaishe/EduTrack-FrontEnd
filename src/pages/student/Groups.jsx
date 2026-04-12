@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Users, BookOpen, AlertCircle, X } from 'lucide-react';
+import { Plus, Users, BookOpen, AlertCircle, X, Calendar } from 'lucide-react';
 import { studentService } from '../../services/studentService';
 import '../../styles/tables.css';
+
+function formatJoinedDate(value) {
+  if (value == null || value === '') return null;
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
 
 const StudentGroups = () => {
   const [groups, setGroups] = useState([]);
@@ -22,9 +28,7 @@ const StudentGroups = () => {
       const data = await studentService.getMyGroups();
       setGroups(data);
     } catch {
-      setGroups([
-        { id: 1, name: 'L3 INFO Grp A', year: '2025', teacher_name: 'Mr. Smith', joined_at: '2025-02-10' },
-      ]);
+      setGroups([]);
     } finally {
       setLoading(false);
     }
@@ -58,59 +62,69 @@ const StudentGroups = () => {
         </button>
       </div>
 
-      <div className="table-container">
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Group Name</th>
-              <th>Teacher</th>
-              <th>Year</th>
-              <th>Joined At</th>
-              <th className="text-right">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr><td colSpan={5} className="table-loading">Loading...</td></tr>
-            ) : groups.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="table-empty-center">
-                  <div className="table-empty-inner">
-                    <div className="table-empty-inner__icon-wrap">
-                      <Users size={32} />
+      <div className="grid-cards">
+        {loading ? (
+          <div className="loading-state">Loading groups...</div>
+        ) : groups.length === 0 ? (
+          <div className="empty-state-card card">
+            <Users size={48} className="empty-state-card__icon" />
+            <h3 className="empty-state-card__title">No Groups Yet</h3>
+            <p>You haven&apos;t joined any groups yet. Join a group using an invite code provided by your teacher.</p>
+            <button type="button" className="btn btn-primary" onClick={() => setShowModal(true)}>
+              <Plus size={18} /> Join Your First Group
+            </button>
+          </div>
+        ) : (
+          groups.map((group) => {
+            const joined = formatJoinedDate(group.joined_at);
+            return (
+              <div key={group.id} className="card card--col">
+                <div>
+                  <div className="card__head">
+                    <div className="card__title-group">
+                      <div className="media-icon media-icon--primary">
+                        <Users size={20} />
+                      </div>
+                      <span>{group.name || 'Unnamed Group'}</span>
                     </div>
-                    <h3 className="table-empty-inner__title">No Groups Yet</h3>
-                    <p className="table-empty-inner__text">You haven&apos;t joined any groups yet. Join a group using an invite code provided by your teacher.</p>
-                    <button type="button" className="btn btn-primary" onClick={() => setShowModal(true)}>
-                      <Plus size={18} /> Join Your First Group
-                    </button>
+                    {group.year ? (
+                      <span className="badge badge-primary badge--trailing">{group.year}</span>
+                    ) : null}
                   </div>
-                </td>
-              </tr>
-            ) : (
-              groups.map(group => (
-                <tr key={group.id}>
-                  <td className="table-cell-flex font-semibold">
-                    <Users size={16} className="table-icon-primary" />
-                    {group.name || 'Unnamed Group'}
-                  </td>
-                  <td>{group.teacher_name || 'TBD'}</td>
-                  <td>{group.year || 'N/A'}</td>
-                  <td>{group.joined_at ? new Date(group.joined_at).toLocaleDateString() : 'N/A'}</td>
-                  <td className="text-right">
-                    <button
-                      type="button"
-                      className="btn btn-secondary btn--sm"
-                      onClick={() => navigate('/student/workshops')}
-                    >
-                      <BookOpen size={14} className="btn__icon-left" /> View Tasks
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+
+                  <div className="card__body">
+                    <p className="card__muted">
+                      <strong>Teacher:</strong> {group.teacher_name || 'TBD'}
+                    </p>
+                    <div className="student-group-card__joined">
+                      <Calendar size={14} className="student-group-card__joined-icon" aria-hidden />
+                      <span className="student-group-card__joined-kicker">Joined</span>
+                      <span className="student-group-card__joined-value">
+                        {joined
+                          ? joined.toLocaleDateString(undefined, {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                            })
+                          : '—'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="card__footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn--block"
+                    onClick={() => navigate('/student/workshops')}
+                  >
+                    <BookOpen size={16} /> View tasks
+                  </button>
+                </div>
+              </div>
+            );
+          })
+        )}
       </div>
 
       {showModal && (

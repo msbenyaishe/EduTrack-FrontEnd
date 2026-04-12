@@ -42,6 +42,10 @@
   margin: 0;
 }
 
+.empty-state-card > .btn {
+  margin-top: var(--space-md);
+}
+
 /* ---------- Toolbar card (filters) ----------
    Base .card uses flex-direction: column — must override so label + controls
    sit in one row (or wrap cleanly) without centered “floating” blocks. */
@@ -1401,6 +1405,38 @@
 
 .modal-assign-intro {
   margin-top: var(--space-sm);
+}
+
+/* Student — My Groups cards */
+.student-group-card__joined {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.5rem;
+  margin-top: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--border-color);
+}
+
+.student-group-card__joined-kicker {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.student-group-card__joined-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--secondary-color);
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.student-group-card__joined-icon {
+  color: var(--text-muted);
+  flex-shrink: 0;
 }
 
 /* ---------- Responsive polish (dashboard pages & blocks) ---------- */

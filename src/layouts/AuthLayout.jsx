@@ -1,7 +1,6 @@
 import React from 'react';
 import { Outlet, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import '../styles/auth.css';
 
 const AuthLayout = () => {
   const { user } = useAuth();
@@ -11,10 +10,8 @@ const AuthLayout = () => {
   }
 
   return (
-    <div className="auth-layout">
-      <div className="auth-container">
-        <Outlet />
-      </div>
+    <div className="auth-container">
+      <Outlet />
     </div>
   );
 };
