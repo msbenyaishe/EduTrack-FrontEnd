@@ -341,16 +341,17 @@ body.public-nav-open {
 }
 
 .landing-hero__card-title {
-  font-size: 1.125rem;
+  font-size: 1.1875rem;
   font-weight: 700;
   color: var(--secondary-color);
-  margin-bottom: var(--space-xs);
+  margin-bottom: var(--space-sm);
+  line-height: 1.35;
 }
 
 .landing-hero__card-text {
-  font-size: 0.9375rem;
+  font-size: 1rem;
   color: var(--text-muted);
-  line-height: 1.55;
+  line-height: 1.6;
   margin: 0;
 }
 
@@ -437,16 +438,17 @@ body.public-nav-open {
 }
 
 .landing-feature-card__title {
-  font-size: 1.0625rem;
+  font-size: 1.125rem;
   font-weight: 700;
   color: var(--secondary-color);
-  margin-bottom: var(--space-xs);
+  margin-bottom: var(--space-sm);
+  line-height: 1.35;
 }
 
 .landing-feature-card__text {
-  font-size: 0.9375rem;
+  font-size: 1rem;
   color: var(--text-muted);
-  line-height: 1.55;
+  line-height: 1.6;
   margin: 0;
 }
 
@@ -474,10 +476,10 @@ body.public-nav-open {
 }
 
 .landing-cta__text {
-  font-size: 1rem;
+  font-size: 1.0625rem;
   color: var(--text-muted);
   margin-bottom: var(--space-lg);
-  line-height: 1.55;
+  line-height: 1.6;
 }
 
 .landing-cta__actions {
@@ -518,7 +520,7 @@ body.public-nav-open {
   }
 
   .landing-hero__card-title {
-    font-size: 1.25rem;
+    font-size: 1.3125rem;
   }
 
   .landing-features {
@@ -531,7 +533,7 @@ body.public-nav-open {
   }
 
   .landing-feature-card__title {
-    font-size: 1.125rem;
+    font-size: 1.1875rem;
   }
 
   .landing-cta {

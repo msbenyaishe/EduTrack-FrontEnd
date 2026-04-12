@@ -88,7 +88,7 @@ const StudentWorkshops = () => {
 
                 <div className="card__body">
                   <div className="card__emphasis">{ws.module}</div>
-                  <div className="card__muted"><strong>Teacher:</strong> {ws.teacher}</div>
+                  <div className="card__teacher-line"><strong>Teacher:</strong> {ws.teacher}</div>
                 </div>
               </div>
 

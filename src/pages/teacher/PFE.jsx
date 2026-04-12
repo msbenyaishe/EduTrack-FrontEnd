@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { GraduationCap, Trash2 } from 'lucide-react';
+import { GraduationCap, Trash2, Users, X } from 'lucide-react';
 import { teacherService } from '../../services/teacherService';
 import { pfeService } from '../../services/pfeService';
 import '../../styles/tables.css';
@@ -10,6 +10,9 @@ const TeacherPFE = () => {
 
   const [pfeTeams, setPfeTeams] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const [showMembersModal, setShowMembersModal] = useState(false);
+  const [membersModalTeam, setMembersModalTeam] = useState(null);
 
   useEffect(() => {
     fetchGroups();
@@ -51,6 +54,11 @@ const TeacherPFE = () => {
       console.error(e);
       alert('Failed to delete PFE team from database.');
     }
+  };
+
+  const handleViewMembers = (team) => {
+    setMembersModalTeam(team);
+    setShowMembersModal(true);
   };
 
   return (
@@ -101,9 +109,14 @@ const TeacherPFE = () => {
                 </div>
 
                 <div className="card__body">
-                  <div className="badge badge-primary badge--block">
-                    {Array.isArray(team.members) ? team.members.length : (team.members || 0)} Students
-                  </div>
+                  <button
+                    type="button"
+                    className="badge-btn"
+                    onClick={() => handleViewMembers(team)}
+                  >
+                    <Users size={14} />
+                    {Array.isArray(team.members) ? team.members.length : (team.members || 0)} Members
+                  </button>
                   <div className="card__muted">Final graduation project team</div>
                 </div>
               </div>
@@ -118,6 +131,61 @@ const TeacherPFE = () => {
           ))
         )}
       </div>
+
+      {showMembersModal && membersModalTeam && (
+        <div className="modal-overlay">
+          <div className="modal-content modal-content--narrow">
+            <div className="modal-header">
+              <h2 className="font-bold modal-title-row">
+                <Users size={20} />
+                {membersModalTeam.name} — Members
+              </h2>
+              <button
+                type="button"
+                className="modal-close"
+                onClick={() => setShowMembersModal(false)}
+                aria-label="Close"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            <div className="member-list-stack scroll-region--sm">
+              {Array.isArray(membersModalTeam.members) && membersModalTeam.members.length > 0 ? (
+                membersModalTeam.members.map((member, idx) => (
+                  <div key={member.id ?? idx} className="member-line">
+                    <div className="member-line__left">
+                      <div className="member-avatar member-avatar--sm">
+                        {member.name?.charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <div className="member-line__name">{member.name}</div>
+                        <div className="card__muted">{member.email}</div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-italic-muted padded-y-muted">
+                  {Array.isArray(membersModalTeam.members) && membersModalTeam.members.length === 0
+                    ? 'No students in this team yet.'
+                    : 'Member names are not available for this team. The list will appear once the server returns a members array on each team.'}
+                </div>
+              )}
+            </div>
+
+            <div className="modal-footer modal-footer--stack modal-footer--mt">
+              <button
+                type="button"
+                className="btn btn-secondary btn--block"
+                onClick={() => setShowMembersModal(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

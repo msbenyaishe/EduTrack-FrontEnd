@@ -59,7 +59,7 @@ const StudentModules = () => {
 
                 <div className="card__body">
                   <p className="card__desc">{mod.description || 'No description available for this module.'}</p>
-                  <div className="card__muted"><strong>Teacher:</strong> {mod.teacher_name}</div>
+                  <div className="card__teacher-line"><strong>Teacher:</strong> {mod.teacher_name}</div>
                 </div>
               </div>
 

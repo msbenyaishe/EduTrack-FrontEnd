@@ -149,7 +149,7 @@ input, textarea, select {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border-color);
-  padding: var(--space-md);
+  padding: var(--space-lg);
   transition: box-shadow var(--transition-normal), transform var(--transition-normal);
   display: flex;
   flex-direction: column;
@@ -164,8 +164,8 @@ input, textarea, select {
 .grid-cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
-  gap: var(--space-md);
-  margin-top: var(--space-sm);
+  gap: var(--space-lg);
+  margin-top: var(--space-md);
 }
 
 .card-action {
@@ -297,11 +297,11 @@ input, textarea, select {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.4rem 0.875rem;
+  padding: 0.45rem 0.9375rem;
   border-radius: var(--radius-full);
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   font-weight: 600;
-  line-height: 1;
+  line-height: 1.25;
   border: 1px solid transparent;
 }
 .badge-primary {

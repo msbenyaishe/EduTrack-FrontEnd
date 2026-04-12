@@ -265,111 +265,95 @@ const StudentAgile = () => {
         )}
       </div>
 
-      {userInTeam && (
-        <div className="alert alert--info">
-          <Layout size={18} />
-          <span>You are already part of an Agile team. You cannot create or join another team in this group.</span>
-        </div>
-      )}
-
-      <div className="table-container">
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Team Name</th>
-              <th>Members</th>
-              <th className="text-right">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(loading) ? (
-              <tr><td colSpan={3} className="table-loading">Loading teams...</td></tr>
-            ) : teams.length === 0 ? (
-              <tr>
-                <td colSpan={3} className="table-empty-center">
-                  <div className="table-empty-inner">
-                    <div className="table-empty-inner__icon-wrap">
-                      <Layout size={32} />
-                    </div>
-                    <h3 className="table-empty-inner__title">No Teams Found</h3>
-                    <p className="table-empty-inner__text">There are no Agile teams in this group yet. Create your team to get started.</p>
-                    {!userInTeam && (
-                      <button type="button" className="btn btn-primary" onClick={() => setShowCreate(true)}>
-                        <Plus size={18} /> Create New Team
-                      </button>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ) : (
-              teams.map(team => {
-                const isMember = team.members?.some(m => Number(m.id) === Number(user?.id));
-                return (
-                  <tr key={team.id}>
-                    <td>
-                      <div className="table-cell-flex font-semibold">
-                        <Users size={16} className="table-icon-primary" />
-                        {team.name}
+      <div className="grid-cards">
+        {loading ? (
+          <div className="loading-state grid-cards__full">Loading teams...</div>
+        ) : teams.length === 0 ? (
+          <div className="empty-state-card card grid-cards__full">
+            <Layout size={48} className="empty-state-card__icon" />
+            <h3 className="empty-state-card__title">No Teams Found</h3>
+            <p>There are no Agile teams in this group yet. Create your team to get started.</p>
+            {!userInTeam && (
+              <button type="button" className="btn btn-primary" onClick={() => setShowCreate(true)}>
+                <Plus size={18} /> Create New Team
+              </button>
+            )}
+          </div>
+        ) : (
+          teams.map((team) => {
+            const isMember = team.members?.some((m) => Number(m.id) === Number(user?.id));
+            return (
+              <div key={team.id} className="card card--col">
+                <div>
+                  <div className="card__head">
+                    <div className="card__title-group">
+                      <div className="media-icon media-icon--primary">
+                        <Users size={20} />
                       </div>
-                    </td>
-                    <td>
+                      <span>{team.name}</span>
+                    </div>
+                    {isMember ? (
+                      <span className="badge badge-success badge--trailing">
+                        <CheckCircle size={14} /> My Team
+                      </span>
+                    ) : null}
+                  </div>
+
+                  <div className="card__body">
+                    <button
+                      type="button"
+                      className="badge-btn"
+                      onClick={() => handleViewMembers(team)}
+                    >
+                      <Users size={14} />
+                      {team.members?.length || 0} Members
+                    </button>
+                  </div>
+                </div>
+
+                <div className="card__footer card__footer--stack">
+                  {isMember ? (
+                    <div className="agile-team-card__toolbar">
                       <button
                         type="button"
-                        className="badge-btn"
-                        onClick={() => handleViewMembers(team)}
+                        className="icon-action-btn"
+                        onClick={() => handleRenameClick(team)}
+                        title="Rename Team"
                       >
-                        <Users size={14} />
-                        {team.members?.length || 0} Members
+                        <Edit2 size={18} />
                       </button>
-                    </td>
-                    <td className="text-right">
-                      {isMember ? (
-                        <div className="table-actions-row">
-                          <span className="badge badge-success badge-inline-success">
-                            <CheckCircle size={14}/> My Team
-                          </span>
-                          <button
-                            type="button"
-                            className="icon-action-btn"
-                            onClick={() => handleRenameClick(team)}
-                            title="Rename Team"
-                          >
-                            <Edit2 size={18} />
-                          </button>
-                          <button
-                            type="button"
-                            className="icon-action-btn"
-                            onClick={() => handleViewSprints(team)}
-                            title="View Sprints"
-                          >
-                            <Layout size={18} />
-                          </button>
-                          <button
-                            type="button"
-                            className="icon-action-btn icon-action-btn--danger"
-                            onClick={() => handleDelete(team.id)}
-                            title="Delete Team"
-                          >
-                            <Trash2 size={18} />
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          type="button"
-                          className="btn btn-secondary btn--join"
-                          onClick={() => handleJoin(team.id)}
-                          disabled={userInTeam}
-                        >
-                          Join Team
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
+                      <button
+                        type="button"
+                        className="icon-action-btn"
+                        onClick={() => handleViewSprints(team)}
+                        title="View Sprints"
+                      >
+                        <Layout size={18} />
+                      </button>
+                      <button
+                        type="button"
+                        className="icon-action-btn icon-action-btn--danger"
+                        onClick={() => handleDelete(team.id)}
+                        title="Delete Team"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn--block"
+                      onClick={() => handleJoin(team.id)}
+                      disabled={userInTeam}
+                    >
+                      Join Team
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })
+        )}
       </div>
 
       {showCreate && (

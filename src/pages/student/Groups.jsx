@@ -102,7 +102,7 @@ const StudentGroups = () => {
                   </div>
 
                   <div className="card__body">
-                    <p className="card__muted">
+                    <p className="card__teacher-line">
                       <strong>Teacher:</strong> {group.teacher_name || 'TBD'}
                     </p>
                     <div className="student-group-card__joined">
