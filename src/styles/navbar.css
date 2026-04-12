@@ -1,51 +1,86 @@
 .navbar {
-  height: 72px;
+  min-height: 80px;
+  height: auto;
   background-color: var(--bg-card);
-  border-bottom: 1px solid var(--border-color);
-  padding: 0 2rem;
+  border-bottom: 2px solid var(--border-color);
+  padding: var(--space-sm) var(--space-xl);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: var(--space-sm);
   position: sticky;
   top: 0;
   z-index: 40;
 }
 
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-width: 0;
+  flex: 1;
+}
+
+.navbar-menu-btn {
+  display: none;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  color: var(--secondary-color);
+  background-color: var(--bg-main);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.navbar-menu-btn:hover {
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+}
+
 .navbar-greeting {
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   font-weight: 600;
   color: var(--secondary-color);
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .navbar-right {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: var(--space-md);
 }
 
-.icon-btn {
+.navbar .icon-btn {
   position: relative;
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-full);
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--text-muted);
   transition: all var(--transition-fast);
+  background-color: var(--bg-main);
 }
 
-.icon-btn:hover {
-  background-color: var(--bg-main);
+.navbar .icon-btn:hover {
+  background-color: var(--primary-light);
   color: var(--primary-color);
+  transform: translateY(-1px);
 }
 
 .notification-dot {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 8px;
-  height: 8px;
+  top: 12px;
+  right: 12px;
+  width: 10px;
+  height: 10px;
   background-color: var(--danger);
   border-radius: 50%;
   border: 2px solid var(--bg-card);
@@ -54,21 +89,21 @@
 .user-profile {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding-left: 1.5rem;
-  border-left: 1px solid var(--border-color);
+  gap: var(--space-sm);
+  padding-left: var(--space-md);
+  border-left: 2px solid var(--border-color);
 }
 
 .avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-full);
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
   background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 1.125rem;
   box-shadow: var(--shadow-sm);
 }
@@ -80,21 +115,61 @@
 
 .user-name {
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   color: var(--secondary-color);
 }
 
 .user-role {
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   color: var(--text-muted);
   text-transform: capitalize;
+  font-weight: 500;
 }
 
 .logout-btn {
-  margin-left: 0.5rem;
+  margin-left: var(--space-2xs);
+  background-color: transparent;
 }
 
 .logout-btn:hover {
   color: var(--danger);
-  background-color: #FEE2E2;
+  background-color: #FEF2F2;
+}
+
+@media (max-width: 1024px) {
+  .navbar {
+    padding-left: max(var(--space-sm), env(safe-area-inset-left));
+    padding-right: max(var(--space-sm), env(safe-area-inset-right));
+    padding-top: max(var(--space-xs), env(safe-area-inset-top));
+  }
+
+  .navbar-menu-btn {
+    display: inline-flex;
+  }
+}
+
+@media (max-width: 640px) {
+  .navbar {
+    padding: var(--space-xs) var(--space-sm);
+  }
+
+  .navbar-greeting {
+    font-size: 1.05rem;
+  }
+
+  .navbar-right {
+    gap: var(--space-xs);
+  }
+}
+
+@media (max-width: 480px) {
+  .user-info {
+    display: none;
+  }
+
+  .user-profile {
+    padding-left: 0;
+    border-left: none;
+    gap: var(--space-xs);
+  }
 }

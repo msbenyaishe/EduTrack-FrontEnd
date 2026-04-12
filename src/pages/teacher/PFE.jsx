@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { GraduationCap, Users, Trash2 } from 'lucide-react';
+import { GraduationCap, Trash2 } from 'lucide-react';
 import { teacherService } from '../../services/teacherService';
 import { pfeService } from '../../services/pfeService';
 import '../../styles/tables.css';
@@ -7,7 +7,7 @@ import '../../styles/tables.css';
 const TeacherPFE = () => {
   const [groups, setGroups] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState(null);
-  
+
   const [pfeTeams, setPfeTeams] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -26,7 +26,7 @@ const TeacherPFE = () => {
       const grpData = await teacherService.getGroups();
       setGroups(grpData);
       if(grpData.length > 0) setSelectedGroup(grpData[0].id);
-    } catch (e) {
+    } catch {
       setGroups([{ id: 1, name: 'L3 INFO Grp A' }]);
       setSelectedGroup(1);
     } finally {
@@ -38,7 +38,7 @@ const TeacherPFE = () => {
     try {
       const data = await pfeService.getTeams(groupId);
       setPfeTeams(data);
-    } catch (e) {
+    } catch {
       setPfeTeams([{ id: 1, name: 'PFE EduTrack', members: 2 }]);
     }
   };
@@ -58,54 +58,65 @@ const TeacherPFE = () => {
       <div className="page-header">
         <div>
           <h1 className="page-title">PFE Teams</h1>
-          <p className="page-subtitle">End-of-study projects (Projet de Fin d'Études)</p>
+          <p className="page-subtitle">End-of-study projects (Projet de Fin d&apos;Études)</p>
         </div>
       </div>
 
-      <div style={{ marginBottom: '1.5rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
-        <p className="font-semibold text-muted">Select Group:</p>
-        <select 
-          className="form-input" 
-          style={{ width: '300px' }}
-          value={selectedGroup || ''} 
-          onChange={(e) => setSelectedGroup(e.target.value)}
-        >
-          {groups.map(g => (
-            <option key={g.id} value={g.id}>{g.name}</option>
-          ))}
-        </select>
+      <div className="card card--toolbar">
+        <label className="card--toolbar__label" htmlFor="pfe-group">Select Group:</label>
+        <div className="card--toolbar__fields">
+          <select
+            id="pfe-group"
+            className="form-input form-input--compact-select"
+            value={selectedGroup || ''}
+            onChange={(e) => setSelectedGroup(e.target.value)}
+          >
+            {groups.map(g => (
+              <option key={g.id} value={g.id}>{g.name}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      <div className="table-container">
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Project Title / Team</th>
-              <th>Members</th>
-              <th className="text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(loading) ? (
-              <tr><td colSpan="3" className="text-center text-muted py-4">Loading teams...</td></tr>
-            ) : pfeTeams.length === 0 ? (
-              <tr><td colSpan="3" className="text-center text-muted py-4">No PFE teams registered.</td></tr>
-            ) : (
-              pfeTeams.map(team => (
-                <tr key={team.id}>
-                  <td className="font-semibold flex items-center gap-2">
-                    <GraduationCap size={16} className="text-primary-color" />
+      <div className="grid-cards">
+        {(loading) ? (
+          <div className="loading-state">Loading PFE teams...</div>
+        ) : pfeTeams.length === 0 ? (
+          <div className="empty-state-card card">
+            <GraduationCap size={48} className="empty-state-card__icon" />
+            <h3 className="empty-state-card__title">No PFE Teams Found</h3>
+            <p>No students in this group have created PFE teams yet.</p>
+          </div>
+        ) : (
+          pfeTeams.map(team => (
+            <div key={team.id} className="card card--col">
+              <div>
+                <div className="card__head">
+                  <div className="card__title-group">
+                    <div className="media-icon media-icon--primary">
+                      <GraduationCap size={20} />
+                    </div>
                     {team.name}
-                  </td>
-                  <td>{Array.isArray(team.members) ? team.members.length : (team.members || 0)} Students</td>
-                  <td className="text-right flex items-center justify-end gap-2">
-                    <button className="action-btn danger" onClick={() => handleDelete(team.id)}><Trash2 size={16}/></button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+                  </div>
+                </div>
+
+                <div className="card__body">
+                  <div className="badge badge-primary badge--block">
+                    {Array.isArray(team.members) ? team.members.length : (team.members || 0)} Students
+                  </div>
+                  <div className="card__muted">Final graduation project team</div>
+                </div>
+              </div>
+
+              <div className="card__footer">
+                <div className="card__stamp">Registered PFE Team</div>
+                <button type="button" className="icon-action-btn icon-action-btn--danger" onClick={() => handleDelete(team.id)} title="Delete Team">
+                  <Trash2 size={18} />
+                </button>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

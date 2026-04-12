@@ -10,8 +10,7 @@ const StudentDashboard = () => {
     const fetchStats = async () => {
       try {
         const data = await studentService.getDashboardStats();
-        
-        // Flatten recent submissions for counting and list display
+
         const submissions = data.recentSubmissions || {};
         const flattened = [
           ...(submissions.workshopSubmissions || []).map(s => ({ ...s, title: s.workshop_title, status: 'Workshop', date: s.submitted_at })),
@@ -22,8 +21,8 @@ const StudentDashboard = () => {
         setStats({
           ...data,
           recentSubmissions: flattened,
-          totalSubmissions: (submissions.workshopSubmissions?.length || 0) + 
-                            (submissions.sprintSubmissions?.length || 0) + 
+          totalSubmissions: (submissions.workshopSubmissions?.length || 0) +
+                            (submissions.sprintSubmissions?.length || 0) +
                             (submissions.pfeSubmissions?.length || 0)
         });
       } finally {
@@ -34,7 +33,7 @@ const StudentDashboard = () => {
   }, []);
 
   return (
-    <div>
+    <div className="dashboard-page">
       <div className="page-header">
         <div>
           <h1 className="page-title">My Dashboard</h1>
@@ -45,7 +44,7 @@ const StudentDashboard = () => {
       <div className="stats-grid">
         <div className="card stat-card">
           <div className="stat-icon primary">
-            <Users size={28} />
+            <Users size={22} />
           </div>
           <div className="stat-info">
             <span className="stat-value">{loading ? '-' : stats.groupsCount}</span>
@@ -55,7 +54,7 @@ const StudentDashboard = () => {
 
         <div className="card stat-card">
           <div className="stat-icon success">
-            <BookOpen size={28} />
+            <BookOpen size={22} />
           </div>
           <div className="stat-info">
             <span className="stat-value">{loading ? '-' : stats.modulesCount}</span>
@@ -65,7 +64,7 @@ const StudentDashboard = () => {
 
         <div className="card stat-card">
           <div className="stat-icon warning">
-            <Upload size={28} />
+            <Upload size={22} />
           </div>
           <div className="stat-info">
             <span className="stat-value">{loading ? '-' : stats.totalSubmissions || 0}</span>
@@ -74,34 +73,37 @@ const StudentDashboard = () => {
         </div>
       </div>
 
-      <h3 style={{ marginBottom: '1rem', color: 'var(--secondary-color)' }}>Recent Activity</h3>
-      <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+      <h3 className="section-heading">Recent Activity</h3>
+      <div className="card activity-card">
         {stats.recentSubmissions.length > 0 ? (
-          <ul style={{ listStyle: 'none' }}>
+          <ul className="activity-list">
             {stats.recentSubmissions.map((sub, idx) => (
-              <li 
-                key={sub.id || idx} 
-                className="flex items-center justify-between" 
-                style={{ padding: '1rem 1.5rem', borderBottom: '1px solid var(--border-color)' }}
+              <li
+                key={sub.id || idx}
+                className="activity-item"
               >
-                <div className="flex items-center gap-4">
-                  <div style={{ backgroundColor: '#D1FAE5', padding: '0.75rem', borderRadius: '50%', color: '#059669' }}>
-                    <Upload size={20} />
+                <div className="activity-item__main">
+                  <div className="activity-icon activity-icon--success" aria-hidden>
+                    <Upload size={18} />
                   </div>
-                  <div>
-                    <p className="font-semibold">{sub.title || 'Assignment'} - {sub.status}</p>
-                    <p className="text-muted" style={{ fontSize: '0.875rem' }}>Successfully submitted</p>
+                  <div className="activity-item__body">
+                    <div className="activity-item__top">
+                      <p className="activity-text__title">
+                        {sub.title || 'Assignment'} — {sub.status}
+                      </p>
+                      <span className="activity-inline-date">
+                        <Clock size={14} aria-hidden />
+                        {sub.date ? new Date(sub.date).toLocaleDateString() : 'Just now'}
+                      </span>
+                    </div>
+                    <p className="activity-text__sub">Successfully submitted</p>
                   </div>
-                </div>
-                <div className="flex items-center text-muted gap-1 text-sm">
-                  <Clock size={16} />
-                  <span>{sub.date ? new Date(sub.date).toLocaleDateString() : 'Just now'}</span>
                 </div>
               </li>
             ))}
           </ul>
         ) : (
-          <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+          <div className="activity-empty">
             No recent activity.
           </div>
         )}

@@ -39,7 +39,7 @@ const TeacherAgile = () => {
     try {
       const data = await teacherService.getModules();
       setModules(data);
-    } catch (e) {
+    } catch {
       setModules([{ id: 1, title: 'Web Development' }, { id: 2, title: 'Software Engineering' }]);
     }
   };
@@ -48,7 +48,7 @@ const TeacherAgile = () => {
     try {
       const data = await agileService.getSprintsByGroup(groupId);
       setSprints(data);
-    } catch (e) {
+    } catch {
       setSprints([
         { id: 1, title: 'Sprint 1: Architecture', module_title: 'Web Dev', created_at: new Date().toISOString() },
         { id: 2, title: 'Sprint 2: UI Design', module_title: 'Web Dev', created_at: new Date().toISOString() }
@@ -86,7 +86,7 @@ const TeacherAgile = () => {
     try {
       const data = await agileService.getTeamSubmissions(team.id);
       setTeamSubmissions(data);
-    } catch (e) {
+    } catch {
       setTeamSubmissions([]);
     } finally {
       setLoadingSubmissions(false);
@@ -98,7 +98,7 @@ const TeacherAgile = () => {
       const grpData = await teacherService.getGroups();
       setGroups(grpData);
       if(grpData.length > 0) setSelectedGroup(grpData[0].id);
-    } catch (e) {
+    } catch {
       setGroups([{ id: 1, name: 'L3 INFO Grp A' }, { id: 2, name: 'M1 CS' }]);
       setSelectedGroup(1);
     } finally {
@@ -110,7 +110,7 @@ const TeacherAgile = () => {
     try {
       const data = await agileService.getTeams(groupId);
       setTeams(data);
-    } catch (e) {
+    } catch {
       setTeams([{ id: 1, name: 'Team Alpha', members: 3, created_at: new Date().toISOString() }]);
     }
   };
@@ -132,86 +132,99 @@ const TeacherAgile = () => {
           <h1 className="page-title">Agile Teams</h1>
           <p className="page-subtitle">Manage student agile teams and sprints.</p>
         </div>
-        <button className="btn btn-primary flex items-center gap-2" onClick={() => setShowSprintManager(true)}>
+        <button type="button" className="btn btn-primary btn--with-icon" onClick={() => setShowSprintManager(true)}>
           <Layout size={18} /> Manage Sprints
         </button>
       </div>
 
-      <div style={{ marginBottom: '1.5rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
-        <p className="font-semibold text-muted">Select Group:</p>
-        <select 
-          className="form-input" 
-          style={{ width: '300px' }}
-          value={selectedGroup || ''} 
-          onChange={(e) => setSelectedGroup(e.target.value)}
-        >
-          {groups.map(g => (
-            <option key={g.id} value={g.id}>{g.name}</option>
-          ))}
-        </select>
+      <div className="card card--toolbar">
+        <label className="card--toolbar__label" htmlFor="agile-group">Select Group:</label>
+        <div className="card--toolbar__fields">
+          <select
+            id="agile-group"
+            className="form-input form-input--compact-select"
+            value={selectedGroup || ''}
+            onChange={(e) => setSelectedGroup(e.target.value)}
+          >
+            {groups.map(g => (
+              <option key={g.id} value={g.id}>{g.name}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      <div className="table-container">
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Team Name</th>
-              <th>Member Count</th>
-              <th>Created Date</th>
-              <th className="text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(loading) ? (
-              <tr><td colSpan="4" className="text-center text-muted py-4">Loading teams...</td></tr>
-            ) : teams.length === 0 ? (
-              <tr><td colSpan="4" className="text-center text-muted py-4">No teams created in this group.</td></tr>
-            ) : (
-              teams.map(team => (
-                <tr key={team.id}>
-                  <td className="font-semibold flex items-center gap-2">
-                    <Users size={16} className="text-primary-color" />
+      <div className="grid-cards">
+        {loading ? (
+          <div className="loading-state">Loading teams...</div>
+        ) : teams.length === 0 ? (
+          <div className="empty-state-card card">
+            <Users size={32} className="empty-state-card__icon" />
+            <p>No agile teams created in this group yet.</p>
+          </div>
+        ) : (
+          teams.map(team => (
+            <div key={team.id} className="card card--col">
+              <div>
+                <div className="card__head">
+                  <div className="card__title-group">
+                    <div className="media-icon media-icon--primary">
+                      <Users size={20} />
+                    </div>
                     {team.name}
-                  </td>
-                  <td>{Array.isArray(team.members) ? team.members.length : (team.members || 0)} Students</td>
-                  <td>{new Date(team.created_at).toLocaleDateString()}</td>
-                  <td className="text-right flex items-center justify-end gap-2">
-                    <button className="action-btn flex items-center gap-1" onClick={() => handleViewSubmissions(team)}><Layout size={14}/> Sprints</button>
-                    <button className="action-btn danger" onClick={() => handleDelete(team.id)}><Trash2 size={16}/></button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+                  </div>
+                </div>
+
+                <div className="card__body">
+                  <div className="badge badge-primary badge--block">
+                    {Array.isArray(team.members) ? team.members.length : (team.members || 0)} Students
+                  </div>
+                  <div className="card__muted">Created: {new Date(team.created_at).toLocaleDateString()}</div>
+                </div>
+              </div>
+
+              <div className="card__footer">
+                <button type="button" className="btn btn-secondary btn--edit-row" onClick={() => handleViewSubmissions(team)}>
+                  <Layout size={16} /> View Sprints
+                </button>
+                <button type="button" className="icon-action-btn icon-action-btn--danger" onClick={() => handleDelete(team.id)} title="Delete team">
+                  <Trash2 size={18} />
+                </button>
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
-      {/* Sprint Manager Modal */}
       {showSprintManager && (
         <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '800px' }}>
+          <div className="modal-content modal-content--wide">
             <div className="modal-header">
               <h2 className="font-bold">Group Sprints</h2>
-              <button className="modal-close" onClick={() => setShowSprintManager(false)}><X size={24} /></button>
+              <button type="button" className="modal-close" onClick={() => setShowSprintManager(false)} aria-label="Close"><X size={24} /></button>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+
+            <div className="two-col-modal">
               <div>
-                <h3 className="font-semibold mb-3">Create New Sprint</h3>
+                <h3 className="modal-section-title">Create New Sprint</h3>
                 <form onSubmit={handleCreateSprint}>
-                  <div className="form-group mb-3">
-                    <label className="form-label">Sprint Title</label>
-                    <input 
-                      type="text" className="form-input" required 
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="sprint-title">Sprint Title</label>
+                    <input
+                      id="sprint-title"
+                      type="text"
+                      className="form-input"
+                      required
                       placeholder="e.g. Sprint 1: MVP"
-                      value={newSprint.title} 
-                      onChange={(e) => setNewSprint({...newSprint, title: e.target.value})} 
+                      value={newSprint.title}
+                      onChange={(e) => setNewSprint({...newSprint, title: e.target.value})}
                     />
                   </div>
-                  <div className="form-group mb-3">
-                    <label className="form-label">Module</label>
-                    <select 
-                      className="form-input" required
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="sprint-module">Module</label>
+                    <select
+                      id="sprint-module"
+                      className="form-input"
+                      required
                       value={newSprint.module_id}
                       onChange={(e) => setNewSprint({...newSprint, module_id: e.target.value})}
                     >
@@ -221,34 +234,36 @@ const TeacherAgile = () => {
                       ))}
                     </select>
                   </div>
-                  <div className="form-group mb-3">
-                    <label className="form-label">Description (Optional)</label>
-                    <textarea 
-                      className="form-input" rows="3"
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="sprint-desc">Description (Optional)</label>
+                    <textarea
+                      id="sprint-desc"
+                      className="form-input"
+                      rows={3}
                       value={newSprint.description}
                       onChange={(e) => setNewSprint({...newSprint, description: e.target.value})}
                     ></textarea>
                   </div>
-                  <button type="submit" className="btn btn-primary w-full flex items-center justify-center gap-2">
+                  <button type="submit" className="btn btn-primary btn--block btn--with-icon">
                     <Plus size={18} /> Create Sprint
                   </button>
                 </form>
               </div>
 
               <div>
-                <h3 className="font-semibold mb-3">Existing Sprints</h3>
-                <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                <h3 className="modal-section-title">Existing Sprints</h3>
+                <div className="scroll-region">
                   {sprints.length === 0 ? (
-                    <p className="text-muted text-center py-4">No sprints created for this group.</p>
+                    <p className="sprint-empty-hint">No sprints created for this group.</p>
                   ) : (
-                    <div className="flex flex-col gap-3">
+                    <div className="sprint-list-stack">
                       {sprints.map(s => (
-                        <div key={s.id} className="card p-3 flex justify-between items-center bg-light">
+                        <div key={s.id} className="sprint-row">
                           <div>
                             <div className="font-bold">{s.title}</div>
-                            <div className="text-xs text-muted">{s.module_title} • {new Date(s.created_at).toLocaleDateString()}</div>
+                            <div className="card__muted">{s.module_title} • {new Date(s.created_at).toLocaleDateString()}</div>
                           </div>
-                          <button className="action-btn danger sm" onClick={() => handleDeleteSprint(s.id)}>
+                          <button type="button" className="action-btn action-btn--danger action-btn--sm" onClick={() => handleDeleteSprint(s.id)} title="Delete sprint">
                             <Trash2 size={14} />
                           </button>
                         </div>
@@ -262,69 +277,57 @@ const TeacherAgile = () => {
         </div>
       )}
 
-      {/* Team Submissions Modal */}
       {showTeamSubmissions && (
         <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '700px' }}>
+          <div className="modal-content modal-content--medium">
             <div className="modal-header">
               <div>
                 <h2 className="font-bold">Submissions: {viewingTeam?.name}</h2>
-                <p className="text-xs text-muted">Tracking progress across all group sprints</p>
+                <p className="card__muted">Tracking progress across all group sprints</p>
               </div>
-              <button className="modal-close" onClick={() => setShowTeamSubmissions(false)}><X size={24} /></button>
+              <button type="button" className="modal-close" onClick={() => setShowTeamSubmissions(false)} aria-label="Close"><X size={24} /></button>
             </div>
-            
-            <div className="mt-4">
-              {loadingSubmissions ? (
-                <div className="text-center py-8">Loading team submissions...</div>
-              ) : sprints.length === 0 ? (
-                <div className="text-center py-8 text-muted italic">No sprints defined for this group yet.</div>
-              ) : (
-                <table className="table">
-                  <thead>
-                    <tr>
-                      <th>Sprint</th>
-                      <th className="text-right">Submission</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {sprints.map(sprint => {
-                      const submission = teamSubmissions.find(sub => sub.sprint_id === sprint.id);
-                      return (
-                        <tr key={sprint.id}>
-                          <td>
-                            <div className="font-medium text-sm">{sprint.title}</div>
-                            <div className="text-xs text-muted">{sprint.module_title}</div>
-                          </td>
-                          <td className="text-right">
-                            {submission ? (
-                              <div className="flex items-center justify-end gap-2">
-                                {submission.repo && (
-                                  <a href={submission.repo} target="_blank" rel="noopener noreferrer" className="action-btn sm" title="Repo">
-                                    <Link size={14} />
-                                  </a>
-                                )}
-                                {submission.web_page && (
-                                  <a href={submission.web_page} target="_blank" rel="noopener noreferrer" className="action-btn sm" title="Demo">
-                                    <ExternalLink size={14} />
-                                  </a>
-                                )}
-                                {submission.pdf_report && (
-                                  <a href={submission.pdf_report} target="_blank" rel="noopener noreferrer" className="action-btn sm" title="PDF">
-                                    <FileText size={14} />
-                                  </a>
-                                )}
-                              </div>
-                            ) : (
-                              <span className="text-xs italic text-muted">No submission</span>
+
+            <div className="scroll-region sprint-list-stack scroll-region--mt">
+                {loadingSubmissions ? (
+                  <p className="sprint-empty-hint">Loading submissions...</p>
+                ) : (
+                  sprints.map(sprint => {
+                  const submission = teamSubmissions.find(sub => sub.sprint_id === sprint.id);
+                  return (
+                    <div key={sprint.id} className="submission-row">
+                      <div>
+                        <div className="member-name">{sprint.title}</div>
+                        <div className="card__muted">{sprint.module_title}</div>
+                      </div>
+
+                      <div className="submission-links">
+                        {submission ? (
+                          <>
+                            {submission.repo && (
+                              <a href={submission.repo} target="_blank" rel="noopener noreferrer" className="link-icon-btn" title="Repo">
+                                <Link size={18} />
+                              </a>
                             )}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              )}
+                            {submission.web_page && (
+                              <a href={submission.web_page} target="_blank" rel="noopener noreferrer" className="link-icon-btn" title="Demo">
+                                <ExternalLink size={18} />
+                              </a>
+                            )}
+                            {submission.pdf_report && (
+                              <a href={submission.pdf_report} target="_blank" rel="noopener noreferrer" className="link-icon-btn" title="PDF">
+                                <FileText size={18} />
+                              </a>
+                            )}
+                          </>
+                        ) : (
+                          <span className="pill-muted">No submission</span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                  })
+                )}
             </div>
           </div>
         </div>

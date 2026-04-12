@@ -13,7 +13,6 @@ const StudentAgile = () => {
   const [showCreate, setShowCreate] = useState(false);
   const [teamName, setTeamName] = useState('');
 
-  const [myGroups, setMyGroups] = useState([]);
   const [selectedGroupId, setSelectedGroupId] = useState(null);
   const [userInTeam, setUserInTeam] = useState(false);
 
@@ -48,7 +47,6 @@ const StudentAgile = () => {
     try {
       setLoading(true);
       const groups = await studentService.getMyGroups();
-      setMyGroups(groups);
       if (groups.length > 0) {
         const firstGroupId = groups[0].id;
         setSelectedGroupId(firstGroupId);
@@ -268,7 +266,7 @@ const StudentAgile = () => {
       </div>
 
       {userInTeam && (
-        <div className="alert alert-info" style={{ marginBottom: '1.5rem', backgroundColor: '#e3f2fd', color: '#0d47a1', padding: '1rem', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <div className="alert alert--info">
           <Layout size={18} />
           <span>You are already part of an Agile team. You cannot create or join another team in this group.</span>
         </div>
@@ -285,9 +283,24 @@ const StudentAgile = () => {
           </thead>
           <tbody>
             {(loading) ? (
-              <tr><td colSpan="3" className="text-center text-muted py-4">Loading teams...</td></tr>
+              <tr><td colSpan={3} className="table-loading">Loading teams...</td></tr>
             ) : teams.length === 0 ? (
-              <tr><td colSpan="3" className="text-center text-muted py-4">No agile teams found.</td></tr>
+              <tr>
+                <td colSpan={3} className="table-empty-center">
+                  <div className="table-empty-inner">
+                    <div className="table-empty-inner__icon-wrap">
+                      <Layout size={32} />
+                    </div>
+                    <h3 className="table-empty-inner__title">No Teams Found</h3>
+                    <p className="table-empty-inner__text">There are no Agile teams in this group yet. Create your team to get started.</p>
+                    {!userInTeam && (
+                      <button type="button" className="btn btn-primary" onClick={() => setShowCreate(true)}>
+                        <Plus size={18} /> Create New Team
+                      </button>
+                    )}
+                  </div>
+                </td>
+              </tr>
             ) : (
               teams.map(team => {
                 const isMember = team.members?.some(m => Number(m.id) === Number(user?.id));
@@ -295,42 +308,45 @@ const StudentAgile = () => {
                   <tr key={team.id}>
                     <td>
                       <div className="table-cell-flex font-semibold">
-                        <Users size={16} className="text-primary-color" />
+                        <Users size={16} className="table-icon-primary" />
                         {team.name}
                       </div>
                     </td>
                     <td>
-                      <button 
-                        className="badge badge-primary hover:opacity-80 transition-opacity cursor-pointer border-none"
+                      <button
+                        type="button"
+                        className="badge-btn"
                         onClick={() => handleViewMembers(team)}
-                        style={{ background: 'var(--primary-light)', color: 'var(--primary-color)' }}
                       >
-                        <Users size={14} className="mr-1" />
+                        <Users size={14} />
                         {team.members?.length || 0} Members
                       </button>
                     </td>
                     <td className="text-right">
                       {isMember ? (
-                        <div className="flex justify-end items-center gap-2">
-                          <span className="badge badge-success flex items-center gap-1 w-auto inline-flex mr-2">
+                        <div className="table-actions-row">
+                          <span className="badge badge-success badge-inline-success">
                             <CheckCircle size={14}/> My Team
                           </span>
-                          <button 
-                            className="icon-btn" 
+                          <button
+                            type="button"
+                            className="icon-action-btn"
                             onClick={() => handleRenameClick(team)}
                             title="Rename Team"
                           >
                             <Edit2 size={18} />
                           </button>
-                          <button 
-                            className="icon-btn" 
+                          <button
+                            type="button"
+                            className="icon-action-btn"
                             onClick={() => handleViewSprints(team)}
                             title="View Sprints"
                           >
                             <Layout size={18} />
                           </button>
-                          <button 
-                            className="icon-btn icon-btn-danger" 
+                          <button
+                            type="button"
+                            className="icon-action-btn icon-action-btn--danger"
                             onClick={() => handleDelete(team.id)}
                             title="Delete Team"
                           >
@@ -338,11 +354,11 @@ const StudentAgile = () => {
                           </button>
                         </div>
                       ) : (
-                        <button 
-                          className="btn btn-secondary w-auto gap-1 text-sm py-1 px-3" 
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn--join"
                           onClick={() => handleJoin(team.id)}
                           disabled={userInTeam}
-                          style={userInTeam ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
                         >
                           Join Team
                         </button>
@@ -361,15 +377,15 @@ const StudentAgile = () => {
           <div className="modal-content">
             <div className="modal-header">
               <h2 className="font-bold">Create New Team</h2>
-              <button className="modal-close" onClick={() => setShowCreate(false)}><span style={{fontSize: '1.25rem'}}>&times;</span></button>
+              <button type="button" className="modal-close" onClick={() => setShowCreate(false)} aria-label="Close"><X size={20} /></button>
             </div>
-            
+
             <form onSubmit={handleCreate}>
               <div className="form-group">
-                <label className="form-label">Team Name</label>
-                <input type="text" className="form-input" required value={teamName} onChange={(e) => setTeamName(e.target.value)} />
+                <label className="form-label" htmlFor="new-team-name">Team Name</label>
+                <input id="new-team-name" type="text" className="form-input" required value={teamName} onChange={(e) => setTeamName(e.target.value)} />
               </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1.5rem' }}>
+              <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowCreate(false)}>Cancel</button>
                 <button type="submit" className="btn btn-primary">Create</button>
               </div>
@@ -382,22 +398,23 @@ const StudentAgile = () => {
           <div className="modal-content">
             <div className="modal-header">
               <h2 className="font-bold">Rename Team</h2>
-              <button className="modal-close" onClick={() => setShowRenameModal(false)}><X size={20} /></button>
+              <button type="button" className="modal-close" onClick={() => setShowRenameModal(false)} aria-label="Close"><X size={20} /></button>
             </div>
-            
+
             <form onSubmit={handleRenameSubmit}>
               <div className="form-group">
-                <label className="form-label">New Team Name</label>
-                <input 
-                  type="text" 
-                  className="form-input" 
-                  required 
-                  value={newTeamName} 
-                  onChange={(e) => setNewTeamName(e.target.value)} 
+                <label className="form-label" htmlFor="rename-team">New Team Name</label>
+                <input
+                  id="rename-team"
+                  type="text"
+                  className="form-input"
+                  required
+                  value={newTeamName}
+                  onChange={(e) => setNewTeamName(e.target.value)}
                   autoFocus
                 />
               </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1.5rem' }}>
+              <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowRenameModal(false)}>Cancel</button>
                 <button type="submit" className="btn btn-primary">Save Changes</button>
               </div>
@@ -407,31 +424,32 @@ const StudentAgile = () => {
       )}
       {showMembersModal && (
         <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '400px' }}>
+          <div className="modal-content modal-content--narrow">
             <div className="modal-header">
-              <h2 className="font-bold flex items-center gap-2">
-                <Users size={20} className="text-primary-color" />
+              <h2 className="font-bold modal-title-row">
+                <Users size={20} />
                 {viewingTeamName} Members
               </h2>
-              <button className="modal-close" onClick={() => setShowMembersModal(false)}><X size={20} /></button>
+              <button type="button" className="modal-close" onClick={() => setShowMembersModal(false)} aria-label="Close"><X size={20} /></button>
             </div>
-            
-            <div className="flex flex-col gap-3 mt-2" style={{ maxHeight: '300px', overflowY: 'auto', paddingRight: '0.5rem' }}>
+
+            <div className="member-list-stack scroll-region--sm">
               {teamMembersList.length > 0 ? (
                 teamMembersList.map((member, idx) => (
-                  <div key={member.id || idx} className="flex items-center justify-between p-3 rounded-lg bg-slate-50 border border-slate-100">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-primary-color text-white flex items-center justify-center font-bold text-xs">
+                  <div key={member.id || idx} className="member-line">
+                    <div className="member-line__left">
+                      <div className="member-avatar member-avatar--sm">
                         {member.name?.charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <div className="font-semibold text-sm">{member.name}</div>
-                        <div className="text-xs text-muted">{member.email}</div>
+                        <div className="member-line__name">{member.name}</div>
+                        <div className="card__muted">{member.email}</div>
                       </div>
                     </div>
                     {isUserTeamMember && Number(member.id) !== Number(user?.id) && (
-                      <button 
-                        className="p-1.5 text-red-500 hover:bg-red-50 rounded-md transition-colors"
+                      <button
+                        type="button"
+                        className="btn-icon-danger"
                         onClick={() => handleRemoveMember(member.id)}
                         title="Remove Member"
                       >
@@ -441,33 +459,32 @@ const StudentAgile = () => {
                   </div>
                 ))
               ) : (
-                <div className="text-center py-6 text-muted italic">No members in this team yet.</div>
+                <div className="text-italic-muted padded-y-muted">No members in this team yet.</div>
               )}
             </div>
 
             {isUserTeamMember && availableStudents.length > 0 && (
-              <div className="mt-6 border-t pt-4">
-                <label className="form-label text-xs uppercase tracking-wider text-slate-500 mb-2">Add Member</label>
-                <div className="flex gap-2">
-                  <select 
-                    className="form-input text-sm"
-                    onChange={(e) => {
-                      if (e.target.value) handleAddMember(e.target.value);
-                      e.target.value = "";
-                    }}
-                    defaultValue=""
-                  >
-                    <option value="" disabled>Select a classmate...</option>
-                    {availableStudents.map(student => (
-                      <option key={student.id} value={student.id}>{student.name}</option>
-                    ))}
-                  </select>
-                </div>
+              <div className="add-member-block">
+                <label className="label-caps" htmlFor="add-member-select">Add Member</label>
+                <select
+                  id="add-member-select"
+                  className="form-input form-input--compact-select"
+                  onChange={(e) => {
+                    if (e.target.value) handleAddMember(e.target.value);
+                    e.target.value = "";
+                  }}
+                  defaultValue=""
+                >
+                  <option value="" disabled>Select a classmate...</option>
+                  {availableStudents.map(student => (
+                    <option key={student.id} value={student.id}>{student.name}</option>
+                  ))}
+                </select>
               </div>
             )}
-            
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
-              <button className="btn btn-secondary w-full" onClick={() => setShowMembersModal(false)}>Close</button>
+
+            <div className="modal-footer modal-footer--stack modal-footer--mt">
+              <button type="button" className="btn btn-secondary btn--block" onClick={() => setShowMembersModal(false)}>Close</button>
             </div>
           </div>
         </div>
@@ -475,50 +492,60 @@ const StudentAgile = () => {
 
       {showSprintsModal && (
         <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '800px' }}>
+          <div className="modal-content modal-content--wide">
             <div className="modal-header">
-              <h2 className="font-bold flex items-center gap-2">
-                <Layout size={20} className="text-secondary-color" />
+              <h2 className="font-bold modal-title-row modal-title-row--muted">
+                <Layout size={20} />
                 Team Sprints: {selectedTeam?.name}
               </h2>
-              <button className="modal-close" onClick={() => {
+              <button type="button" className="modal-close" onClick={() => {
                 setShowSprintsModal(false);
                 setSubmissionForm({ sprintId: null, repo: '', web_page: '', pdf_report: '' });
-              }}><X size={20} /></button>
+              }} aria-label="Close"><X size={20} /></button>
             </div>
 
-            <div className="mt-4">
+            <div className="scroll-region--mt">
               {loadingSprints ? (
-                <div className="text-center py-8">Loading sprints...</div>
+                <div className="loading-state">Loading sprints...</div>
               ) : groupSprints.length === 0 ? (
-                <div className="text-center py-8 text-muted italic">No sprints have been defined for this group yet.</div>
+                <div className="empty-modal-message">No sprints have been defined for this group yet.</div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Sprint List */}
-                  <div className="flex flex-col gap-3" style={{ maxHeight: '400px', overflowY: 'auto', paddingRight: '0.5rem' }}>
-                    <h3 className="text-xs font-bold uppercase text-slate-500 tracking-wider mb-1">Available Sprints</h3>
+                <div className="sprint-layout">
+                  <div className="sprint-list-panel">
+                    <h3 className="sprint-list-panel__title">Available Sprints</h3>
                     {groupSprints.map(sprint => {
                       const submission = teamSubmissions.find(sub => sub.sprint_id === sprint.id);
                       const isSelected = submissionForm.sprintId === sprint.id;
-                      
+
+                      const choiceClass = submission
+                        ? 'sprint-choice sprint-choice--done'
+                        : isSelected
+                          ? 'sprint-choice sprint-choice--selected'
+                          : 'sprint-choice sprint-choice--default';
+
                       return (
-                        <div 
-                          key={sprint.id} 
-                          className={`card p-3 cursor-pointer transition-all border-l-4 ${
-                            isSelected ? 'border-primary-color bg-indigo-50' : 
-                            submission ? 'border-success' : 'border-slate-300'
-                          }`}
+                        <div
+                          key={sprint.id}
+                          className={choiceClass}
                           onClick={() => !submission && setSubmissionForm(prev => ({ ...prev, sprintId: sprint.id }))}
+                          onKeyDown={(e) => {
+                            if (!submission && (e.key === 'Enter' || e.key === ' ')) {
+                              e.preventDefault();
+                              setSubmissionForm(prev => ({ ...prev, sprintId: sprint.id }));
+                            }
+                          }}
+                          role="button"
+                          tabIndex={0}
                         >
-                          <div className="flex justify-between items-start">
+                          <div className="sprint-choice__head">
                             <div>
-                              <div className="font-bold text-sm">{sprint.title}</div>
-                              <div className="text-xs text-muted">{sprint.module_title}</div>
+                              <div className="sprint-choice__title">{sprint.title}</div>
+                              <div className="card__muted">{sprint.module_title}</div>
                             </div>
                             {submission ? (
-                              <span className="badge badge-success text-[10px] py-0.5 px-2">Submitted</span>
+                              <span className="badge badge-success badge--tiny">Submitted</span>
                             ) : (
-                              <span className="badge badge-primary text-[10px] py-0.5 px-2">Pending</span>
+                              <span className="badge badge-primary badge--tiny">Pending</span>
                             )}
                           </div>
                         </div>
@@ -526,67 +553,73 @@ const StudentAgile = () => {
                     })}
                   </div>
 
-                  {/* Submission Form */}
-                  <div className="bg-slate-50 p-4 rounded-lg border border-slate-100">
-                    <h3 className="text-xs font-bold uppercase text-slate-500 tracking-wider mb-4">
+                  <div className="sprint-form-panel">
+                    <h3 className="sprint-form-panel__title">
                       {submissionForm.sprintId ? 'Submit Sprint' : 'Select a sprint'}
                     </h3>
 
                     {submissionForm.sprintId ? (
-                      <form onSubmit={handleSubmitSprint}>
-                        <div className="form-group mb-3 text-sm">
-                          <label className="form-label mb-1">Repository Link</label>
-                          <input 
-                            type="url" className="form-input py-1.5 px-3" 
-                            placeholder="https://github.com/..." 
+                      <form className="form-compact" onSubmit={handleSubmitSprint}>
+                        <div className="form-group">
+                          <label className="form-label" htmlFor="sprint-repo">Repository Link</label>
+                          <input
+                            id="sprint-repo"
+                            type="url"
+                            className="form-input"
+                            placeholder="https://github.com/..."
                             value={submissionForm.repo}
                             onChange={(e) => handleSubmissionChange('repo', e.target.value)}
                           />
                         </div>
-                        <div className="form-group mb-3 text-sm">
-                          <label className="form-label mb-1">Live Demo Link</label>
-                          <input 
-                            type="url" className="form-input py-1.5 px-3" 
-                            placeholder="https://app-demo.com" 
+                        <div className="form-group">
+                          <label className="form-label" htmlFor="sprint-demo">Live Demo Link</label>
+                          <input
+                            id="sprint-demo"
+                            type="url"
+                            className="form-input"
+                            placeholder="https://app-demo.com"
                             value={submissionForm.web_page}
                             onChange={(e) => handleSubmissionChange('web_page', e.target.value)}
                           />
                         </div>
-                        <div className="form-group mb-4 text-sm">
-                          <label className="form-label mb-1">PDF Report Link / URL</label>
-                          <input 
-                            type="text" className="form-input py-1.5 px-3" 
-                            placeholder="Google Drive / Dropbox Link" 
+                        <div className="form-group">
+                          <label className="form-label" htmlFor="sprint-pdf">PDF Report Link / URL</label>
+                          <input
+                            id="sprint-pdf"
+                            type="text"
+                            className="form-input"
+                            placeholder="Google Drive / Dropbox Link"
                             required
                             value={submissionForm.pdf_report}
                             onChange={(e) => handleSubmissionChange('pdf_report', e.target.value)}
                           />
                         </div>
-                        <div className="flex gap-2 mt-4">
-                          <button 
-                            type="button" className="btn btn-secondary flex-1 py-1.5"
+                        <div className="form-actions-tight">
+                          <button
+                            type="button"
+                            className="btn btn-secondary"
                             onClick={() => setSubmissionForm({ sprintId: null, repo: '', web_page: '', pdf_report: '' })}
                           >
                             Cancel
                           </button>
-                          <button type="submit" className="btn btn-primary flex-1 py-1.5">
+                          <button type="submit" className="btn btn-primary">
                             Submit Work
                           </button>
                         </div>
                       </form>
                     ) : (
-                      <div className="h-full flex flex-col items-center justify-center text-center text-muted py-8 px-4 border-2 border-dashed border-slate-200 rounded-md">
-                        <Layout size={32} className="opacity-20 mb-2" />
-                        <p className="text-sm">Select a pending sprint from the list to start your submission.</p>
+                      <div className="sprint-placeholder">
+                        <Layout size={32} className="sprint-placeholder__icon" />
+                        <p className="card__muted">Select a pending sprint from the list to start your submission.</p>
                       </div>
                     )}
                   </div>
                 </div>
               )}
             </div>
-            
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
-              <button className="btn btn-secondary w-full" onClick={() => setShowSprintsModal(false)}>Close Window</button>
+
+            <div className="modal-footer modal-footer--stack modal-footer--mt">
+              <button type="button" className="btn btn-secondary btn--block" onClick={() => setShowSprintsModal(false)}>Close Window</button>
             </div>
           </div>
         </div>

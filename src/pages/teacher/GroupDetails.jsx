@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Users, Mail, Clock, Trash2, Plus, BookOpen, Share2, Calendar, Check, X } from 'lucide-react';
+import { ArrowLeft, Users, Mail, Clock, Trash2, Plus, BookOpen, Share2, Calendar, X } from 'lucide-react';
 import { teacherService } from '../../services/teacherService';
 import '../../styles/tables.css';
 
@@ -32,16 +32,14 @@ const GroupDetails = () => {
       setStudents(studentsData);
       setModules(groupModules);
       setAllModules(allTeacherModules);
-      
+
       if (groupData.invite_expires_at) {
-        // Convert to YYYY-MM-DDThh:mm for datetime-local
         const date = new Date(groupData.invite_expires_at);
         const isoString = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString();
         setInviteExpiry(isoString.slice(0, 16));
       }
     } catch (e) {
       console.error(e);
-      // Fallback
       setGroup({ id, name: 'Group Not Found', year: '-', invite_code: 'ERROR' });
     } finally {
       setLoading(false);
@@ -111,17 +109,18 @@ const GroupDetails = () => {
   };
 
   if (loading) {
-    return <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>Loading group details...</div>;
+    return <div className="center-loading">Loading group details...</div>;
   }
 
   return (
     <div>
-      <div className="page-header" style={{ marginBottom: '2rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <button 
-            className="btn btn-secondary" 
+      <div className="page-header page-header--spaced">
+        <div className="page-header__back-row">
+          <button
+            type="button"
+            className="btn btn-secondary btn--icon-square"
             onClick={() => navigate('/teacher/groups')}
-            style={{ padding: '0.5rem' }}
+            aria-label="Back to groups"
           >
             <ArrowLeft size={20} />
           </button>
@@ -132,140 +131,105 @@ const GroupDetails = () => {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 350px', gap: '2rem', alignItems: 'start' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-          {/* Students Section */}
-          <div className="card" style={{ padding: '1.5rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Users size={20} style={{ color: 'var(--primary-color)' }} />
-                <h2 className="font-bold text-lg">Enrolled Students ({students.length})</h2>
-              </div>
+      <div className="detail-layout">
+        <div className="detail-main-stack">
+          <div className="card panel-section">
+            <div className="panel-section__head">
+              <h2 className="panel-section__title">
+                <Users size={20} />
+                Enrolled Students ({students.length})
+              </h2>
             </div>
-            
-            <div className="table-container">
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Joined At</th>
-                    <th className="text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {students.length === 0 ? (
-                    <tr>
-                      <td colSpan="4" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>No students have joined this group yet.</td>
-                    </tr>
-                  ) : (
-                    students.map((student) => (
-                      <tr key={student.id}>
-                        <td className="font-semibold">{student.name}</td>
-                        <td>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)' }}>
-                            <Mail size={14} />
-                            {student.email}
-                          </div>
-                        </td>
-                        <td>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)' }}>
-                            <Clock size={14} />
-                            {new Date(student.joined_at).toLocaleDateString()}
-                          </div>
-                        </td>
-                        <td className="text-right">
-                          <button 
-                            className="action-btn danger sm" 
-                            onClick={() => handleRemoveStudent(student.id)} 
-                            title="Remove Student"
-                          >
-                            <Trash2 size={16}/>
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+
+            <div className="stacked-gap">
+              {students.length === 0 ? (
+                <div className="empty-modal-message">No students have joined this group yet.</div>
+              ) : (
+                students.map((student) => (
+                  <div key={student.id} className="member-row">
+                    <div className="member-row__main">
+                      <div className="member-avatar">
+                        {student.name?.charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <div className="member-name">{student.name}</div>
+                        <div className="member-meta">
+                          <span className="member-meta__item"><Mail size={12} /> {student.email}</span>
+                          <span className="member-meta__item"><Clock size={12} /> {new Date(student.joined_at).toLocaleDateString()}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      className="btn-icon-danger"
+                      onClick={() => handleRemoveStudent(student.id)}
+                      title="Remove Student"
+                    >
+                      <Trash2 size={18}/>
+                    </button>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 
-          {/* Modules Section */}
-          <div className="card" style={{ padding: '1.5rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <BookOpen size={20} style={{ color: 'var(--primary-color)' }} />
-                <h2 className="font-bold text-lg">Assigned Modules ({modules.length})</h2>
-              </div>
-              <button className="btn btn-primary sm" onClick={() => setShowModuleModal(true)}>
+          <div className="card panel-section">
+            <div className="panel-section__head">
+              <h2 className="panel-section__title">
+                <BookOpen size={20} />
+                Assigned Modules ({modules.length})
+              </h2>
+              <button type="button" className="btn btn-primary btn--sm" onClick={() => setShowModuleModal(true)}>
                 <Plus size={16} /> Assign Module
               </button>
             </div>
-            
-            <div className="table-container">
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Module Name</th>
-                    <th className="text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {modules.length === 0 ? (
-                    <tr>
-                      <td colSpan="2" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>No modules assigned to this group yet.</td>
-                    </tr>
-                  ) : (
-                    modules.map((mod) => (
-                      <tr key={mod.id}>
-                        <td className="font-semibold">{mod.title}</td>
-                        <td className="text-right">
-                          <button 
-                            className="action-btn danger sm" 
-                            onClick={() => handleUnassignModule(mod.id)} 
-                            title="Remove Module"
-                          >
-                            <X size={16}/>
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+
+            <div className="module-grid">
+              {modules.length === 0 ? (
+                <div className="module-grid__empty">No modules assigned to this group yet.</div>
+              ) : (
+                modules.map((mod) => (
+                  <div key={mod.id} className="module-row">
+                    <div className="module-row__info">
+                      <div className="module-icon-sm">
+                         <BookOpen size={16} />
+                      </div>
+                      <span className="module-title">{mod.title}</span>
+                    </div>
+                    <button
+                      type="button"
+                      className="btn-unassign"
+                      onClick={() => handleUnassignModule(mod.id)}
+                      title="Remove Module"
+                    >
+                      <X size={18}/>
+                    </button>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>
 
-        {/* Invitation Settings Section */}
-        <div className="card" style={{ padding: '1.5rem', position: 'sticky', top: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
-            <Share2 size={20} style={{ color: 'var(--primary-color)' }} />
-            <h2 className="font-bold text-lg">Invitation</h2>
+        <div className="card sidebar-card">
+          <div className="panel-section__head panel-section__head--only">
+            <h2 className="panel-section__title">
+              <Share2 size={20} />
+              Invitation
+            </h2>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div className="sidebar-stack">
             <div>
-              <label className="text-xs font-bold text-muted" style={{ textTransform: 'uppercase' }}>Invite Code</label>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem' }}>
-                <div style={{ 
-                  backgroundColor: 'var(--bg-light)', 
-                  padding: '0.75rem 1rem', 
-                  borderRadius: 'var(--radius-sm)', 
-                  flex: 1, 
-                  fontFamily: 'monospace', 
-                  fontWeight: 'bold', 
-                  fontSize: '1.125rem',
-                  border: '1px solid var(--border-color)',
-                  color: 'var(--primary-color)',
-                  textAlign: 'center'
-                }}>
+              <div className="invite-label">Invite Code</div>
+              <div className="invite-row">
+                <div className="invite-code-box">
                   {group?.invite_code || '---'}
                 </div>
-                <button 
-                  className="btn btn-secondary sm" 
-                  onClick={handleGenerateNewCode} 
+                <button
+                  type="button"
+                  className="btn btn-secondary btn--sm"
+                  onClick={handleGenerateNewCode}
                   title="Renew Code"
                 >
                   Regenerate
@@ -274,30 +238,30 @@ const GroupDetails = () => {
             </div>
 
             <div className="form-group">
-              <label className="text-xs font-bold text-muted flex items-center gap-1" style={{ textTransform: 'uppercase' }}>
+              <label className="invite-label label-with-icon" htmlFor="invite-expiry">
                 <Calendar size={12} /> Expiration Date
               </label>
-              <input 
-                type="datetime-local" 
-                className="form-input" 
-                style={{ marginTop: '0.5rem' }}
+              <input
+                id="invite-expiry"
+                type="datetime-local"
+                className="form-input form-input--tight-top"
                 value={inviteExpiry}
                 onChange={(e) => setInviteExpiry(e.target.value)}
               />
-              <p className="text-xs text-muted mt-2">
-                {group?.invite_expires_at ? (
-                  new Date(group.invite_expires_at) < new Date() ? 
-                  <span style={{ color: '#ef4444' }}>Code has expired.</span> : 
-                  `Expires on ${new Date(group.invite_expires_at).toLocaleString()}`
-                ) : 'No expiration date set.'}
+              <p className="field-hint">
+                {group?.invite_expires_at
+                  ? (new Date(group.invite_expires_at) < new Date()
+                      ? <span className="field-hint--error">Code has expired.</span>
+                      : `Expires on ${new Date(group.invite_expires_at).toLocaleString()}`)
+                  : 'No expiration date set.'}
               </p>
             </div>
 
-            <button 
-              className="btn btn-primary" 
+            <button
+              type="button"
+              className="btn btn-primary btn--block"
               onClick={handleUpdateExpiration}
               disabled={updatingExpiry}
-              style={{ width: '100%' }}
             >
               {updatingExpiry ? 'Updating...' : 'Save Expiration'}
             </button>
@@ -305,35 +269,40 @@ const GroupDetails = () => {
         </div>
       </div>
 
-      {/* Assign Module Modal */}
       {showModuleModal && (
         <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '450px' }}>
+          <div className="modal-content modal-content--assign">
             <div className="modal-header">
               <h2 className="font-bold">Assign Module</h2>
-              <button className="modal-close" onClick={() => setShowModuleModal(false)}><X size={20}/></button>
+              <button type="button" className="modal-close" onClick={() => setShowModuleModal(false)} aria-label="Close"><X size={20}/></button>
             </div>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem' }}>
-              <p className="text-sm text-muted">Select a module to assign to <strong>{group?.name}</strong>.</p>
-              
-              <div className="table-container" style={{ maxHeight: '300px', overflowY: 'auto' }}>
-                <table className="table">
-                  <tbody>
-                    {allModules.filter(am => !modules.some(m => m.id === am.id)).length === 0 ? (
-                      <tr><td className="text-center py-4 text-muted">All modules are already assigned.</td></tr>
-                    ) : (
-                      allModules.filter(am => !modules.some(m => m.id === am.id)).map(am => (
-                        <tr key={am.id} style={{ cursor: 'pointer' }} onClick={() => handleAssignModule(am.id)}>
-                          <td className="flex items-center justify-between">
-                            <span className="font-semibold">{am.title}</span>
-                            <Plus size={16} className="text-primary-color" />
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
+
+            <div className="modal-assign-intro">
+              <p className="modal-hint">Select a module to assign to <strong>{group?.name}</strong>.</p>
+
+              <div className="assign-list">
+                {allModules.filter(am => !modules.some(m => m.id === am.id)).length === 0 ? (
+                  <div className="assign-list__empty">All modules are already assigned.</div>
+                ) : (
+                  allModules.filter(am => !modules.some(m => m.id === am.id)).map(am => (
+                    <div
+                      key={am.id}
+                      className="assign-pick-row"
+                      onClick={() => handleAssignModule(am.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          handleAssignModule(am.id);
+                        }
+                      }}
+                      role="button"
+                      tabIndex={0}
+                    >
+                      <span className="assign-pick-row__title">{am.title}</span>
+                      <Plus size={16} className="assign-pick-row__icon" />
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>

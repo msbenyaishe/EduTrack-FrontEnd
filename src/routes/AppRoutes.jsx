@@ -35,7 +35,7 @@ import StudentSubmissions from '../pages/student/Submissions';
 
 // Temporary placeholder component
 const Placeholder = ({ title }) => (
-  <div className="card" style={{ margin: '2rem' }}>
+  <div className="card" style={{ margin: 'var(--space-lg) auto', maxWidth: '28rem' }}>
     <h2 className="font-bold text-center">{title}</h2>
   </div>
 );

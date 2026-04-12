@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Upload, CheckCircle, Clock, ExternalLink, Link, FileText } from 'lucide-react';
+import { CheckCircle, Clock, ExternalLink, Link, FileText } from 'lucide-react';
 import { studentService } from '../../services/studentService';
 import '../../styles/tables.css';
 
@@ -14,7 +14,7 @@ const StudentSubmissions = () => {
   const fetchSubmissions = async () => {
     try {
       const { recentSubmissions } = await studentService.getDashboardStats();
-      
+
       const workshops = (recentSubmissions.workshopSubmissions || []).map(s => ({
         id: `ws-${s.id}`,
         title: s.workshop_title,
@@ -41,7 +41,7 @@ const StudentSubmissions = () => {
         links: { repo: s.project_repo, demo: s.project_demo, pdf: s.report_pdf }
       }));
 
-      const all = [...workshops, ...sprints, ...pfes].sort((a, b) => 
+      const all = [...workshops, ...sprints, ...pfes].sort((a, b) =>
         new Date(b.date) - new Date(a.date)
       );
 
@@ -63,63 +63,60 @@ const StudentSubmissions = () => {
         </div>
       </div>
 
-      <div className="table-container">
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Assignment / Module</th>
-              <th>Type</th>
-              <th>Date Submitted</th>
-              <th className="text-right">My Links</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(loading) ? (
-              <tr><td colSpan="4" className="text-center text-muted py-4">Loading submissions...</td></tr>
-            ) : submissions.length === 0 ? (
-              <tr><td colSpan="4" className="text-center text-muted py-4">No submissions yet!</td></tr>
-            ) : (
-              submissions.map(sub => (
-                <tr key={sub.id}>
-                  <td className="font-semibold">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle size={16} className="text-success" />
-                      <div>
-                        <div>{sub.title}</div>
-                        <div className="text-xs text-muted">{sub.module || '-'}</div>
-                      </div>
+      <div className="grid-cards">
+        {loading ? (
+          <div className="loading-state">Loading submissions...</div>
+        ) : submissions.length === 0 ? (
+          <div className="empty-state-card card">
+            <CheckCircle size={48} className="empty-state-card__icon" />
+            <h3 className="empty-state-card__title">No Submissions Found</h3>
+            <p>You haven&apos;t submitted any assignments yet.</p>
+          </div>
+        ) : (
+          submissions.map(sub => (
+            <div key={sub.id} className="card card--col">
+              <div>
+                <div className="card__head">
+                  <div className="card__title-group">
+                    <div className="media-icon media-icon--success">
+                      <CheckCircle size={20} />
                     </div>
-                  </td>
-                  <td><span className="badge">{sub.type}</span></td>
-                  <td>
-                    <span className="flex items-center gap-1 text-muted">
-                      <Clock size={14} /> {new Date(sub.date).toLocaleDateString()}
-                    </span>
-                  </td>
-                  <td className="text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      {sub.links.repo && (
-                        <a href={sub.links.repo} target="_blank" rel="noopener noreferrer" className="action-btn" title="View Repository">
-                          <Link size={16} />
-                        </a>
-                      )}
-                      {sub.links.demo && (
-                        <a href={sub.links.demo} target="_blank" rel="noopener noreferrer" className="action-btn" title="View Demo">
-                          <ExternalLink size={16} />
-                        </a>
-                      )}
-                      {sub.links.pdf && (
-                        <a href={sub.links.pdf} target="_blank" rel="noopener noreferrer" className="action-btn" title="View Document">
-                          <FileText size={16} />
-                        </a>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+                    {sub.title}
+                  </div>
+                  <span className="badge badge-primary badge--trailing">{sub.type}</span>
+                </div>
+
+                <div className="card__body">
+                  <div className="card__emphasis">{sub.module || 'General'}</div>
+                  <div className="meta-inline">
+                    <Clock size={12} /> Submitted on {new Date(sub.date).toLocaleDateString()}
+                  </div>
+                </div>
+              </div>
+
+              <div className="card__footer link-btn-row">
+                {sub.links.repo && (
+                  <a href={sub.links.repo} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn--link-tight" title="Repository">
+                    <Link size={14} className="btn__icon-left" /> Repo
+                  </a>
+                )}
+                {sub.links.demo && (
+                  <a href={sub.links.demo} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn--link-tight" title="Live Demo">
+                    <ExternalLink size={14} className="btn__icon-left" /> Demo
+                  </a>
+                )}
+                {sub.links.pdf && (
+                  <a href={sub.links.pdf} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn--link-tight" title="PDF Report">
+                    <FileText size={14} className="btn__icon-left" /> Report
+                  </a>
+                )}
+                {!sub.links.repo && !sub.links.demo && !sub.links.pdf && (
+                  <span className="no-links">No links provided</span>
+                )}
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

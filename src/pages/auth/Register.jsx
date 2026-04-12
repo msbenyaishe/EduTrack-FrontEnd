@@ -46,16 +46,16 @@ const Register = () => {
         <p className="auth-subtitle">Join EduTrack today.</p>
       </div>
 
-      <div className="role-tabs flex gap-2" style={{ marginBottom: '1.5rem' }}>
+      <div className="role-tabs">
         <button
-          className={`btn ${role === 'student' ? 'btn-primary' : 'btn-secondary'} flex-1`}
+          className={`btn ${role === 'student' ? 'btn-primary' : 'btn-secondary'}`}
           onClick={() => setRole('student')}
           type="button"
         >
           Student
         </button>
         <button
-          className={`btn ${role === 'teacher' ? 'btn-primary' : 'btn-secondary'} flex-1`}
+          className={`btn ${role === 'teacher' ? 'btn-primary' : 'btn-secondary'}`}
           onClick={() => setRole('teacher')}
           type="button"
         >

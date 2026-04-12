@@ -1,10 +1,10 @@
 import React from 'react';
-import { LogOut, User, Bell } from 'lucide-react';
+import { LogOut, User, Menu } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import '../styles/navbar.css';
 
-const Navbar = () => {
+const Navbar = ({ onMenuClick, navOpen = false }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -16,16 +16,24 @@ const Navbar = () => {
   return (
     <header className="navbar">
       <div className="navbar-left">
+        {onMenuClick && (
+          <button
+            type="button"
+            className="navbar-menu-btn"
+            onClick={onMenuClick}
+            aria-label="Open navigation menu"
+            aria-expanded={navOpen}
+            aria-controls="app-sidebar"
+          >
+            <Menu size={22} strokeWidth={2} />
+          </button>
+        )}
         <h2 className="navbar-greeting">
-          Hello, {user?.name || 'User'} 👋
+          Hello, {user?.name || 'User'}
         </h2>
       </div>
       
       <div className="navbar-right">
-        <button className="icon-btn" aria-label="Notifications">
-          <Bell size={20} />
-          <span className="notification-dot"></span>
-        </button>
         
         <div className="user-profile">
           <div className="avatar">

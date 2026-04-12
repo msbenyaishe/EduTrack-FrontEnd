@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import '../styles/sidebar.css';
 
-const Sidebar = ({ role }) => {
+const Sidebar = ({ role, onNavigate, id }) => {
   const teacherLinks = [
     { to: '/teacher/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { to: '/teacher/modules', icon: BookOpen, label: 'Modules' },
@@ -38,7 +38,7 @@ const Sidebar = ({ role }) => {
   const links = role === 'teacher' ? teacherLinks : studentLinks;
 
   return (
-    <aside className="sidebar">
+    <aside className="sidebar" id={id} aria-label="Main navigation">
       <div className="sidebar-header">
         <div className="logo">
           <BookOpen className="logo-icon" size={28} />
@@ -54,6 +54,7 @@ const Sidebar = ({ role }) => {
               key={index}
               to={link.to}
               className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+              onClick={() => onNavigate?.()}
             >
               <Icon size={20} className="link-icon" />
               <span className="link-label">{link.label}</span>

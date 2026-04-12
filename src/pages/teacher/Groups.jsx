@@ -23,7 +23,7 @@ const Groups = () => {
     try {
       const data = await teacherService.getGroups();
       setGroups(data);
-    } catch (e) {
+    } catch {
       setGroups([
         { id: 1, name: 'L3 INFO Grp A', year: '2025', invite_code: 'INF2025X' },
         { id: 2, name: 'Master 1 Web', year: '2025', invite_code: null }
@@ -103,74 +103,88 @@ const Groups = () => {
           <h1 className="page-title">Groups</h1>
           <p className="page-subtitle">Manage your student groups and invites.</p>
         </div>
-        <button className="btn btn-primary" onClick={handleOpenCreateModal}>
+        <button type="button" className="btn btn-primary" onClick={handleOpenCreateModal}>
           <Plus size={18} /> New Group
         </button>
       </div>
 
-      <div className="table-container">
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Group Name</th>
-              <th>Academic Year</th>
-              <th>Invite Code</th>
-              <th className="text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr><td colSpan="4" className="text-center text-muted py-4">Loading...</td></tr>
-            ) : groups.length === 0 ? (
-              <tr><td colSpan="4" className="text-center text-muted">No groups found.</td></tr>
-            ) : (
-              groups.map(group => (
-                <tr key={group.id}>
-                  <td className="font-semibold">{group.name}</td>
-                  <td>{group.year}</td>
-                  <td>
+      <div className="grid-cards">
+        {loading ? (
+          <div className="loading-state">Loading groups...</div>
+        ) : groups.length === 0 ? (
+          <div className="card-action" onClick={handleOpenCreateModal}>
+            <div className="card-action__icon">
+              <Users size={24} />
+            </div>
+            <h3 className="card-action__title">Create Your First Group</h3>
+            <p className="card-action__text">Manage student cohorts and assignments</p>
+          </div>
+        ) : (
+          <>
+            {groups.map(group => (
+              <div key={group.id} className="card card--col">
+                <div>
+                  <div className="card__head">
+                    <div className="card__title-group">
+                      <div className="media-icon media-icon--primary">
+                        <Users size={20} />
+                      </div>
+                      {group.name}
+                    </div>
+                    <span className="badge badge-primary badge--trailing">{group.year}</span>
+                  </div>
+
+                  <div className="card__body">
+                    <div className="card__overline">Invite Code</div>
                     {group.invite_code ? (
-                      <div className="flex items-center gap-2">
-                        <span className="badge badge-primary" style={{ fontFamily: 'monospace', fontSize: '0.875rem' }}>
+                      <div className="invite-code-inline">
+                        <span className="invite-code-inline__value">
                           {group.invite_code}
                         </span>
-                        <button 
-                          className="icon-btn" 
-                          style={{ width: 28, height: 28 }}
+                        <button
+                          type="button"
+                          className="icon-action-btn"
                           onClick={() => copyToClipboard(group.invite_code)}
+                          title="Copy Code"
                         >
-                          {copiedCode === group.invite_code ? <Check size={14} className="text-success" /> : <Copy size={14} />}
+                          {copiedCode === group.invite_code ? <Check size={16} className="text-success" /> : <Copy size={16} />}
                         </button>
                       </div>
                     ) : (
-                      <button 
-                        className="btn btn-secondary w-auto" 
-                        style={{ padding: '0.25rem 0.75rem', fontSize: '0.75rem' }}
+                      <button
+                        type="button"
+                        className="btn btn-secondary btn--block btn--sm"
                         onClick={() => handleGenerateCode(group.id)}
                         disabled={generatingCode === group.id}
                       >
-                        {generatingCode === group.id ? 'Generating...' : 'Generate Code'}
+                        {generatingCode === group.id ? 'Generating...' : 'Generate Invite Code'}
                       </button>
                     )}
-                  </td>
-                  <td className="text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <button className="icon-btn" title="Edit Group" onClick={() => handleEdit(group)}>
-                        <Edit2 size={16} />
-                      </button>
-                      <button className="icon-btn danger" title="Delete Group" onClick={() => handleDelete(group.id)}>
-                        <Trash2 size={16} />
-                      </button>
-                      <button className="btn btn-secondary" onClick={() => navigate(`/teacher/groups/${group.id}`)}>
-                        <Users size={14} style={{ marginRight: '0.25rem' }}/> Manage
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+                  </div>
+                </div>
+
+                <div className="card__footer">
+                  <button type="button" className="btn btn-primary btn--edit-row" onClick={() => navigate(`/teacher/groups/${group.id}`)}>
+                    <Users size={16} /> Manage
+                  </button>
+                  <div className="card__footer-actions">
+                    <button type="button" className="icon-action-btn" onClick={() => handleEdit(group)} title="Edit group">
+                      <Edit2 size={18} />
+                    </button>
+                    <button type="button" className="icon-action-btn icon-action-btn--danger" onClick={() => handleDelete(group.id)} title="Delete group">
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            <div className="card-action" onClick={handleOpenCreateModal}>
+              <Plus size={24} className="card-action__plus" />
+              <span className="font-medium">Add New Group</span>
+            </div>
+          </>
+        )}
       </div>
 
       {showModal && (
@@ -178,32 +192,34 @@ const Groups = () => {
           <div className="modal-content">
             <div className="modal-header">
               <h2 className="font-bold">{isEditing ? 'Edit Group' : 'Create Group'}</h2>
-              <button className="modal-close" onClick={() => setShowModal(false)}><X size={20}/></button>
+              <button type="button" className="modal-close" onClick={() => setShowModal(false)}><X size={20}/></button>
             </div>
-            
+
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label className="form-label">Group Name</label>
-                <input 
-                  type="text" 
-                  className="form-input" 
-                  required 
+                <label className="form-label" htmlFor="group-name">Group Name</label>
+                <input
+                  id="group-name"
+                  type="text"
+                  className="form-input"
+                  required
                   placeholder="e.g. Master 1 CS"
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
                 />
               </div>
               <div className="form-group">
-                <label className="form-label">Academic Year</label>
-                <input 
-                  type="text" 
-                  className="form-input" 
-                  required 
+                <label className="form-label" htmlFor="group-year">Academic Year</label>
+                <input
+                  id="group-year"
+                  type="text"
+                  className="form-input"
+                  required
                   value={formData.year}
                   onChange={(e) => setFormData({...formData, year: e.target.value})}
                 />
               </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1.5rem' }}>
+              <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
                 <button type="submit" className="btn btn-primary">{isEditing ? 'Update Group' : 'Save Group'}</button>
               </div>

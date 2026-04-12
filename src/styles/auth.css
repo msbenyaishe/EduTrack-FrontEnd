@@ -79,6 +79,16 @@
   text-decoration: underline;
 }
 
+.role-tabs {
+  display: flex;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-md);
+}
+
+.role-tabs .btn {
+  flex: 1;
+}
+
 .error-message {
   background-color: #FEF2F2;
   color: var(--danger);
@@ -90,4 +100,20 @@
   align-items: center;
   gap: 0.5rem;
   border: 1px solid #FCA5A5;
+}
+
+@media (max-width: 480px) {
+  .auth-layout {
+    padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right))
+      max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+    align-items: flex-start;
+  }
+
+  .auth-card {
+    padding: 1.5rem;
+  }
+
+  .auth-title {
+    font-size: 1.25rem;
+  }
 }

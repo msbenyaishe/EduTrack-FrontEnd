@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { GraduationCap, ExternalLink, Plus, Upload, CheckCircle } from 'lucide-react';
+import { GraduationCap, ExternalLink, Plus, Upload, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { studentService } from '../../services/studentService';
 import { pfeService } from '../../services/pfeService';
 import '../../styles/tables.css';
 
@@ -9,13 +10,12 @@ const StudentPFE = () => {
   const [teams, setTeams] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const { user } = useAuth();
-  
+
   const [formData, setFormData] = useState({ pfe_team_id: '', project_title: '', description: '', project_repo: '', project_demo: '', explanation_video: '', report_pdf: '' });
   const [submitting, setSubmitting] = useState(false);
   const [showCreateTeam, setShowCreateTeam] = useState(false);
   const [newTeamName, setNewTeamName] = useState('');
 
-  const [myGroups, setMyGroups] = useState([]);
   const [selectedGroupId, setSelectedGroupId] = useState(null);
 
   useEffect(() => {
@@ -26,7 +26,6 @@ const StudentPFE = () => {
     try {
       setLoading(true);
       const groups = await studentService.getMyGroups();
-      setMyGroups(groups);
       if (groups.length > 0) {
         const firstGroupId = groups[0].id;
         setSelectedGroupId(firstGroupId);
@@ -66,7 +65,7 @@ const StudentPFE = () => {
       setShowCreateTeam(false);
       setNewTeamName('');
       fetchTeams(selectedGroupId);
-    } catch (e) {
+    } catch {
       alert('Failed to create PFE team.');
     }
   };
@@ -111,54 +110,75 @@ const StudentPFE = () => {
           <h1 className="page-title">PFE Portal</h1>
           <p className="page-subtitle">Manage your end-of-study project.</p>
         </div>
-        <div className="flex gap-2">
-          <button className="btn btn-secondary" onClick={() => setShowCreateTeam(true)}>
+        <div className="page-header__actions">
+          <button type="button" className="btn btn-secondary" onClick={() => setShowCreateTeam(true)}>
             <Plus size={18} /> Create Team
           </button>
-          <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+          <button type="button" className="btn btn-primary" onClick={() => setShowModal(true)}>
             <Upload size={18} /> Submit PFE
           </button>
         </div>
       </div>
 
-      <div className="table-container">
-        <table className="table">
-          <thead>
-            <tr>
-              <th>PFE Team</th>
-              <th>Members</th>
-              <th className="text-right">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(loading) ? (
-              <tr><td colSpan="3" className="text-center text-muted py-4">Loading PFE...</td></tr>
-            ) : teams.length === 0 ? (
-              <tr><td colSpan="3" className="text-center text-muted py-4">No PFE teams found.</td></tr>
-            ) : (
-              teams.map(team => (
-                <tr key={team.id}>
-                  <td className="font-semibold flex items-center gap-2">
-                    <GraduationCap size={16} className="text-primary-color" />
-                    {team.name}
-                  </td>
-                  <td>{Array.isArray(team.members) ? team.members.length : (team.members || 0)} Students</td>
-                  <td className="text-right">
-                    {team.members?.some(m => m.id === user?.id) ? (
-                      <span className="badge badge-success flex items-center gap-1 justify-end w-auto inline-flex">
-                        <CheckCircle size={14}/> Joined
-                      </span>
+      <div className="grid-cards">
+        {loading ? (
+          <div className="loading-state">Loading PFE...</div>
+        ) : teams.length === 0 ? (
+          <div className="card-action" onClick={() => setShowCreateTeam(true)}>
+            <div className="card-action__icon">
+              <GraduationCap size={24} />
+            </div>
+            <h3 className="card-action__title">Create PFE Team</h3>
+            <p className="card-action__text">Start your graduation project team</p>
+          </div>
+        ) : (
+          <>
+            {teams.map(team => {
+              const isMember = team.members?.some(m => m.id === user?.id);
+              return (
+                <div key={team.id} className={`card card--col${isMember ? ' card--accent' : ''}`}>
+                  <div>
+                    <div className="card__head">
+                      <div className="card__title-group">
+                        <div className={`media-icon ${isMember ? 'media-icon--solid-primary' : 'media-icon--muted'}`}>
+                          <GraduationCap size={20} />
+                        </div>
+                        {team.name}
+                      </div>
+                      {isMember && (
+                        <span className="badge badge-success badge--trailing">
+                           My Team
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="card__body">
+                      <div className="badge badge-primary badge--block">
+                        {Array.isArray(team.members) ? team.members.length : (team.members || 0)} Students
+                      </div>
+                      <p className="card__muted">Final graduation project team</p>
+                    </div>
+                  </div>
+
+                  <div className="card__footer">
+                    {isMember ? (
+                      <div className="card__stamp--primary">Joined & Active</div>
                     ) : (
-                      <button className="btn btn-secondary w-auto text-sm py-1 px-3" onClick={() => handleJoin(team.id)}>
-                        Join
+                      <button type="button" className="btn btn-secondary btn--block" onClick={() => handleJoin(team.id)}>
+                        Join Team
                       </button>
                     )}
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+                  </div>
+                </div>
+              );
+            })}
+
+            <div className="card-action" onClick={() => setShowCreateTeam(true)}>
+              <Plus size={24} className="card-action__plus" />
+              <span className="font-medium">Create Another Team</span>
+            </div>
+          </>
+        )}
       </div>
 
       {showModal && (
@@ -166,16 +186,19 @@ const StudentPFE = () => {
           <div className="modal-content">
             <div className="modal-header">
               <h2 className="font-bold">Submit PFE Details</h2>
-              <button className="modal-close" onClick={() => setShowModal(false)}><span style={{fontSize: '1.25rem'}}>&times;</span></button>
+              <button type="button" className="modal-close" onClick={() => setShowModal(false)} aria-label="Close">
+                <X size={20} />
+              </button>
             </div>
-            
+
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label className="form-label">Select Your Team</label>
-                <select 
-                  className="form-input" 
-                  required 
-                  value={formData.pfe_team_id} 
+                <label className="form-label" htmlFor="pfe-team">Select Your Team</label>
+                <select
+                  id="pfe-team"
+                  className="form-input"
+                  required
+                  value={formData.pfe_team_id}
                   onChange={e => setFormData({...formData, pfe_team_id: e.target.value})}
                 >
                   <option value="" disabled>Select a team...</option>
@@ -185,22 +208,22 @@ const StudentPFE = () => {
                 </select>
               </div>
               <div className="form-group">
-                <label className="form-label">Project Title</label>
-                <input type="text" className="form-input" required value={formData.project_title} onChange={e => setFormData({...formData, project_title: e.target.value})} />
+                <label className="form-label" htmlFor="pfe-title">Project Title</label>
+                <input id="pfe-title" type="text" className="form-input" required value={formData.project_title} onChange={e => setFormData({...formData, project_title: e.target.value})} />
               </div>
               <div className="form-group">
-                <label className="form-label">Description</label>
-                <textarea className="form-input" rows={2} value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} />
+                <label className="form-label" htmlFor="pfe-desc">Description</label>
+                <textarea id="pfe-desc" className="form-input" rows={2} value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} />
               </div>
               <div className="form-group">
-                <label className="form-label flex items-center gap-1"><ExternalLink size={14}/> Repository URL</label>
+                <label className="form-label form-label--inline-icon"><ExternalLink size={14}/> Repository URL</label>
                 <input type="url" className="form-input" value={formData.project_repo} onChange={e => setFormData({...formData, project_repo: e.target.value})} />
               </div>
               <div className="form-group">
-                <label className="form-label flex items-center gap-1"><ExternalLink size={14}/> Live Demo URL</label>
+                <label className="form-label form-label--inline-icon"><ExternalLink size={14}/> Live Demo URL</label>
                 <input type="url" className="form-input" value={formData.project_demo} onChange={e => setFormData({...formData, project_demo: e.target.value})} />
               </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1.5rem' }}>
+              <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)} disabled={submitting}>Cancel</button>
                 <button type="submit" className="btn btn-primary" disabled={submitting}>{submitting ? 'Submitting...' : 'Submit PFE'}</button>
               </div>
@@ -213,14 +236,16 @@ const StudentPFE = () => {
           <div className="modal-content">
             <div className="modal-header">
               <h2 className="font-bold">Create PFE Team</h2>
-              <button className="modal-close" onClick={() => setShowCreateTeam(false)}><span style={{fontSize: '1.25rem'}}>&times;</span></button>
+              <button type="button" className="modal-close" onClick={() => setShowCreateTeam(false)} aria-label="Close">
+                <X size={20} />
+              </button>
             </div>
             <form onSubmit={handleCreateTeam}>
               <div className="form-group">
-                <label className="form-label">Team Name</label>
-                <input type="text" className="form-input" required value={newTeamName} onChange={e => setNewTeamName(e.target.value)} placeholder="e.g. EduTrack Team" />
+                <label className="form-label" htmlFor="new-pfe-team">Team Name</label>
+                <input id="new-pfe-team" type="text" className="form-input" required value={newTeamName} onChange={e => setNewTeamName(e.target.value)} placeholder="e.g. EduTrack Team" />
               </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1.5rem' }}>
+              <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowCreateTeam(false)}>Cancel</button>
                 <button type="submit" className="btn btn-primary">Create Team</button>
               </div>
