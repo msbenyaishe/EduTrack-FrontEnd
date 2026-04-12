@@ -6,6 +6,8 @@ import '../../styles/tables.css';
 const SubmissionsDashboard = () => {
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedGroup, setSelectedGroup] = useState('All');
+  const [selectedType, setSelectedType] = useState('All');
 
   useEffect(() => {
     fetchSubmissions();
@@ -57,12 +59,45 @@ const SubmissionsDashboard = () => {
     }
   };
 
+  const uniqueGroups = ['All', ...new Set(submissions.map(s => s.group).filter(Boolean))];
+
+  const filteredSubmissions = submissions.filter(sub => {
+    const matchGroup = selectedGroup === 'All' || sub.group === selectedGroup;
+    let matchType = true;
+    if (selectedType === 'Workshops') matchType = sub.type.startsWith('Workshop');
+    if (selectedType === 'Agile Sprints') matchType = sub.type.startsWith('Sprint');
+    if (selectedType === 'PFE') matchType = sub.type.startsWith('PFE');
+    return matchGroup && matchType;
+  });
+
   return (
     <div>
-      <div className="page-header">
+      <div className="page-header flex justify-between items-end">
         <div>
           <h1 className="page-title">Global Submissions</h1>
           <p className="page-subtitle">Review all incoming student work.</p>
+        </div>
+        <div className="flex gap-4">
+          <select 
+            className="p-2 border rounded-md" 
+            value={selectedGroup} 
+            onChange={(e) => setSelectedGroup(e.target.value)}
+          >
+            {uniqueGroups.map(group => (
+              <option key={group} value={group}>{group === 'All' ? 'All Groups' : group}</option>
+            ))}
+          </select>
+          
+          <select 
+            className="p-2 border rounded-md" 
+            value={selectedType} 
+            onChange={(e) => setSelectedType(e.target.value)}
+          >
+            <option value="All">All Types</option>
+            <option value="Workshops">Workshops</option>
+            <option value="Agile Sprints">Agile Sprints</option>
+            <option value="PFE">PFE</option>
+          </select>
         </div>
       </div>
 
@@ -79,11 +114,11 @@ const SubmissionsDashboard = () => {
           </thead>
           <tbody>
             {(loading) ? (
-              <tr><td colSpan="4" className="text-center text-muted py-4">Loading submissions...</td></tr>
-            ) : submissions.length === 0 ? (
-              <tr><td colSpan="4" className="text-center text-muted py-4">No recent submissions.</td></tr>
+              <tr><td colSpan="5" className="text-center text-muted py-4">Loading submissions...</td></tr>
+            ) : filteredSubmissions.length === 0 ? (
+              <tr><td colSpan="5" className="text-center text-muted py-4">No submissions match the selected filters.</td></tr>
             ) : (
-              submissions.map(sub => (
+              filteredSubmissions.map(sub => (
                 <tr key={sub.id}>
                   <td className="font-semibold">
                     <div className="flex items-center gap-2">
