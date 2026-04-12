@@ -11,9 +11,13 @@ function pickStudentJoinedAt(g) {
     g.enrolled_at ??
     g.enrolledAt ??
     g.pivot?.joined_at ??
+    g.pivot?.created_at ??
     g.group_student?.joined_at ??
+    g.group_student?.created_at ??
     g.student_group?.joined_at ??
-    g.membership?.joined_at;
+    g.student_group?.created_at ??
+    g.membership?.joined_at ??
+    g.membership?.created_at;
   if (v != null && v !== '') return v;
   return null;
 }
