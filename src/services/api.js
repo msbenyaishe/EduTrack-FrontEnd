@@ -1,7 +1,12 @@
 import axios from 'axios';
 
+const baseURL = (
+  import.meta.env.VITE_API_URL ||
+  'https://edutrack-backend-five.vercel.app/api'
+).replace(/\/$/, '');
+
 const api = axios.create({
-  baseURL: 'https://edutrack-backend-five.vercel.app/api',
+  baseURL,
   headers: {
     'Content-Type': 'application/json',
   },
