@@ -164,6 +164,10 @@ body.public-nav-open {
 }
 
 @media (max-width: 767px) {
+  .public-nav__brand {
+    font-size: 1.25rem;
+  }
+
   .public-nav__desktop {
     display: none;
   }
@@ -490,6 +494,30 @@ body.public-nav-open {
 }
 
 @media (max-width: 480px) {
+  .landing-hero {
+    padding-top: max(var(--space-2xl), env(safe-area-inset-top));
+  }
+
+  .landing-hero__title {
+    font-size: clamp(1.95rem, 6.5vw + 1rem, 2.75rem);
+  }
+
+  .landing-hero__eyebrow {
+    font-size: 0.875rem;
+  }
+
+  .landing-hero__card-title {
+    font-size: 1.1875rem;
+  }
+
+  .landing-features__heading {
+    font-size: clamp(1.5rem, 4.5vw + 0.85rem, 1.75rem);
+  }
+
+  .landing-cta__title {
+    font-size: clamp(1.35rem, 3.5vw + 0.65rem, 1.5rem);
+  }
+
   .landing-hero__actions {
     flex-direction: column;
     align-items: stretch;
