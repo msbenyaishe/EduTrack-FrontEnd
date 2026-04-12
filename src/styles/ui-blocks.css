@@ -1502,4 +1502,62 @@
   .member-row__main {
     flex: 1 1 100%;
   }
+
+  /* Headings & titles — larger on phones for readability */
+  .empty-state-card__title {
+    font-size: 1.25rem;
+  }
+
+  .card__title-group {
+    font-size: 1.1875rem;
+  }
+
+  .card-action__title {
+    font-size: 1.125rem;
+  }
+
+  .panel-section__title {
+    font-size: 1.25rem;
+  }
+
+  .section-heading {
+    font-size: 1.25rem;
+  }
+
+  .table-empty-inner__title {
+    font-size: 1.25rem;
+  }
+
+  .activity-text__title {
+    font-size: 1.0625rem;
+  }
+
+  .modal-section-title {
+    font-size: 1.125rem;
+  }
+
+  .assign-pick-row__title {
+    font-size: 1rem;
+  }
+
+  .submission-type-box__title {
+    font-size: 1rem;
+  }
+
+  .submission-card__name {
+    font-size: 1.1875rem;
+  }
+
+  .sprint-list-panel__title,
+  .sprint-form-panel__title {
+    font-size: 0.8125rem;
+  }
+
+  .sprint-choice__title {
+    font-size: 1rem;
+  }
+
+  .card--toolbar__label {
+    font-size: 1.0625rem;
+  }
 }

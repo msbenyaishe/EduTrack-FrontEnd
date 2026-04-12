@@ -494,28 +494,57 @@ body.public-nav-open {
 }
 
 @media (max-width: 480px) {
+  .public-nav__brand {
+    font-size: 1.3125rem;
+  }
+
   .landing-hero {
-    padding-top: max(var(--space-2xl), env(safe-area-inset-top));
+    padding-top: max(
+      calc(var(--space-2xl) + var(--space-sm)),
+      env(safe-area-inset-top)
+    );
   }
 
   .landing-hero__title {
-    font-size: clamp(1.95rem, 6.5vw + 1rem, 2.75rem);
+    font-size: clamp(2.05rem, 7vw + 1rem, 2.85rem);
   }
 
   .landing-hero__eyebrow {
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
+  }
+
+  .landing-hero__lead {
+    font-size: clamp(1.0625rem, 2vw + 0.9rem, 1.25rem);
   }
 
   .landing-hero__card-title {
-    font-size: 1.1875rem;
+    font-size: 1.25rem;
+  }
+
+  .landing-features {
+    padding-top: max(var(--space-2xl), 3rem);
+    padding-bottom: max(var(--space-2xl), 3rem);
   }
 
   .landing-features__heading {
-    font-size: clamp(1.5rem, 4.5vw + 0.85rem, 1.75rem);
+    font-size: clamp(1.6rem, 5vw + 0.9rem, 1.85rem);
+  }
+
+  .landing-feature-card__title {
+    font-size: 1.125rem;
+  }
+
+  .landing-cta {
+    padding-top: max(calc(var(--space-2xl) + var(--space-sm)), env(safe-area-inset-top));
+    padding-bottom: max(var(--space-2xl), 3rem);
   }
 
   .landing-cta__title {
-    font-size: clamp(1.35rem, 3.5vw + 0.65rem, 1.5rem);
+    font-size: clamp(1.45rem, 4vw + 0.7rem, 1.6rem);
+  }
+
+  .landing-cta__text {
+    font-size: 1.0625rem;
   }
 
   .landing-hero__actions {

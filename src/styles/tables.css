@@ -173,7 +173,15 @@
   .table th,
   .table td {
     padding: 0.65rem 0.75rem;
-    font-size: 0.875rem;
+  }
+
+  .table td {
+    font-size: 0.9375rem;
+  }
+
+  .table th {
+    font-size: 0.9375rem;
+    letter-spacing: 0.045em;
   }
 }
 
@@ -187,5 +195,11 @@
 
   .modal-content {
     padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-overlay {
+    padding-top: max(var(--space-lg), env(safe-area-inset-top));
   }
 }

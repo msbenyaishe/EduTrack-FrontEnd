@@ -357,6 +357,18 @@ input, textarea, select {
 }
 
 @media (max-width: 480px) {
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.625rem;
+  }
+
+  h3 {
+    font-size: 1.375rem;
+  }
+
   .container {
     padding-left: 1rem;
     padding-right: 1rem;

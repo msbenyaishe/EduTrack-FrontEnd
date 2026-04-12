@@ -44,7 +44,16 @@ const StudentGroups = () => {
       setInviteCode('');
       fetchGroups();
     } catch (e) {
-      setJoinError(e.response?.data?.message || 'Invalid invite code or group already joined.');
+      const status = e.response?.status;
+      const msg = e.response?.data?.message;
+      if (status === 404) {
+        setJoinError(
+          msg ||
+            'Invite not found, or the join API is missing. If this keeps happening, confirm VITE_API_URL ends with /api and matches your backend.'
+        );
+      } else {
+        setJoinError(msg || 'Invalid invite code or group already joined.');
+      }
     } finally {
       setJoining(false);
     }
@@ -146,14 +155,14 @@ const StudentGroups = () => {
 
             <form onSubmit={handleJoin}>
               <div className="form-group">
-                <label className="form-label form-label--centered" htmlFor="invite-code">Enter your 6-character invite code</label>
+                <label className="form-label form-label--centered" htmlFor="invite-code">Enter your 8-character invite code</label>
                 <input
                   id="invite-code"
                   type="text"
                   className="form-input form-input--invite"
                   required
-                  maxLength={6}
-                  placeholder="------"
+                  maxLength={8}
+                  placeholder="--------"
                   value={inviteCode}
                   onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
                   disabled={joining}

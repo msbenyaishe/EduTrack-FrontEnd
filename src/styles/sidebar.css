@@ -111,3 +111,9 @@
     box-shadow: var(--shadow-lg);
   }
 }
+
+@media (max-width: 480px) {
+  .sidebar-header .logo {
+    font-size: 1.625rem;
+  }
+}
