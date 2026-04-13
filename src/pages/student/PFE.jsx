@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { GraduationCap, ExternalLink, Plus, Upload, X, Video, FileText } from 'lucide-react';
+import { GraduationCap, ExternalLink, Plus, Upload, X, Video, FileText, Trash2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { studentService } from '../../services/studentService';
 import { pfeService } from '../../services/pfeService';
@@ -75,12 +75,39 @@ const StudentPFE = () => {
     try {
       await pfeService.joinTeam(id);
       alert('Joined PFE Team Successfully!');
+      fetchTeams(selectedGroupId);
     } catch (e) {
       if (e.response && e.response.status === 409) {
         alert('You are already a member of this team!');
       } else {
         alert('Failed to join team in database.');
       }
+    }
+  };
+
+  const isTeamCreator = (team) => {
+    const userId = Number(user?.id);
+    return (
+      Number(team?.created_by) === userId ||
+      Number(team?.createdBy) === userId ||
+      Number(team?.owner_id) === userId ||
+      Number(team?.ownerId) === userId ||
+      Number(team?.creator_id) === userId ||
+      Number(team?.creatorId) === userId ||
+      team?.is_creator === true ||
+      team?.isCreator === true
+    );
+  };
+
+  const handleDeleteTeam = async (teamId) => {
+    if (!window.confirm('Are you sure you want to delete this PFE team? This action cannot be undone.')) return;
+    try {
+      await pfeService.deleteTeam(teamId);
+      alert('PFE team deleted successfully.');
+      fetchTeams(selectedGroupId);
+    } catch (e) {
+      console.error(e);
+      alert(e.response?.data?.message || 'Failed to delete PFE team.');
     }
   };
 
@@ -169,6 +196,7 @@ const StudentPFE = () => {
           <>
             {teams.map(team => {
               const isMember = team.members?.some(m => m.id === user?.id);
+              const canDeleteTeam = isTeamCreator(team);
               return (
                 <div key={team.id} className={`card card--col${isMember ? ' card--accent' : ''}`}>
                   <div>
@@ -196,7 +224,19 @@ const StudentPFE = () => {
 
                   <div className="card__footer">
                     {isMember ? (
-                      <div className="card__stamp--primary">Joined & Active</div>
+                      <div className="agile-team-card__toolbar">
+                        <div className="card__stamp--primary">Joined & Active</div>
+                        {canDeleteTeam && (
+                          <button
+                            type="button"
+                            className="icon-action-btn icon-action-btn--danger"
+                            onClick={() => handleDeleteTeam(team.id)}
+                            title="Delete Team"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        )}
+                      </div>
                     ) : (
                       <button type="button" className="btn btn-secondary btn--block" onClick={() => handleJoin(team.id)}>
                         Join Team

@@ -47,12 +47,18 @@ const TeacherPFE = () => {
   };
 
   const handleDelete = async (id) => {
+    const confirmed = window.confirm('Are you sure you want to delete this PFE team?');
+    if (!confirmed) {
+      alert('Deletion cancelled.');
+      return;
+    }
     try {
       await pfeService.deleteTeam(id);
       fetchPfeTeams(selectedGroup);
+      alert('PFE team deleted successfully.');
     } catch (e) {
       console.error(e);
-      alert('Failed to delete PFE team from database.');
+      alert(e.response?.data?.message || 'Failed to delete PFE team from database.');
     }
   };
 
