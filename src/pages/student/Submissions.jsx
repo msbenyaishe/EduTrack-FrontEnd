@@ -3,6 +3,18 @@ import { CheckCircle, Clock, ExternalLink, Link, FileText, Video } from 'lucide-
 import { studentService } from '../../services/studentService';
 import '../../styles/tables.css';
 
+const resolveModuleName = (submission) =>
+  submission?.module_title ||
+  submission?.module_name ||
+  submission?.moduleName ||
+  submission?.module?.title ||
+  submission?.module?.name ||
+  submission?.sprint?.module_title ||
+  submission?.sprint?.module_name ||
+  submission?.sprint?.module?.title ||
+  submission?.sprint?.module?.name ||
+  '';
+
 const StudentSubmissions = () => {
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,7 +31,7 @@ const StudentSubmissions = () => {
         id: `ws-${s.id}`,
         title: s.workshop_title,
         type: 'Workshop',
-        module: s.module_title,
+        module: resolveModuleName(s),
         date: s.submitted_at,
         reaction: s.teacher_reaction || s.reaction || null,
         links: { repo: s.repo, demo: s.web_page, pdf: s.pdf_report }
@@ -29,7 +41,7 @@ const StudentSubmissions = () => {
         id: `sp-${s.id}`,
         title: s.sprint_title,
         type: 'Sprint',
-        module: s.module_title,
+        module: resolveModuleName(s),
         date: s.submitted_at,
         reaction: s.teacher_reaction || s.reaction || null,
         links: { repo: s.repo, demo: s.web_page, pdf: s.pdf_report }

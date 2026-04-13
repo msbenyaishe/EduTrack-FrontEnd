@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Folder, CheckCircle, Clock, Link, ExternalLink, FileText, Video } from 'lucide-react';
+import { Folder, CheckCircle, Clock, Link, ExternalLink, FileText, Video, Trash2 } from 'lucide-react';
 import { teacherService } from '../../services/teacherService';
 import '../../styles/tables.css';
 
@@ -106,6 +106,19 @@ const SubmissionsDashboard = () => {
     }
   };
 
+  const handleDelete = async (submission) => {
+    const ok = window.confirm('Delete this submission? This action cannot be undone.');
+    if (!ok) return;
+
+    try {
+      await teacherService.deleteSubmission(submission.submissionType, submission.submissionId);
+      setSubmissions((prev) => prev.filter((item) => item.id !== submission.id));
+    } catch (e) {
+      console.error('Failed to delete submission:', e);
+      alert('Could not delete submission. Backend delete endpoint may not be ready.');
+    }
+  };
+
   return (
     <div>
       <div className="page-header">
@@ -172,7 +185,7 @@ const SubmissionsDashboard = () => {
                 <div className="submission-meta-stack">
                     <div className="submission-type-box">
                         <div className="submission-type-box__title">{sub.type}</div>
-                        <div className="submission-type-box__sub">{sub.module || 'No Module'}</div>
+                        <div className="submission-type-box__sub">{sub.module || 'General'}</div>
                     </div>
                     <div className="meta-inline">
                         <Clock size={12} /> {new Date(sub.date).toLocaleDateString()}
@@ -217,6 +230,14 @@ const SubmissionsDashboard = () => {
                     <Video size={18} />
                   </a>
                 )}
+                <button
+                  type="button"
+                  className="icon-action-btn icon-action-btn--danger"
+                  onClick={() => handleDelete(sub)}
+                  title="Delete submission"
+                >
+                  <Trash2 size={18} />
+                </button>
                 {!sub.links.repo && !sub.links.demo && !sub.links.pdf && !sub.links.video && (
                   <span className="no-links">No links provided</span>
                 )}

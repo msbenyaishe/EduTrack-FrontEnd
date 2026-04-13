@@ -23,6 +23,12 @@ export const teacherService = {
     });
     return res.data;
   },
+  deleteSubmission: async (submissionType, submissionId) => {
+    const res = await api.delete('/teachers/submissions', {
+      data: { submissionType, submissionId }
+    });
+    return res.data;
+  },
   
   // MODULES
   getModules: async () => {
