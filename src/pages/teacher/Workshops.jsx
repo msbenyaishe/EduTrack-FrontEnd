@@ -141,7 +141,7 @@ const TeacherWorkshops = () => {
                 </div>
 
                 <div className="card__footer">
-                  <button type="button" className="btn btn-secondary btn--edit-row" onClick={() => navigate(`/teacher/submissions/workshop/${ws.id}`)}>
+                  <button type="button" className="btn btn-secondary btn--edit-row" onClick={() => navigate('/teacher/submissions', { state: { filterType: 'Workshops' } })}>
                     <Upload size={16} /> Submissions
                   </button>
                   <div className="card__footer-actions">

@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Folder, CheckCircle, Clock, Link, ExternalLink, FileText } from 'lucide-react';
 import { teacherService } from '../../services/teacherService';
 import '../../styles/tables.css';
 
 const SubmissionsDashboard = () => {
+  const location = useLocation();
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedGroup, setSelectedGroup] = useState('All');
-  const [selectedType, setSelectedType] = useState('All');
+  const [selectedType, setSelectedType] = useState(location.state?.filterType || 'All');
 
   useEffect(() => {
     fetchSubmissions();
