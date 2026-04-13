@@ -992,16 +992,20 @@
 }
 
 .student-reaction-emoji {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-size: 1.6rem;
   line-height: 1;
+  flex-shrink: 0;
 }
 
 .student-reaction-row {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 0.5rem;
   margin-top: 0.35rem;
+  flex-wrap: wrap;
 }
 
 .student-reaction-label {
@@ -1009,6 +1013,7 @@
   font-weight: 600;
   color: var(--secondary-color);
   letter-spacing: 0.01em;
+  margin: 0;
 }
 
 .no-links {
