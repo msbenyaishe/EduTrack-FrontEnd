@@ -116,7 +116,7 @@ const StudentSubmissions = () => {
                   </a>
                 )}
                 {sub.links.video && (
-                  <a href={sub.links.video} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn--link-tight" title="Explanation Video">
+                  <a href={sub.links.video} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn--link-tight btn--video-link" title="Explanation Video">
                     <Video size={14} className="btn__icon-left" /> Video
                   </a>
                 )}

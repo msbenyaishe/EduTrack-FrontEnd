@@ -1121,6 +1121,10 @@
   grid-column: 1 / -1;
 }
 
+.my-submission-card .link-btn-row .btn--video-link {
+  grid-column: 1 / -1;
+}
+
 @media (max-width: 520px) {
   .my-submission-card .link-btn-row {
     grid-template-columns: 1fr;
