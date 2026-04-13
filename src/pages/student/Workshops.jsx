@@ -31,6 +31,11 @@ const StudentWorkshops = () => {
   };
 
   const handleOpenSubmit = (ws) => {
+    setFormData({
+      repo: ws.repo || '',
+      web_page: ws.web_page || '',
+      pdf_report: ws.pdf_report || ''
+    });
     setSelectedWorkshop(ws);
     setShowModal(true);
   };
@@ -41,6 +46,7 @@ const StudentWorkshops = () => {
     try {
       await workshopService.submitWorkshop({ ...formData, workshop_id: selectedWorkshop.id });
       fetchWorkshops();
+      setFormData({ repo: '', web_page: '', pdf_report: '' });
       setShowModal(false);
     } catch (e) {
       console.error(e);
@@ -104,17 +110,13 @@ const StudentWorkshops = () => {
                   </a>
                 )}
 
-                {!ws.submitted ? (
-                  <button
-                    type="button"
-                    className="btn btn-primary btn--block"
-                    onClick={() => handleOpenSubmit(ws)}
-                  >
-                    <Upload size={16} /> Submit Work
-                  </button>
-                ) : (
-                  <div className="status-banner">Work Submitted</div>
-                )}
+                <button
+                  type="button"
+                  className="btn btn-primary btn--block"
+                  onClick={() => handleOpenSubmit(ws)}
+                >
+                  <Upload size={16} /> {ws.submitted ? 'Modify Submission' : 'Submit Work'}
+                </button>
               </div>
             </div>
           ))
@@ -125,7 +127,7 @@ const StudentWorkshops = () => {
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
-              <h2 className="font-bold">Submit: {selectedWorkshop?.title}</h2>
+              <h2 className="font-bold">{selectedWorkshop?.submitted ? 'Modify Submission' : 'Submit'}: {selectedWorkshop?.title}</h2>
               <button type="button" className="modal-close" onClick={() => setShowModal(false)} aria-label="Close">
                 <X size={20} />
               </button>
@@ -150,7 +152,7 @@ const StudentWorkshops = () => {
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)} disabled={submitting}>Cancel</button>
                 <button type="submit" className="btn btn-primary" disabled={submitting || (!formData.repo && !formData.web_page && !formData.pdf_report)}>
-                  {submitting ? 'Submitting...' : 'Submit'}
+                  {submitting ? 'Saving...' : (selectedWorkshop?.submitted ? 'Save Changes' : 'Submit')}
                 </button>
               </div>
             </form>

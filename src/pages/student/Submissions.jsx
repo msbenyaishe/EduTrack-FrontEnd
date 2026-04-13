@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CheckCircle, Clock, ExternalLink, Link, FileText } from 'lucide-react';
+import { CheckCircle, Clock, ExternalLink, Link, FileText, Video } from 'lucide-react';
 import { studentService } from '../../services/studentService';
 import '../../styles/tables.css';
 
@@ -38,7 +38,12 @@ const StudentSubmissions = () => {
         title: s.project_title || 'PFE Final Project',
         type: 'PFE',
         date: s.submitted_at,
-        links: { repo: s.project_repo, demo: s.project_demo, pdf: s.report_pdf }
+        links: {
+          repo: s.project_repo,
+          demo: s.project_demo,
+          pdf: s.report_pdf || s.final_report || s.pdf_report,
+          video: s.explanation_video || s.project_video || s.video_url
+        }
       }));
 
       const all = [...workshops, ...sprints, ...pfes].sort((a, b) =>
@@ -63,7 +68,7 @@ const StudentSubmissions = () => {
         </div>
       </div>
 
-      <div className="grid-cards">
+      <div className="grid-cards my-submissions-grid">
         {loading ? (
           <div className="loading-state">Loading submissions...</div>
         ) : submissions.length === 0 ? (
@@ -74,7 +79,7 @@ const StudentSubmissions = () => {
           </div>
         ) : (
           submissions.map(sub => (
-            <div key={sub.id} className="card card--col">
+            <div key={sub.id} className="card card--col my-submission-card">
               <div>
                 <div className="card__head">
                   <div className="card__title-group">
@@ -110,7 +115,12 @@ const StudentSubmissions = () => {
                     <FileText size={14} className="btn__icon-left" /> Report
                   </a>
                 )}
-                {!sub.links.repo && !sub.links.demo && !sub.links.pdf && (
+                {sub.links.video && (
+                  <a href={sub.links.video} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn--link-tight" title="Explanation Video">
+                    <Video size={14} className="btn__icon-left" /> Video
+                  </a>
+                )}
+                {!sub.links.repo && !sub.links.demo && !sub.links.pdf && !sub.links.video && (
                   <span className="no-links">No links provided</span>
                 )}
               </div>

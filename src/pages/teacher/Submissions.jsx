@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Folder, CheckCircle, Clock, Link, ExternalLink, FileText } from 'lucide-react';
+import { Folder, CheckCircle, Clock, Link, ExternalLink, FileText, Video } from 'lucide-react';
 import { teacherService } from '../../services/teacherService';
 import '../../styles/tables.css';
 
@@ -45,7 +45,12 @@ const SubmissionsDashboard = () => {
         type: `PFE: ${s.project_title || 'Final Project'}`,
         group: s.group_name,
         date: s.submitted_at,
-        links: { repo: s.project_repo, demo: s.project_demo, pdf: s.report_pdf }
+        links: {
+          repo: s.project_repo,
+          demo: s.project_demo,
+          pdf: s.report_pdf || s.final_report || s.pdf_report,
+          video: s.explanation_video || s.project_video || s.video_url
+        }
       }));
 
       const allSubmissions = [...workshops, ...sprints, ...pfes].sort((a, b) =>
@@ -160,7 +165,12 @@ const SubmissionsDashboard = () => {
                     <FileText size={18} />
                   </a>
                 )}
-                {!sub.links.repo && !sub.links.demo && !sub.links.pdf && (
+                {sub.links.video && (
+                  <a href={sub.links.video} target="_blank" rel="noopener noreferrer" className="icon-action-btn" title="Watch Video">
+                    <Video size={18} />
+                  </a>
+                )}
+                {!sub.links.repo && !sub.links.demo && !sub.links.pdf && !sub.links.video && (
                   <span className="no-links">No links provided</span>
                 )}
               </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { GraduationCap, ExternalLink, Plus, Upload, X } from 'lucide-react';
+import { GraduationCap, ExternalLink, Plus, Upload, X, Video, FileText } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { studentService } from '../../services/studentService';
 import { pfeService } from '../../services/pfeService';
@@ -15,6 +15,7 @@ const StudentPFE = () => {
   const [submitting, setSubmitting] = useState(false);
   const [showCreateTeam, setShowCreateTeam] = useState(false);
   const [newTeamName, setNewTeamName] = useState('');
+  const [existingSubmission, setExistingSubmission] = useState(null);
 
   const [selectedGroupId, setSelectedGroupId] = useState(null);
 
@@ -83,6 +84,38 @@ const StudentPFE = () => {
     }
   };
 
+  const handleOpenSubmissionModal = async () => {
+    if (!formData.pfe_team_id) {
+      alert('Please join or create a team first!');
+      return;
+    }
+
+    try {
+      const existing = await pfeService.getTeamSubmissions(formData.pfe_team_id);
+      const current = Array.isArray(existing) ? existing[0] : existing;
+
+      if (current) {
+        setExistingSubmission(current);
+        setFormData(prev => ({
+          ...prev,
+          project_title: current.project_title || '',
+          description: current.description || '',
+          project_repo: current.project_repo || '',
+          project_demo: current.project_demo || '',
+          explanation_video: current.explanation_video || '',
+          report_pdf: current.report_pdf || ''
+        }));
+      } else {
+        setExistingSubmission(null);
+      }
+    } catch (e) {
+      console.error('Failed to fetch existing PFE submission:', e);
+      setExistingSubmission(null);
+    }
+
+    setShowModal(true);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.pfe_team_id) {
@@ -93,6 +126,7 @@ const StudentPFE = () => {
     try {
       await pfeService.submitPfe(formData);
       setShowModal(false);
+      setExistingSubmission(null);
       setFormData(prev => ({ ...prev, project_title: '', description: '', project_repo: '', project_demo: '', explanation_video: '', report_pdf: '' }));
       alert('PFE submitted to database!');
     } catch (e) {
@@ -114,8 +148,8 @@ const StudentPFE = () => {
           <button type="button" className="btn btn-secondary" onClick={() => setShowCreateTeam(true)}>
             <Plus size={18} /> Create Team
           </button>
-          <button type="button" className="btn btn-primary" onClick={() => setShowModal(true)}>
-            <Upload size={18} /> Submit PFE
+          <button type="button" className="btn btn-primary" onClick={handleOpenSubmissionModal}>
+            <Upload size={18} /> {existingSubmission ? 'Modify PFE' : 'Submit PFE'}
           </button>
         </div>
       </div>
@@ -185,13 +219,19 @@ const StudentPFE = () => {
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
-              <h2 className="font-bold">Submit PFE Details</h2>
-              <button type="button" className="modal-close" onClick={() => setShowModal(false)} aria-label="Close">
+              <h2 className="font-bold">{existingSubmission ? 'Modify PFE Details' : 'Submit PFE Details'}</h2>
+              <button type="button" className="modal-close" onClick={() => {
+                setShowModal(false);
+                setExistingSubmission(null);
+              }} aria-label="Close">
                 <X size={20} />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className="pfe-submission-form">
+              {existingSubmission && (
+                <div className="status-banner">Editing your existing PFE submission</div>
+              )}
               <div className="form-group">
                 <label className="form-label" htmlFor="pfe-team">Select Your Team</label>
                 <select
@@ -223,9 +263,22 @@ const StudentPFE = () => {
                 <label className="form-label form-label--inline-icon"><ExternalLink size={14}/> Live Demo URL</label>
                 <input type="url" className="form-input" value={formData.project_demo} onChange={e => setFormData({...formData, project_demo: e.target.value})} />
               </div>
+              <div className="form-group">
+                <label className="form-label form-label--inline-icon"><Video size={14}/> Explanation Video Link</label>
+                <input type="url" className="form-input" placeholder="YouTube, Loom, etc." value={formData.explanation_video} onChange={e => setFormData({...formData, explanation_video: e.target.value})} />
+              </div>
+              <div className="form-group">
+                <label className="form-label form-label--inline-icon"><FileText size={14}/> Final Report Link (URL)</label>
+                <input type="url" className="form-input" placeholder="Google Drive, Dropbox, etc." value={formData.report_pdf} onChange={e => setFormData({...formData, report_pdf: e.target.value})} />
+              </div>
               <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)} disabled={submitting}>Cancel</button>
-                <button type="submit" className="btn btn-primary" disabled={submitting}>{submitting ? 'Submitting...' : 'Submit PFE'}</button>
+                <button type="button" className="btn btn-secondary" onClick={() => {
+                  setShowModal(false);
+                  setExistingSubmission(null);
+                }} disabled={submitting}>Cancel</button>
+                <button type="submit" className="btn btn-primary" disabled={submitting}>
+                  {submitting ? 'Saving...' : (existingSubmission ? 'Save Changes' : 'Submit PFE')}
+                </button>
               </div>
             </form>
           </div>

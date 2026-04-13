@@ -232,6 +232,15 @@ const StudentAgile = () => {
     setSubmissionForm(prev => ({ ...prev, [field]: value }));
   };
 
+  const openSprintSubmissionForm = (sprint, submission) => {
+    setSubmissionForm({
+      sprintId: sprint.id,
+      repo: submission?.repo || '',
+      web_page: submission?.web_page || '',
+      pdf_report: submission?.pdf_report || ''
+    });
+  };
+
   const handleSubmitSprint = async (e) => {
     e.preventDefault();
     try {
@@ -511,11 +520,11 @@ const StudentAgile = () => {
                         <div
                           key={sprint.id}
                           className={choiceClass}
-                          onClick={() => !submission && setSubmissionForm(prev => ({ ...prev, sprintId: sprint.id }))}
+                          onClick={() => openSprintSubmissionForm(sprint, submission)}
                           onKeyDown={(e) => {
-                            if (!submission && (e.key === 'Enter' || e.key === ' ')) {
+                            if (e.key === 'Enter' || e.key === ' ') {
                               e.preventDefault();
-                              setSubmissionForm(prev => ({ ...prev, sprintId: sprint.id }));
+                              openSprintSubmissionForm(sprint, submission);
                             }
                           }}
                           role="button"
@@ -542,8 +551,11 @@ const StudentAgile = () => {
                       {submissionForm.sprintId ? 'Submit Sprint' : 'Select a sprint'}
                     </h3>
 
-                    {submissionForm.sprintId ? (
+                      {submissionForm.sprintId ? (
                       <form className="form-compact" onSubmit={handleSubmitSprint}>
+                          {teamSubmissions.some(sub => sub.sprint_id === submissionForm.sprintId) && (
+                            <div className="status-banner">Editing existing submission</div>
+                          )}
                         <div className="form-group">
                           <label className="form-label" htmlFor="sprint-repo">Repository Link</label>
                           <input
@@ -587,7 +599,7 @@ const StudentAgile = () => {
                             Cancel
                           </button>
                           <button type="submit" className="btn btn-primary">
-                            Submit Work
+                            {teamSubmissions.some(sub => sub.sprint_id === submissionForm.sprintId) ? 'Save Changes' : 'Submit Work'}
                           </button>
                         </div>
                       </form>
