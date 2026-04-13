@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Folder, CheckCircle, Clock, Link, ExternalLink, FileText, Video } from 'lucide-react';
 import { teacherService } from '../../services/teacherService';
-import { REACTION_OPTIONS, getSubmissionReactions, saveSubmissionReaction } from '../../utils/submissionReactions';
 import '../../styles/tables.css';
+
+const REACTION_OPTIONS = ['👍', '👏', '🔥', '✅', '🎉'];
 
 const SubmissionsDashboard = () => {
   const location = useLocation();
@@ -11,11 +12,8 @@ const SubmissionsDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [selectedGroup, setSelectedGroup] = useState('All');
   const [selectedType, setSelectedType] = useState(location.state?.filterType || 'All');
-  const [submissionReactions, setSubmissionReactions] = useState({});
-
   useEffect(() => {
     fetchSubmissions();
-    setSubmissionReactions(getSubmissionReactions());
   }, []);
 
   const fetchSubmissions = async () => {
@@ -24,33 +22,39 @@ const SubmissionsDashboard = () => {
 
       const workshops = (recentSubmissions.workshopSubmissions || []).map(s => ({
         id: `ws-${s.id}`,
+        submissionId: s.id,
+        submissionType: 'workshop',
         student: s.student_name,
         type: `Workshop: ${s.workshop_title}`,
         module: s.module_title,
         group: s.group_name,
         date: s.submitted_at,
-        reactionKey: `ws|${(s.workshop_title || '').trim()}|${s.submitted_at || ''}`,
+        reaction: s.teacher_reaction || s.reaction || null,
         links: { repo: s.repo, demo: s.web_page, pdf: s.pdf_report }
       }));
 
       const sprints = (recentSubmissions.sprintSubmissions || []).map(s => ({
         id: `sp-${s.id}`,
+        submissionId: s.id,
+        submissionType: 'sprint',
         student: s.team_name,
         type: `Sprint: ${s.sprint_title}`,
         module: s.module_title,
         group: s.group_name,
         date: s.submitted_at,
-        reactionKey: `sp|${(s.sprint_title || '').trim()}|${s.submitted_at || ''}`,
+        reaction: s.teacher_reaction || s.reaction || null,
         links: { repo: s.repo, demo: s.web_page, pdf: s.pdf_report }
       }));
 
       const pfes = (recentSubmissions.pfeSubmissions || []).map(s => ({
         id: `pfe-${s.id}`,
+        submissionId: s.id,
+        submissionType: 'pfe',
         student: s.team_name,
         type: `PFE: ${s.project_title || 'Final Project'}`,
         group: s.group_name,
         date: s.submitted_at,
-        reactionKey: `pfe|${(s.project_title || 'Final Project').trim()}|${s.submitted_at || ''}`,
+        reaction: s.teacher_reaction || s.reaction || null,
         links: {
           repo: s.project_repo,
           demo: s.project_demo,
@@ -83,9 +87,23 @@ const SubmissionsDashboard = () => {
     return matchGroup && matchType;
   });
 
-  const handleReaction = (submissionId, reaction, reactionKey) => {
-    const next = saveSubmissionReaction(submissionId, reaction, [reactionKey]);
-    setSubmissionReactions(next);
+  const handleReaction = async (submission, reaction) => {
+    const previousReaction = submission.reaction || null;
+    setSubmissions((prev) =>
+      prev.map((item) => (item.id === submission.id ? { ...item, reaction } : item))
+    );
+    try {
+      await teacherService.updateSubmissionReaction(
+        submission.submissionType,
+        submission.submissionId,
+        reaction
+      );
+    } catch (e) {
+      setSubmissions((prev) =>
+        prev.map((item) => (item.id === submission.id ? { ...item, reaction: previousReaction } : item))
+      );
+      alert('Could not save reaction yet. Backend endpoint is probably not ready.');
+    }
   };
 
   return (
@@ -135,7 +153,7 @@ const SubmissionsDashboard = () => {
           </div>
         ) : (
           filteredSubmissions.map(sub => {
-            const currentReaction = submissionReactions[sub.id] || submissionReactions[sub.reactionKey];
+            const currentReaction = sub.reaction;
             return (
             <div key={sub.id} className="card card--col teacher-submission-card">
               <div>
@@ -167,7 +185,7 @@ const SubmissionsDashboard = () => {
                             key={`${sub.id}-${emoji}`}
                             type="button"
                             className={`icon-action-btn submission-reaction-btn ${currentReaction === emoji ? 'submission-reaction-btn--active' : ''}`}
-                            onClick={() => handleReaction(sub.id, emoji, sub.reactionKey)}
+                            onClick={() => handleReaction(sub, emoji)}
                             title={`Set ${emoji} mark`}
                           >
                             <span aria-hidden className="submission-reaction-emoji">{emoji}</span>

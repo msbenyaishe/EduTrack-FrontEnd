@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Users, BookOpen, Upload, Clock } from 'lucide-react';
 import { studentService } from '../../services/studentService';
-import { getSubmissionReaction } from '../../utils/submissionReactions';
 
 const StudentDashboard = () => {
   const [stats, setStats] = useState({ groupsCount: 0, modulesCount: 0, recentSubmissions: [] });
@@ -14,9 +13,9 @@ const StudentDashboard = () => {
 
         const submissions = data.recentSubmissions || {};
         const flattened = [
-          ...(submissions.workshopSubmissions || []).map(s => ({ ...s, title: s.workshop_title, status: 'Workshop', date: s.submitted_at, submissionKey: `ws-${s.id}`, reactionKey: `ws|${(s.workshop_title || '').trim()}|${s.submitted_at || ''}` })),
-          ...(submissions.sprintSubmissions || []).map(s => ({ ...s, title: s.sprint_title, status: 'Sprint', date: s.submitted_at, submissionKey: `sp-${s.id}`, reactionKey: `sp|${(s.sprint_title || '').trim()}|${s.submitted_at || ''}` })),
-          ...(submissions.pfeSubmissions || []).map(s => ({ ...s, title: s.project_title || 'PFE Final', status: 'PFE', date: s.submitted_at, submissionKey: `pfe-${s.id}`, reactionKey: `pfe|${(s.project_title || 'PFE Final').trim()}|${s.submitted_at || ''}` }))
+          ...(submissions.workshopSubmissions || []).map(s => ({ ...s, title: s.workshop_title, status: 'Workshop', date: s.submitted_at, reaction: s.teacher_reaction || s.reaction || null })),
+          ...(submissions.sprintSubmissions || []).map(s => ({ ...s, title: s.sprint_title, status: 'Sprint', date: s.submitted_at, reaction: s.teacher_reaction || s.reaction || null })),
+          ...(submissions.pfeSubmissions || []).map(s => ({ ...s, title: s.project_title || 'PFE Final', status: 'PFE', date: s.submitted_at, reaction: s.teacher_reaction || s.reaction || null }))
         ].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
 
         setStats({
@@ -79,7 +78,7 @@ const StudentDashboard = () => {
         {stats.recentSubmissions.length > 0 ? (
           <ul className="activity-list">
             {stats.recentSubmissions.map((sub, idx) => {
-              const reaction = getSubmissionReaction(sub.submissionKey, [sub.reactionKey]);
+              const reaction = sub.reaction;
               return (
               <li
                 key={sub.id || idx}

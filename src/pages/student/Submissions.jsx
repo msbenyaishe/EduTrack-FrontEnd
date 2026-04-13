@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, Clock, ExternalLink, Link, FileText, Video } from 'lucide-react';
 import { studentService } from '../../services/studentService';
-import { getSubmissionReaction } from '../../utils/submissionReactions';
 import '../../styles/tables.css';
 
 const StudentSubmissions = () => {
@@ -22,7 +21,7 @@ const StudentSubmissions = () => {
         type: 'Workshop',
         module: s.module_title,
         date: s.submitted_at,
-        reactionKey: `ws|${(s.workshop_title || '').trim()}|${s.submitted_at || ''}`,
+        reaction: s.teacher_reaction || s.reaction || null,
         links: { repo: s.repo, demo: s.web_page, pdf: s.pdf_report }
       }));
 
@@ -32,7 +31,7 @@ const StudentSubmissions = () => {
         type: 'Sprint',
         module: s.module_title,
         date: s.submitted_at,
-        reactionKey: `sp|${(s.sprint_title || '').trim()}|${s.submitted_at || ''}`,
+        reaction: s.teacher_reaction || s.reaction || null,
         links: { repo: s.repo, demo: s.web_page, pdf: s.pdf_report }
       }));
 
@@ -41,7 +40,7 @@ const StudentSubmissions = () => {
         title: s.project_title || 'PFE Final Project',
         type: 'PFE',
         date: s.submitted_at,
-        reactionKey: `pfe|${(s.project_title || 'PFE Final Project').trim()}|${s.submitted_at || ''}`,
+        reaction: s.teacher_reaction || s.reaction || null,
         links: {
           repo: s.project_repo,
           demo: s.project_demo,
@@ -83,7 +82,7 @@ const StudentSubmissions = () => {
           </div>
         ) : (
           submissions.map(sub => {
-            const reaction = getSubmissionReaction(sub.id, [sub.reactionKey]);
+            const reaction = sub.reaction;
             return (
             <div key={sub.id} className="card card--col my-submission-card">
               <div>

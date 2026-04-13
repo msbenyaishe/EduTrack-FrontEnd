@@ -15,6 +15,14 @@ export const teacherService = {
       recentSubmissions: submissionsRes.data || []
     };
   },
+  updateSubmissionReaction: async (submissionType, submissionId, reaction) => {
+    const res = await api.patch('/teachers/submissions/reaction', {
+      submissionType,
+      submissionId,
+      reaction
+    });
+    return res.data;
+  },
   
   // MODULES
   getModules: async () => {
