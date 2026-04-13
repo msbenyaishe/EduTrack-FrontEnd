@@ -948,6 +948,69 @@
   color: var(--text-muted);
 }
 
+.submission-mark-row {
+  margin-top: 0.2rem;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  column-gap: 0.5rem;
+}
+
+.submission-mark-label {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--secondary-color);
+  line-height: 1;
+}
+
+.submission-reaction-list {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-wrap: nowrap;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 2px;
+}
+
+.submission-reaction-btn {
+  min-width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 0.5rem;
+  flex: 0 0 auto;
+}
+
+.submission-reaction-btn--active {
+  border: 1px solid #6366f1;
+  background: #eef2ff;
+}
+
+.submission-reaction-emoji {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.student-reaction-emoji {
+  display: inline-block;
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.student-reaction-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+}
+
+.student-reaction-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--secondary-color);
+  letter-spacing: 0.01em;
+}
+
 .no-links {
   font-size: 0.75rem;
   font-style: italic;
@@ -1090,6 +1153,43 @@
 /* ---------- Student my submissions ---------- */
 .my-submissions-grid {
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+}
+
+.teacher-submissions-grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 295px), 1fr));
+}
+
+.teacher-submission-card {
+  min-height: 330px;
+  padding: var(--space-md);
+}
+
+.teacher-submission-card .submission-card__name {
+  font-size: 1.35rem;
+}
+
+.teacher-submission-card .card__muted {
+  font-size: 1rem;
+}
+
+.teacher-submission-card .submission-type-box__title {
+  font-size: 1.1rem;
+}
+
+.teacher-submission-card .submission-type-box__sub {
+  font-size: 0.92rem;
+}
+
+.teacher-submission-card .meta-inline {
+  font-size: 0.95rem;
+}
+
+.teacher-submission-card .submission-mark-label {
+  font-size: 1.12rem;
+}
+
+.teacher-submission-card .submission-reaction-emoji {
+  font-size: 1.25rem;
 }
 
 .my-submission-card .card__title-group {

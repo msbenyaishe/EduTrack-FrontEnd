@@ -16,7 +16,15 @@ const TeacherDashboard = () => {
           ...(submissions.workshopSubmissions || []).map(s => ({ ...s, student: s.student_name, type: `WS: ${s.workshop_title}`, date: s.submitted_at })),
           ...(submissions.sprintSubmissions || []).map(s => ({ ...s, student: s.team_name, type: `Sprint: ${s.sprint_title}`, date: s.submitted_at })),
           ...(submissions.pfeSubmissions || []).map(s => ({ ...s, student: s.team_name, type: `PFE: ${s.project_title || 'Final'}`, date: s.submitted_at }))
-        ].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+        ].map(sub => {
+          const group = sub.group_name ? `Group: ${sub.group_name}` : null;
+          const module = sub.module_title ? `Module: ${sub.module_title}` : null;
+
+          return {
+            ...sub,
+            activityMeta: [group, module].filter(Boolean).join(' | ') || 'Submission received'
+          };
+        }).sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
 
         setStats({
           ...data,
@@ -96,7 +104,7 @@ const TeacherDashboard = () => {
                         {sub.date ? new Date(sub.date).toLocaleDateString() : 'Just now'}
                       </span>
                     </div>
-                    <p className="activity-text__sub">Group / Module</p>
+                    <p className="activity-text__sub">{sub.activityMeta}</p>
                   </div>
                 </div>
               </li>

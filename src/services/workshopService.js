@@ -6,6 +6,10 @@ export const workshopService = {
     const res = await api.post('/workshops', data);
     return res.data;
   },
+  updateWorkshop: async (id, data) => {
+    const res = await api.put(`/workshops/${id}`, data);
+    return res.data;
+  },
   getWorkshopsByGroupAndModule: async (moduleId, groupId) => {
     const res = await api.get(`/workshops/module/${moduleId}/group/${groupId}`);
     return res.data;

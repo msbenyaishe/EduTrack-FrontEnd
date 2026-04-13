@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Folder, CheckCircle, Clock, Link, ExternalLink, FileText, Video } from 'lucide-react';
 import { teacherService } from '../../services/teacherService';
+import { REACTION_OPTIONS, getSubmissionReactions, saveSubmissionReaction } from '../../utils/submissionReactions';
 import '../../styles/tables.css';
 
 const SubmissionsDashboard = () => {
@@ -10,9 +11,11 @@ const SubmissionsDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [selectedGroup, setSelectedGroup] = useState('All');
   const [selectedType, setSelectedType] = useState(location.state?.filterType || 'All');
+  const [submissionReactions, setSubmissionReactions] = useState({});
 
   useEffect(() => {
     fetchSubmissions();
+    setSubmissionReactions(getSubmissionReactions());
   }, []);
 
   const fetchSubmissions = async () => {
@@ -26,6 +29,7 @@ const SubmissionsDashboard = () => {
         module: s.module_title,
         group: s.group_name,
         date: s.submitted_at,
+        reactionKey: `ws|${(s.workshop_title || '').trim()}|${s.submitted_at || ''}`,
         links: { repo: s.repo, demo: s.web_page, pdf: s.pdf_report }
       }));
 
@@ -36,6 +40,7 @@ const SubmissionsDashboard = () => {
         module: s.module_title,
         group: s.group_name,
         date: s.submitted_at,
+        reactionKey: `sp|${(s.sprint_title || '').trim()}|${s.submitted_at || ''}`,
         links: { repo: s.repo, demo: s.web_page, pdf: s.pdf_report }
       }));
 
@@ -45,6 +50,7 @@ const SubmissionsDashboard = () => {
         type: `PFE: ${s.project_title || 'Final Project'}`,
         group: s.group_name,
         date: s.submitted_at,
+        reactionKey: `pfe|${(s.project_title || 'Final Project').trim()}|${s.submitted_at || ''}`,
         links: {
           repo: s.project_repo,
           demo: s.project_demo,
@@ -76,6 +82,11 @@ const SubmissionsDashboard = () => {
     if (selectedType === 'PFE') matchType = sub.type.startsWith('PFE');
     return matchGroup && matchType;
   });
+
+  const handleReaction = (submissionId, reaction, reactionKey) => {
+    const next = saveSubmissionReaction(submissionId, reaction, [reactionKey]);
+    setSubmissionReactions(next);
+  };
 
   return (
     <div>
@@ -114,7 +125,7 @@ const SubmissionsDashboard = () => {
         </div>
       </div>
 
-      <div className="grid-cards">
+      <div className="grid-cards teacher-submissions-grid">
         {loading ? (
           <div className="loading-state">Loading submissions...</div>
         ) : filteredSubmissions.length === 0 ? (
@@ -123,8 +134,10 @@ const SubmissionsDashboard = () => {
             <p>No submissions match the selected filters.</p>
           </div>
         ) : (
-          filteredSubmissions.map(sub => (
-            <div key={sub.id} className="card card--col">
+          filteredSubmissions.map(sub => {
+            const currentReaction = submissionReactions[sub.id] || submissionReactions[sub.reactionKey];
+            return (
+            <div key={sub.id} className="card card--col teacher-submission-card">
               <div>
                 <div className="card__head">
                   <div className="submission-card__profile">
@@ -145,6 +158,22 @@ const SubmissionsDashboard = () => {
                     </div>
                     <div className="meta-inline">
                         <Clock size={12} /> {new Date(sub.date).toLocaleDateString()}
+                    </div>
+                    <div className="meta-inline submission-mark-row">
+                      <span className="submission-mark-label">Mark:</span>
+                      <div className="submission-reaction-list">
+                        {REACTION_OPTIONS.map((emoji) => (
+                          <button
+                            key={`${sub.id}-${emoji}`}
+                            type="button"
+                            className={`icon-action-btn submission-reaction-btn ${currentReaction === emoji ? 'submission-reaction-btn--active' : ''}`}
+                            onClick={() => handleReaction(sub.id, emoji, sub.reactionKey)}
+                            title={`Set ${emoji} mark`}
+                          >
+                            <span aria-hidden className="submission-reaction-emoji">{emoji}</span>
+                          </button>
+                        ))}
+                      </div>
                     </div>
                 </div>
               </div>
@@ -175,7 +204,8 @@ const SubmissionsDashboard = () => {
                 )}
               </div>
             </div>
-          ))
+          );
+          })
         )}
       </div>
     </div>

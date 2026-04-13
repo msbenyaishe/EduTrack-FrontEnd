@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, BookOpen, Users, Upload, ExternalLink, Trash2, X } from 'lucide-react';
+import { Plus, BookOpen, Upload, ExternalLink, Trash2, X, Edit2 } from 'lucide-react';
 import { teacherService } from '../../services/teacherService';
 import { workshopService } from '../../services/workshopService';
 import '../../styles/tables.css';
@@ -16,6 +16,7 @@ const TeacherWorkshops = () => {
   const [showModal, setShowModal] = useState(false);
   const [modules, setModules] = useState([]);
   const navigate = useNavigate();
+  const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({ module_id: '', title: '', description: '', repo: '', pdf_report: '', web_page: '' });
 
   useEffect(() => {
@@ -61,16 +62,39 @@ const TeacherWorkshops = () => {
     }
   };
 
-  const handleCreate = async (e) => {
+  const resetForm = () => {
+    setFormData({ module_id: '', title: '', description: '', repo: '', pdf_report: '', web_page: '' });
+    setEditingId(null);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await workshopService.createWorkshop({ ...formData, group_id: selectedGroup });
+      if (editingId) {
+        await workshopService.updateWorkshop(editingId, { ...formData, group_id: selectedGroup });
+      } else {
+        await workshopService.createWorkshop({ ...formData, group_id: selectedGroup });
+      }
       setShowModal(false);
+      resetForm();
       fetchWorkshops(selectedGroup);
     } catch (e) {
       console.error(e);
       alert('Failed to save workshop to database.');
     }
+  };
+
+  const handleEdit = (workshop) => {
+    setEditingId(workshop.id);
+    setFormData({
+      module_id: workshop.module_id || '',
+      title: workshop.title || '',
+      description: workshop.description || '',
+      repo: workshop.repo || '',
+      pdf_report: workshop.pdf_report || '',
+      web_page: workshop.web_page || ''
+    });
+    setShowModal(true);
   };
 
   const handleDelete = async (id) => {
@@ -90,7 +114,7 @@ const TeacherWorkshops = () => {
           <h1 className="page-title">Workshops</h1>
           <p className="page-subtitle">Assign workshops and review student code.</p>
         </div>
-        <button type="button" className="btn btn-primary" onClick={() => setShowModal(true)}>
+        <button type="button" className="btn btn-primary" onClick={() => { resetForm(); setShowModal(true); }}>
           <Plus size={18} /> Add Workshop
         </button>
       </div>
@@ -145,6 +169,9 @@ const TeacherWorkshops = () => {
                     <Upload size={16} /> Submissions
                   </button>
                   <div className="card__footer-actions">
+                    <button type="button" className="icon-action-btn" onClick={() => handleEdit(ws)} title="Edit Workshop">
+                      <Edit2 size={18} />
+                    </button>
                     {ws.web_page && (
                       <a href={ws.web_page} target="_blank" rel="noopener noreferrer" className="icon-action-btn" title="External Link">
                         <ExternalLink size={18} />
@@ -158,7 +185,7 @@ const TeacherWorkshops = () => {
               </div>
             ))}
 
-            <div className="card-action" onClick={() => setShowModal(true)}>
+            <div className="card-action" onClick={() => { resetForm(); setShowModal(true); }}>
               <Plus size={24} className="card-action__plus" />
               <span className="font-medium">Add Another Workshop</span>
             </div>
@@ -170,13 +197,13 @@ const TeacherWorkshops = () => {
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
-              <h2 className="font-bold">Create Workshop</h2>
-              <button type="button" className="modal-close" onClick={() => setShowModal(false)} aria-label="Close">
+              <h2 className="font-bold">{editingId ? 'Edit Workshop' : 'Create Workshop'}</h2>
+              <button type="button" className="modal-close" onClick={() => { setShowModal(false); resetForm(); }} aria-label="Close">
                 <X size={20} />
               </button>
             </div>
 
-            <form onSubmit={handleCreate}>
+            <form onSubmit={handleSubmit}>
               <div className="form-group">
                 <label className="form-label" htmlFor="ws-module">Select Module</label>
                 <select id="ws-module" className="form-input" required value={formData.module_id} onChange={(e) => setFormData({...formData, module_id: e.target.value})}>
@@ -200,8 +227,8 @@ const TeacherWorkshops = () => {
               </div>
 
               <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
-                <button type="submit" className="btn btn-primary">Save Workshop</button>
+                <button type="button" className="btn btn-secondary" onClick={() => { setShowModal(false); resetForm(); }}>Cancel</button>
+                <button type="submit" className="btn btn-primary">{editingId ? 'Update Workshop' : 'Save Workshop'}</button>
               </div>
             </form>
           </div>

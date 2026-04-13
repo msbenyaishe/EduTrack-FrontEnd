@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, Clock, ExternalLink, Link, FileText, Video } from 'lucide-react';
 import { studentService } from '../../services/studentService';
+import { getSubmissionReaction } from '../../utils/submissionReactions';
 import '../../styles/tables.css';
 
 const StudentSubmissions = () => {
@@ -21,6 +22,7 @@ const StudentSubmissions = () => {
         type: 'Workshop',
         module: s.module_title,
         date: s.submitted_at,
+        reactionKey: `ws|${(s.workshop_title || '').trim()}|${s.submitted_at || ''}`,
         links: { repo: s.repo, demo: s.web_page, pdf: s.pdf_report }
       }));
 
@@ -30,6 +32,7 @@ const StudentSubmissions = () => {
         type: 'Sprint',
         module: s.module_title,
         date: s.submitted_at,
+        reactionKey: `sp|${(s.sprint_title || '').trim()}|${s.submitted_at || ''}`,
         links: { repo: s.repo, demo: s.web_page, pdf: s.pdf_report }
       }));
 
@@ -38,6 +41,7 @@ const StudentSubmissions = () => {
         title: s.project_title || 'PFE Final Project',
         type: 'PFE',
         date: s.submitted_at,
+        reactionKey: `pfe|${(s.project_title || 'PFE Final Project').trim()}|${s.submitted_at || ''}`,
         links: {
           repo: s.project_repo,
           demo: s.project_demo,
@@ -78,7 +82,9 @@ const StudentSubmissions = () => {
             <p>You haven&apos;t submitted any assignments yet.</p>
           </div>
         ) : (
-          submissions.map(sub => (
+          submissions.map(sub => {
+            const reaction = getSubmissionReaction(sub.id, [sub.reactionKey]);
+            return (
             <div key={sub.id} className="card card--col my-submission-card">
               <div>
                 <div className="card__head">
@@ -86,6 +92,7 @@ const StudentSubmissions = () => {
                     <div className="media-icon media-icon--success">
                       <CheckCircle size={20} />
                     </div>
+
                     {sub.title}
                   </div>
                   <span className="badge badge-primary badge--trailing">{sub.type}</span>
@@ -96,6 +103,12 @@ const StudentSubmissions = () => {
                   <div className="meta-inline">
                     <Clock size={12} /> Submitted on {new Date(sub.date).toLocaleDateString()}
                   </div>
+                  {reaction && (
+                    <div className="student-reaction-row">
+                      <span className="student-reaction-label">Teacher reacted</span>
+                      <span aria-hidden className="student-reaction-emoji">{reaction}</span>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -125,7 +138,8 @@ const StudentSubmissions = () => {
                 )}
               </div>
             </div>
-          ))
+          );
+          })
         )}
       </div>
     </div>
