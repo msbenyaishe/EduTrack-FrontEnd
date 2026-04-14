@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Building, Plus, X } from 'lucide-react';
+import { Building, Plus, X, Pencil, Trash2 } from 'lucide-react';
 import { internshipService } from '../../services/internshipService';
 import '../../styles/tables.css';
 
@@ -9,6 +9,8 @@ const StudentInternships = () => {
   const [internships, setInternships] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentInternshipId, setCurrentInternshipId] = useState(null);
 
   useEffect(() => {
     fetchInternships();
@@ -26,20 +28,53 @@ const StudentInternships = () => {
     }
   };
 
-  const handleCreate = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await internshipService.submitInternship(formData);
-      setShowModal(false);
-      setFormData({ company_name: '', supervisor_name: '', start_date: '', end_date: '' });
+      if (isEditing) {
+        await internshipService.updateInternship(currentInternshipId, formData);
+      } else {
+        await internshipService.submitInternship(formData);
+      }
+      handleCloseModal();
       fetchInternships();
     } catch (e) {
-      console.error('Failed to submit internship', e.response?.data || e.message);
+      console.error('Failed to save internship', e.response?.data || e.message);
       alert('Failed to save to database. Check connection.');
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleEditClick = (intern) => {
+    setFormData({
+      company_name: intern.company_name,
+      supervisor_name: intern.supervisor_name,
+      start_date: new Date(intern.start_date).toISOString().split('T')[0],
+      end_date: new Date(intern.end_date).toISOString().split('T')[0]
+    });
+    setCurrentInternshipId(intern.id);
+    setIsEditing(true);
+    setShowModal(true);
+  };
+
+  const handleDeleteClick = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this internship?')) return;
+    try {
+      await internshipService.deleteInternship(id);
+      fetchInternships();
+    } catch (e) {
+      console.error('Failed to delete internship', e);
+      alert('Failed to delete. Check connection.');
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setIsEditing(false);
+    setCurrentInternshipId(null);
+    setFormData({ company_name: '', supervisor_name: '', start_date: '', end_date: '' });
   };
 
   return (
@@ -89,8 +124,16 @@ const StudentInternships = () => {
                   </div>
                 </div>
 
-                <div className="card__footer">
+                <div className="card__footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div className="card__stamp">Active Internship</div>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button type="button" className="btn btn-secondary" style={{ padding: '4px 8px' }} onClick={() => handleEditClick(intern)} title="Edit">
+                      <Pencil size={16} />
+                    </button>
+                    <button type="button" className="btn btn-danger" style={{ padding: '4px 8px', backgroundColor: '#fee2e2', color: '#dc2626', borderColor: '#fca5a5' }} onClick={() => handleDeleteClick(intern.id)} title="Delete">
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -107,13 +150,13 @@ const StudentInternships = () => {
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
-              <h2 className="font-bold">Register Internship</h2>
-              <button type="button" className="modal-close" onClick={() => setShowModal(false)} aria-label="Close">
+              <h2 className="font-bold">{isEditing ? 'Edit Internship' : 'Register Internship'}</h2>
+              <button type="button" className="modal-close" onClick={handleCloseModal} aria-label="Close">
                 <X size={20} />
               </button>
             </div>
 
-            <form onSubmit={handleCreate}>
+            <form onSubmit={handleSubmit}>
               <div className="form-group">
                 <label className="form-label" htmlFor="co-name">Company Name</label>
                 <input id="co-name" type="text" className="form-input" required value={formData.company_name} onChange={e => setFormData({...formData, company_name: e.target.value})} />
@@ -133,7 +176,7 @@ const StudentInternships = () => {
                 </div>
               </div>
               <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)} disabled={submitting}>Cancel</button>
+                <button type="button" className="btn btn-secondary" onClick={handleCloseModal} disabled={submitting}>Cancel</button>
                 <button type="submit" className="btn btn-primary" disabled={submitting}>{submitting ? 'Saving...' : 'Save Internship'}</button>
               </div>
             </form>

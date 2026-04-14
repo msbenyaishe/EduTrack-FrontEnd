@@ -13,6 +13,10 @@ export const internshipService = {
     const res = await api.put(`/internships/${id}`, data);
     return res.data;
   },
+  deleteInternship: async (id) => {
+    const res = await api.delete(`/internships/${id}`);
+    return res.data;
+  },
   getGroupInternships: async (groupId) => {
     const res = await api.get(`/internships/group/${groupId}`);
     return res.data;
