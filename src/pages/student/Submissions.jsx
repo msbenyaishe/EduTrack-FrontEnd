@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CheckCircle, Clock, ExternalLink, Link, FileText, Video } from 'lucide-react';
+import { CheckCircle, Clock, ExternalLink, Link, FileText, Video, Trash2 } from 'lucide-react';
 import { studentService } from '../../services/studentService';
 import '../../styles/tables.css';
 
@@ -18,6 +18,7 @@ const resolveModuleName = (submission) =>
 const StudentSubmissions = () => {
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
     fetchSubmissions();
@@ -29,6 +30,8 @@ const StudentSubmissions = () => {
 
       const workshops = (recentSubmissions.workshopSubmissions || []).map(s => ({
         id: `ws-${s.id}`,
+        rawId: s.id,
+        apiType: 'workshop',
         title: s.workshop_title,
         type: 'Workshop',
         module: resolveModuleName(s),
@@ -39,6 +42,8 @@ const StudentSubmissions = () => {
 
       const sprints = (recentSubmissions.sprintSubmissions || []).map(s => ({
         id: `sp-${s.id}`,
+        rawId: s.id,
+        apiType: 'sprint',
         title: s.sprint_title,
         type: 'Sprint',
         module: resolveModuleName(s),
@@ -49,6 +54,8 @@ const StudentSubmissions = () => {
 
       const pfes = (recentSubmissions.pfeSubmissions || []).map(s => ({
         id: `pfe-${s.id}`,
+        rawId: s.id,
+        apiType: 'pfe',
         title: s.project_title || 'PFE Final Project',
         type: 'PFE',
         date: s.submitted_at,
@@ -71,6 +78,19 @@ const StudentSubmissions = () => {
       setSubmissions([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id, apiType, rawId) => {
+    if (!window.confirm('Are you sure you want to delete this submission?')) return;
+    try {
+      setDeletingId(id);
+      await studentService.deleteSubmission(apiType, rawId);
+      setSubmissions(prev => prev.filter(s => s.id !== id));
+    } catch (e) {
+      alert(e.response?.data?.message || 'Failed to delete submission');
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -123,30 +143,50 @@ const StudentSubmissions = () => {
                 </div>
               </div>
 
-              <div className="card__footer link-btn-row">
-                {sub.links.repo && (
-                  <a href={sub.links.repo} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn--link-tight" title="Repository">
-                    <Link size={14} className="btn__icon-left" /> Repo
-                  </a>
+              <div className="card__footer" style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', gap: 'var(--space-sm)' }}>
+                
+                {/* Top row: Repo & Demo */}
+                {(sub.links.repo || sub.links.demo) && (
+                  <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
+                    {sub.links.repo && (
+                      <a href={sub.links.repo} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn--link-tight" style={{ flex: 1 }} title="Repository">
+                        <Link size={14} className="btn__icon-left" /> Repo
+                      </a>
+                    )}
+                    {sub.links.demo && (
+                      <a href={sub.links.demo} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn--link-tight" style={{ flex: 1 }} title="Live Demo">
+                        <ExternalLink size={14} className="btn__icon-left" /> Demo
+                      </a>
+                    )}
+                  </div>
                 )}
-                {sub.links.demo && (
-                  <a href={sub.links.demo} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn--link-tight" title="Live Demo">
-                    <ExternalLink size={14} className="btn__icon-left" /> Demo
-                  </a>
-                )}
-                {sub.links.pdf && (
-                  <a href={sub.links.pdf} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn--link-tight" title="PDF Report">
-                    <FileText size={14} className="btn__icon-left" /> Report
-                  </a>
-                )}
-                {sub.links.video && (
-                  <a href={sub.links.video} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn--link-tight btn--video-link" title="Explanation Video">
-                    <Video size={14} className="btn__icon-left" /> Video
-                  </a>
-                )}
-                {!sub.links.repo && !sub.links.demo && !sub.links.pdf && !sub.links.video && (
-                  <span className="no-links">No links provided</span>
-                )}
+
+                {/* Bottom row: Report, Video & Trash Container */}
+                <div style={{ display: 'flex', gap: 'var(--space-sm)', alignItems: 'center' }}>
+                  {!sub.links.repo && !sub.links.demo && !sub.links.pdf && !sub.links.video && (
+                    <span className="no-links" style={{ flex: 1 }}>No links provided</span>
+                  )}
+                  {sub.links.pdf && (
+                    <a href={sub.links.pdf} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn--link-tight" style={{ flex: 1 }} title="PDF Report">
+                      <FileText size={14} className="btn__icon-left" /> Report
+                    </a>
+                  )}
+                  {sub.links.video && (
+                    <a href={sub.links.video} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn--link-tight btn--video-link" style={{ flex: 1 }} title="Explanation Video">
+                      <Video size={14} className="btn__icon-left" /> Video
+                    </a>
+                  )}
+                  <button
+                    type="button"
+                    className="btn-icon-danger"
+                    style={{ flexShrink: 0 }}
+                    onClick={() => handleDelete(sub.id, sub.apiType, sub.rawId)}
+                    disabled={deletingId === sub.id}
+                    title="Delete Submission"
+                  >
+                    <Trash2 size={23} />
+                  </button>
+                </div>
               </div>
             </div>
           );

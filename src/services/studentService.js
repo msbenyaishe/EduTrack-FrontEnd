@@ -62,5 +62,9 @@ export const studentService = {
   joinGroup: async (invite_code) => {
     const res = await api.post('/groups/join', { invite_code });
     return res.data;
+  },
+  deleteSubmission: async (submissionType, submissionId) => {
+    const res = await api.delete('/students/submissions', { data: { submissionType, submissionId } });
+    return res.data;
   }
 };
