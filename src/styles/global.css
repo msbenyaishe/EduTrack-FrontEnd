@@ -502,8 +502,8 @@ input, textarea, select {
   .lang-switcher__btn {
     padding: 0;
     gap: 0;
-    width: 30px;
-    height: 30px;
+    width: 35px;
+    height: 35px;
     min-width: 35px;
     justify-content: center;
     border-radius: var(--radius-md);
