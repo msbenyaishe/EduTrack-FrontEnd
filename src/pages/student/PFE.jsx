@@ -512,7 +512,7 @@ const StudentPFE = () => {
                       <div className="member-avatar member-avatar--sm">
                         {member.name?.charAt(0).toUpperCase()}
                       </div>
-                      <div>
+                      <div className="member-line__info">
                         <div className="member-line__name">{member.name}</div>
                         <div className="card__muted">{member.email}</div>
                       </div>
@@ -526,7 +526,7 @@ const StudentPFE = () => {
                       <div className="member-avatar member-avatar--sm">
                         {member.name?.charAt(0).toUpperCase()}
                       </div>
-                      <div>
+                      <div className="member-line__info">
                         <div className="member-line__name">{member.name}</div>
                         <div className="card__muted">{member.email}</div>
                       </div>
@@ -552,7 +552,7 @@ const StudentPFE = () => {
             </div>
 
               {isTeamMember(membersModalTeam) && availableStudents.length > 0 && (
-                <div className="member-invite-section" style={{ marginTop: 'var(--space-md)', paddingTop: 'var(--space-sm)', borderTop: '1px solid var(--border-color)' }}>
+                <div className="member-invite-section">
                   <h4 className="card__overline">{t('student.pfe.addMember', { defaultValue: 'ADD MEMBER' })}</h4>
                   <div className="flex-row gap-xs">
                     <select
@@ -563,7 +563,7 @@ const StudentPFE = () => {
                     >
                       <option value="" disabled>{t('student.pfe.searchClassmates', { defaultValue: 'Search classmates...' })}</option>
                       {availableStudents.map(student => (
-                        <option key={student.id} value={student.id}>{student.name} ({student.email})</option>
+                        <option key={student.id} value={student.id}>{student.name}</option>
                       ))}
                     </select>
                   </div>

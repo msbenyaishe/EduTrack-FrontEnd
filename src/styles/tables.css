@@ -202,4 +202,12 @@
   .modal-overlay {
     padding-top: max(var(--space-lg), env(safe-area-inset-top));
   }
+
+  .modal-content {
+    padding: 1.25rem 1rem;
+  }
+
+  .modal-header {
+    margin-bottom: 1.25rem;
+  }
 }

@@ -436,7 +436,7 @@ const StudentAgile = () => {
                       <div className="member-avatar member-avatar--sm">
                         {member.name?.charAt(0).toUpperCase()}
                       </div>
-                      <div>
+                      <div className="member-line__info">
                         <div className="member-line__name">{member.name}</div>
                         <div className="card__muted">{member.email}</div>
                       </div>

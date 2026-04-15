@@ -1357,6 +1357,7 @@
   background: var(--bg-main);
   border: 1px solid var(--border-color);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  min-width: 0;
 }
 
 .member-line:hover {
@@ -1368,6 +1369,13 @@
   display: flex;
   align-items: center;
   gap: 1.125rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.member-line__info {
+  flex: 1;
+  min-width: 0;
 }
 
 .member-line__name {
@@ -1375,11 +1383,42 @@
   font-size: 1.0625rem;
   line-height: 1.4;
   color: var(--secondary-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .member-line .card__muted {
   font-size: 0.9375rem;
   margin-top: 0.125rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 480px) {
+  .member-line {
+    padding: 0.75rem 1rem;
+    gap: var(--space-sm);
+  }
+
+  .member-line__left {
+    gap: 0.75rem;
+  }
+
+  .member-avatar--sm {
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 0.9375rem;
+  }
+
+  .member-line__name {
+    font-size: 0.9375rem;
+  }
+
+  .member-line .card__muted {
+    font-size: 0.8125rem;
+  }
 }
 
 .padded-y-muted {
@@ -1401,7 +1440,8 @@
   font-weight: 700;
 }
 
-.add-member-block {
+.add-member-block,
+.member-invite-section {
   margin-top: var(--space-md);
   padding-top: var(--space-md);
   border-top: 1px solid var(--border-color);
