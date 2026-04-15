@@ -81,13 +81,13 @@ const PublicNavbar = () => {
         className={`public-nav__mobile${open ? ' is-open' : ''}`}
         aria-hidden={!open}
       >
-        <LanguageSwitcher variant="blocks" />
         <NavLink to="/login" className={navLink(false)} end onClick={close}>
           {t('nav.signIn')}
         </NavLink>
         <NavLink to="/register" className={navLink(true)} end onClick={close}>
           {t('nav.signUp')}
         </NavLink>
+        <LanguageSwitcher variant="blocks" />
       </div>
     </header>
   );

@@ -513,7 +513,7 @@ input, textarea, select {
 /* Public mobile language blocks */
 .lang-switcher--blocks {
   width: 100%;
-  max-width: 320px;
+  max-width: 100%;
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

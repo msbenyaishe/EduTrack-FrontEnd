@@ -236,10 +236,16 @@ body.public-nav-open {
     font-size: 1rem;
   }
 
-  .public-nav__mobile .lang-switcher {
+  .public-nav__mobile .lang-switcher:not(.lang-switcher--blocks) {
     width: 100%;
     display: flex;
     justify-content: center;
+    margin-top: var(--space-xs);
+  }
+
+  .public-nav__mobile .lang-switcher--blocks {
+    display: grid;
+    margin-top: var(--space-sm);
   }
 
   .public-nav__mobile .public-nav__cta {
