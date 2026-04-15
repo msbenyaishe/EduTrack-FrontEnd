@@ -2,11 +2,12 @@ import React, { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Globe } from "lucide-react";
 
-const LanguageSwitcher = ({ compact = false }) => {
+const LanguageSwitcher = ({ compact = false, variant = "dropdown" }) => {
   const { i18n, t } = useTranslation();
   const language = i18n.resolvedLanguage || "en";
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
+  const btnRef = useRef(null);
   const menuId = useId();
 
   const items = useMemo(
@@ -37,6 +38,23 @@ const LanguageSwitcher = ({ compact = false }) => {
 
   const label = (language || "en").toUpperCase();
 
+  if (variant === "blocks") {
+    return (
+      <div className="lang-switcher lang-switcher--blocks" aria-label={t("common.language", { defaultValue: "Language" })}>
+        {items.map((it) => (
+          <button
+            key={it.id}
+            type="button"
+            className={`lang-block${language === it.id ? " is-active" : ""}`}
+            onClick={() => i18n.changeLanguage(it.id)}
+          >
+            {it.label}
+          </button>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div
       ref={rootRef}
@@ -47,6 +65,7 @@ const LanguageSwitcher = ({ compact = false }) => {
       <button
         type="button"
         className="lang-switcher__btn"
+        ref={btnRef}
         aria-label={t("common.language", { defaultValue: "Language" })}
         aria-haspopup="menu"
         aria-expanded={open}

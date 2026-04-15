@@ -428,7 +428,7 @@ input, textarea, select {
 .lang-switcher:hover .lang-switcher__menu,
 .lang-switcher:focus-within .lang-switcher__menu,
 .lang-switcher.is-open .lang-switcher__menu {
-  display: block;
+  display: flex;
 }
 
 .lang-switcher__item {
@@ -484,8 +484,46 @@ input, textarea, select {
   .lang-switcher__menu {
     right: auto;
     left: 0;
-    width: min(240px, 85vw);
+    width: 160px;
+    max-width: 160px;
   }
+
+  .lang-switcher__item {
+    padding: 0.55rem 0.65rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* Public mobile language blocks */
+.lang-switcher--blocks {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-xs);
+}
+
+.lang-block {
+  min-height: 44px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-sm);
+  color: var(--secondary-color);
+  font-weight: 800;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.lang-block:hover {
+  background: var(--bg-main);
+  border-color: rgba(59, 130, 246, 0.25);
+}
+
+.lang-block.is-active {
+  background: var(--primary-light);
+  border-color: rgba(59, 130, 246, 0.35);
+  color: var(--primary-color);
 }
 
 @media (max-width: 768px) {

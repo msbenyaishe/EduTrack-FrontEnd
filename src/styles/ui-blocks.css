@@ -110,24 +110,6 @@
   background: var(--bg-card);
 }
 
-@media (max-width: 480px) {
-  .card.card--toolbar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .card--toolbar__label {
-    min-width: 0;
-  }
-
-  .card--toolbar__fields .form-input,
-  .card--toolbar__fields select.form-input {
-    max-width: none;
-    flex: 1 1 auto;
-    width: 100%;
-  }
-}
-
 /* ---------- Resource cards ---------- */
 .card.card--col {
   display: flex;
@@ -1725,6 +1707,23 @@
 }
 
 @media (max-width: 480px) {
+  .card.card--toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .card--toolbar__label {
+    min-width: 0;
+    font-size: 1.0625rem;
+  }
+
+  .card--toolbar__fields .form-input,
+  .card--toolbar__fields select.form-input {
+    max-width: none;
+    flex: 1 1 auto;
+    width: 100%;
+  }
+
   .modal-footer {
     flex-direction: column;
     align-items: stretch;
@@ -1795,9 +1794,5 @@
 
   .sprint-choice__title {
     font-size: 1rem;
-  }
-
-  .card--toolbar__label {
-    font-size: 1.0625rem;
   }
 }

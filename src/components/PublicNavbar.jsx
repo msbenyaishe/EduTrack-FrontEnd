@@ -81,7 +81,7 @@ const PublicNavbar = () => {
         className={`public-nav__mobile${open ? ' is-open' : ''}`}
         aria-hidden={!open}
       >
-        <LanguageSwitcher />
+        <LanguageSwitcher variant="blocks" />
         <NavLink to="/login" className={navLink(false)} end onClick={close}>
           {t('nav.signIn')}
         </NavLink>
