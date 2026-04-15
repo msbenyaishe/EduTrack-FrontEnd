@@ -238,10 +238,8 @@ body.public-nav-open {
 
   .public-nav__mobile .lang-switcher {
     width: 100%;
-  }
-
-  .public-nav__mobile .lang-switcher__select {
-    width: 100%;
+    display: flex;
+    justify-content: center;
   }
 
   .public-nav__mobile .public-nav__cta {
