@@ -494,6 +494,22 @@ input, textarea, select {
   }
 }
 
+@media (max-width: 500px) {
+  .lang-switcher__value {
+    display: none;
+  }
+
+  .lang-switcher__btn {
+    padding: 0;
+    gap: 0;
+    width: 30px;
+    height: 30px;
+    min-width: 35px;
+    justify-content: center;
+    border-radius: var(--radius-md);
+  }
+}
+
 /* Public mobile language blocks */
 .lang-switcher--blocks {
   width: 100%;
