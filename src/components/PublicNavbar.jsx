@@ -41,19 +41,19 @@ const PublicNavbar = () => {
       <div className="public-nav__inner">
         <Link to="/" className="public-nav__brand" onClick={close}>
           <span className="public-nav__logo-mark" aria-hidden>
-            <BookOpen size={22} strokeWidth={2.25} />
+            <BookOpen size={26} strokeWidth={2.25} />
           </span>
           <span className="public-nav__logo-text">{t('common.appName')}</span>
         </Link>
 
         <nav className="public-nav__desktop" aria-label={t('nav.primary')}>
-          <LanguageSwitcher compact />
           <NavLink to="/login" className={navLink(false)} end>
             {t('nav.signIn')}
           </NavLink>
           <NavLink to="/register" className={navLink(true)} end>
             {t('nav.signUp')}
           </NavLink>
+          <LanguageSwitcher compact />
         </nav>
 
         <button
