@@ -2,9 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Users, Mail, Clock, Trash2, Plus, BookOpen, Share2, Calendar, X } from 'lucide-react';
 import { teacherService } from '../../services/teacherService';
+import { useTranslation } from 'react-i18next';
+import { formatDate } from '../../utils/locale';
 
 
 const GroupDetails = () => {
+  const { t, i18n } = useTranslation();
+  const language = i18n.resolvedLanguage || 'en';
   const { id } = useParams();
   const navigate = useNavigate();
   const [group, setGroup] = useState(null);
@@ -40,20 +44,20 @@ const GroupDetails = () => {
       }
     } catch (e) {
       console.error(e);
-      setGroup({ id, name: 'Group Not Found', year: '-', invite_code: 'ERROR' });
+      setGroup({ id, name: t('teacher.groupDetails.groupNotFound', { defaultValue: 'Group Not Found' }), year: '-', invite_code: 'ERROR' });
     } finally {
       setLoading(false);
     }
   };
 
   const handleRemoveStudent = async (studentId) => {
-    if (window.confirm('Are you sure you want to remove this student from the group?')) {
+    if (window.confirm(t('teacher.groupDetails.removeStudentConfirm', { defaultValue: 'Are you sure you want to remove this student from the group?' }))) {
       try {
         await teacherService.removeStudentFromGroup(id, studentId);
         setStudents(students.filter(s => s.id !== studentId));
       } catch (e) {
         console.error(e);
-        alert('Failed to remove student.');
+        alert(t('teacher.groupDetails.removeStudentFailed', { defaultValue: 'Failed to remove student.' }));
       }
     }
   };
@@ -66,30 +70,30 @@ const GroupDetails = () => {
       setShowModuleModal(false);
     } catch (e) {
       console.error(e);
-      alert('Failed to assign module. It might already be assigned.');
+      alert(t('teacher.groupDetails.assignModuleFailed', { defaultValue: 'Failed to assign module. It might already be assigned.' }));
     }
   };
 
   const handleUnassignModule = async (moduleId) => {
-    if (window.confirm('Are you sure you want to remove this module from the group?')) {
+    if (window.confirm(t('teacher.groupDetails.removeModuleConfirm', { defaultValue: 'Are you sure you want to remove this module from the group?' }))) {
       try {
         await teacherService.unassignModuleFromGroup(moduleId, id);
         setModules(modules.filter(m => m.id !== moduleId));
       } catch (e) {
         console.error(e);
-        alert('Failed to remove module.');
+        alert(t('teacher.groupDetails.removeModuleFailed', { defaultValue: 'Failed to remove module.' }));
       }
     }
   };
 
   const handleGenerateNewCode = async () => {
-    if (window.confirm('Generating a new code will immediately invalidate the old one. Continue?')) {
+    if (window.confirm(t('teacher.groupDetails.regenerateConfirm', { defaultValue: 'Generating a new code will immediately invalidate the old one. Continue?' }))) {
       try {
         const data = await teacherService.generateInviteCode(id);
         setGroup({ ...group, invite_code: data.invite_code });
       } catch (e) {
         console.error(e);
-        alert('Failed to generate new code.');
+        alert(t('teacher.groupDetails.regenerateFailed', { defaultValue: 'Failed to generate new code.' }));
       }
     }
   };
@@ -99,17 +103,17 @@ const GroupDetails = () => {
     try {
       await teacherService.updateGroup(id, { invite_expires_at: inviteExpiry });
       setGroup({ ...group, invite_expires_at: inviteExpiry });
-      alert('Expiration date updated successfully!');
+      alert(t('teacher.groupDetails.expirationUpdated', { defaultValue: 'Expiration date updated successfully!' }));
     } catch (e) {
       console.error(e);
-      alert('Failed to update expiration date.');
+      alert(t('teacher.groupDetails.expirationUpdateFailed', { defaultValue: 'Failed to update expiration date.' }));
     } finally {
       setUpdatingExpiry(false);
     }
   };
 
   if (loading) {
-    return <div className="center-loading">Loading group details...</div>;
+    return <div className="center-loading">{t('teacher.groupDetails.loading', { defaultValue: 'Loading group details...' })}</div>;
   }
 
   return (
@@ -120,13 +124,13 @@ const GroupDetails = () => {
             type="button"
             className="btn btn-secondary btn--icon-square"
             onClick={() => navigate('/teacher/groups')}
-            aria-label="Back to groups"
+            aria-label={t('teacher.groupDetails.backToGroups', { defaultValue: 'Back to groups' })}
           >
             <ArrowLeft size={20} />
           </button>
           <div>
             <h1 className="page-title">{group?.name}</h1>
-            <p className="page-subtitle">Academic Year: {group?.year}</p>
+            <p className="page-subtitle">{t('teacher.groupDetails.academicYear', { defaultValue: 'Academic Year:' })} {group?.year}</p>
           </div>
         </div>
       </div>
@@ -137,13 +141,13 @@ const GroupDetails = () => {
             <div className="panel-section__head">
               <h2 className="panel-section__title">
                 <Users size={20} />
-                Enrolled Students ({students.length})
+                {t('teacher.groupDetails.enrolledStudents', { defaultValue: 'Enrolled Students' })} ({students.length})
               </h2>
             </div>
 
             <div className="stacked-gap">
               {students.length === 0 ? (
-                <div className="empty-modal-message">No students have joined this group yet.</div>
+                <div className="empty-modal-message">{t('teacher.groupDetails.noStudentsYet', { defaultValue: 'No students have joined this group yet.' })}</div>
               ) : (
                 students.map((student) => (
                   <div key={student.id} className="member-row">
@@ -155,7 +159,7 @@ const GroupDetails = () => {
                         <div className="member-name">{student.name}</div>
                         <div className="member-meta">
                           <span className="member-meta__item"><Mail size={12} /> {student.email}</span>
-                          <span className="member-meta__item"><Clock size={12} /> {new Date(student.joined_at).toLocaleDateString()}</span>
+                          <span className="member-meta__item"><Clock size={12} /> {formatDate(student.joined_at, language)}</span>
                         </div>
                       </div>
                     </div>
@@ -163,7 +167,7 @@ const GroupDetails = () => {
                       type="button"
                       className="btn-icon-danger"
                       onClick={() => handleRemoveStudent(student.id)}
-                      title="Remove Student"
+                      title={t('teacher.groupDetails.removeStudent', { defaultValue: 'Remove Student' })}
                     >
                       <Trash2 size={18}/>
                     </button>
@@ -177,16 +181,16 @@ const GroupDetails = () => {
             <div className="panel-section__head">
               <h2 className="panel-section__title">
                 <BookOpen size={20} />
-                Assigned Modules ({modules.length})
+                {t('teacher.groupDetails.assignedModules', { defaultValue: 'Assigned Modules' })} ({modules.length})
               </h2>
               <button type="button" className="btn btn-primary btn--sm" onClick={() => setShowModuleModal(true)}>
-                <Plus size={16} /> Assign Module
+                <Plus size={16} /> {t('teacher.groupDetails.assignModule', { defaultValue: 'Assign Module' })}
               </button>
             </div>
 
             <div className="module-grid">
               {modules.length === 0 ? (
-                <div className="module-grid__empty">No modules assigned to this group yet.</div>
+                <div className="module-grid__empty">{t('teacher.groupDetails.noModules', { defaultValue: 'No modules assigned to this group yet.' })}</div>
               ) : (
                 modules.map((mod) => (
                   <div key={mod.id} className="module-row">
@@ -200,7 +204,7 @@ const GroupDetails = () => {
                       type="button"
                       className="btn-unassign"
                       onClick={() => handleUnassignModule(mod.id)}
-                      title="Remove Module"
+                      title={t('teacher.groupDetails.removeModule', { defaultValue: 'Remove Module' })}
                     >
                       <X size={18}/>
                     </button>
@@ -215,13 +219,13 @@ const GroupDetails = () => {
           <div className="panel-section__head panel-section__head--only">
             <h2 className="panel-section__title">
               <Share2 size={20} />
-              Invitation
+              {t('teacher.groupDetails.invitation', { defaultValue: 'Invitation' })}
             </h2>
           </div>
 
           <div className="sidebar-stack">
             <div>
-              <div className="invite-label">Invite Code</div>
+              <div className="invite-label">{t('teacher.groupDetails.inviteCode', { defaultValue: 'Invite Code' })}</div>
               <div className="invite-row">
                 <div className="invite-code-box">
                   {group?.invite_code || '---'}
@@ -230,16 +234,16 @@ const GroupDetails = () => {
                   type="button"
                   className="btn btn-secondary btn--sm"
                   onClick={handleGenerateNewCode}
-                  title="Renew Code"
+                  title={t('teacher.groupDetails.renewCode', { defaultValue: 'Renew Code' })}
                 >
-                  Regenerate
+                  {t('teacher.groupDetails.regenerate', { defaultValue: 'Regenerate' })}
                 </button>
               </div>
             </div>
 
             <div className="form-group">
               <label className="invite-label label-with-icon" htmlFor="invite-expiry">
-                <Calendar size={12} /> Expiration Date
+                <Calendar size={12} /> {t('teacher.groupDetails.expirationDate', { defaultValue: 'Expiration Date' })}
               </label>
               <input
                 id="invite-expiry"
@@ -251,9 +255,9 @@ const GroupDetails = () => {
               <p className="field-hint">
                 {group?.invite_expires_at
                   ? (new Date(group.invite_expires_at) < new Date()
-                      ? <span className="field-hint--error">Code has expired.</span>
-                      : `Expires on ${new Date(group.invite_expires_at).toLocaleString()}`)
-                  : 'No expiration date set.'}
+                      ? <span className="field-hint--error">{t('teacher.groupDetails.codeExpired', { defaultValue: 'Code has expired.' })}</span>
+                      : t('teacher.groupDetails.expiresOn', { defaultValue: 'Expires on {{date}}', date: new Date(group.invite_expires_at).toLocaleString() }))
+                  : t('teacher.groupDetails.noExpiration', { defaultValue: 'No expiration date set.' })}
               </p>
             </div>
 
@@ -263,7 +267,7 @@ const GroupDetails = () => {
               onClick={handleUpdateExpiration}
               disabled={updatingExpiry}
             >
-              {updatingExpiry ? 'Updating...' : 'Save Expiration'}
+              {updatingExpiry ? t('teacher.groupDetails.updating', { defaultValue: 'Updating...' }) : t('teacher.groupDetails.saveExpiration', { defaultValue: 'Save Expiration' })}
             </button>
           </div>
         </div>
@@ -273,16 +277,16 @@ const GroupDetails = () => {
         <div className="modal-overlay">
           <div className="modal-content modal-content--assign">
             <div className="modal-header">
-              <h2 className="font-bold">Assign Module</h2>
-              <button type="button" className="modal-close" onClick={() => setShowModuleModal(false)} aria-label="Close"><X size={20}/></button>
+              <h2 className="font-bold">{t('teacher.groupDetails.assignModule', { defaultValue: 'Assign Module' })}</h2>
+              <button type="button" className="modal-close" onClick={() => setShowModuleModal(false)} aria-label={t('common.close')}><X size={20}/></button>
             </div>
 
             <div className="modal-assign-intro">
-              <p className="modal-hint">Select a module to assign to <strong>{group?.name}</strong>.</p>
+              <p className="modal-hint">{t('teacher.groupDetails.selectModuleFor', { defaultValue: 'Select a module to assign to {{group}}.', group: group?.name })}</p>
 
               <div className="assign-list">
                 {allModules.filter(am => !modules.some(m => m.id === am.id)).length === 0 ? (
-                  <div className="assign-list__empty">All modules are already assigned.</div>
+                  <div className="assign-list__empty">{t('teacher.groupDetails.allModulesAssigned', { defaultValue: 'All modules are already assigned.' })}</div>
                 ) : (
                   allModules.filter(am => !modules.some(m => m.id === am.id)).map(am => (
                     <div

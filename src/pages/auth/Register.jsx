@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { authService } from '../../services/authService';
 import { BookOpen, AlertCircle, Loader } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const Register = () => {
   const [role, setRole] = useState('student'); // 'student' or 'teacher'
@@ -14,6 +15,7 @@ const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,7 +32,7 @@ const Register = () => {
       login(data);
       navigate(`/${data.role}/dashboard`);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to create account. Please try again.');
+      setError(err.response?.data?.message || t('auth.registerFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -42,8 +44,8 @@ const Register = () => {
         <div className="auth-logo">
           <BookOpen size={24} />
         </div>
-        <h1 className="auth-title">Create Account</h1>
-        <p className="auth-subtitle">Join EduTrack today.</p>
+        <h1 className="auth-title">{t('auth.createAccount')}</h1>
+        <p className="auth-subtitle">{t('auth.createAccountSubtitle')}</p>
       </div>
 
       <div className="role-tabs">
@@ -52,14 +54,14 @@ const Register = () => {
           onClick={() => setRole('student')}
           type="button"
         >
-          Student
+          {t('roles.student')}
         </button>
         <button
           className={`btn ${role === 'teacher' ? 'btn-primary' : 'btn-secondary'}`}
           onClick={() => setRole('teacher')}
           type="button"
         >
-          Teacher
+          {t('roles.teacher')}
         </button>
       </div>
 
@@ -72,42 +74,42 @@ const Register = () => {
 
       <form onSubmit={handleSubmit} className="auth-form">
         <div className="form-group">
-          <label className="form-label" htmlFor="name">Full Name</label>
+          <label className="form-label" htmlFor="name">{t('auth.fullName')}</label>
           <input
             id="name"
             type="text"
             className="form-input"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="John Doe"
+            placeholder={t('auth.placeholderName')}
             required
             disabled={isLoading}
           />
         </div>
 
         <div className="form-group">
-          <label className="form-label" htmlFor="email">Email Address</label>
+          <label className="form-label" htmlFor="email">{t('auth.email')}</label>
           <input
             id="email"
             type="email"
             className="form-input"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="john@example.com"
+            placeholder={t('auth.placeholderEmail')}
             required
             disabled={isLoading}
           />
         </div>
 
         <div className="form-group">
-          <label className="form-label" htmlFor="password">Password</label>
+          <label className="form-label" htmlFor="password">{t('auth.password')}</label>
           <input
             id="password"
             type="password"
             className="form-input"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Min. 6 characters"
+            placeholder={t('auth.placeholderMinPassword')}
             required
             disabled={isLoading}
             minLength={6}
@@ -122,18 +124,18 @@ const Register = () => {
           {isLoading ? (
             <>
               <Loader size={18} className="spin" />
-              Creating Account...
+              {t('auth.creatingAccount')}
             </>
           ) : (
-            'Sign Up'
+            t('auth.signUp')
           )}
         </button>
       </form>
 
       <div className="auth-footer">
         <p>
-          Already have an account?{' '}
-          <Link to="/login" className="auth-link">Sign In</Link>
+          {t('auth.alreadyHaveAccount')}{' '}
+          <Link to="/login" className="auth-link">{t('auth.signIn')}</Link>
         </p>
       </div>
     </div>

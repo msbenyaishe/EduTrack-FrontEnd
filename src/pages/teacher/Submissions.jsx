@@ -2,11 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Folder, CheckCircle, Clock, Link, ExternalLink, FileText, Video, Trash2 } from 'lucide-react';
 import { teacherService } from '../../services/teacherService';
+import { useTranslation } from 'react-i18next';
+import { formatDate } from '../../utils/locale';
 
 
 const REACTION_OPTIONS = ['👍', '👏', '🔥', '✅', '🎉'];
 
 const SubmissionsDashboard = () => {
+  const { t, i18n } = useTranslation();
+  const language = i18n.resolvedLanguage || 'en';
   const location = useLocation();
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -69,7 +73,7 @@ const SubmissionsDashboard = () => {
 
       setSubmissions(allSubmissions);
     } catch (e) {
-      console.error('Failed to fetch submissions:', e);
+      console.error(t('teacher.submissions.fetchFailedLog', { defaultValue: 'Failed to fetch submissions:' }), e);
       setSubmissions([]);
     } finally {
       setLoading(false);
@@ -98,24 +102,24 @@ const SubmissionsDashboard = () => {
         submission.submissionId,
         reaction
       );
-    } catch (e) {
+    } catch {
       setSubmissions((prev) =>
         prev.map((item) => (item.id === submission.id ? { ...item, reaction: previousReaction } : item))
       );
-      alert('Could not save reaction yet. Backend endpoint is probably not ready.');
+      alert(t('teacher.submissions.reactionSaveFailed', { defaultValue: 'Could not save reaction yet. Backend endpoint is probably not ready.' }));
     }
   };
 
   const handleDelete = async (submission) => {
-    const ok = window.confirm('Delete this submission? This action cannot be undone.');
+    const ok = window.confirm(t('teacher.submissions.deleteConfirm', { defaultValue: 'Delete this submission? This action cannot be undone.' }));
     if (!ok) return;
 
     try {
       await teacherService.deleteSubmission(submission.submissionType, submission.submissionId);
       setSubmissions((prev) => prev.filter((item) => item.id !== submission.id));
     } catch (e) {
-      console.error('Failed to delete submission:', e);
-      alert('Could not delete submission. Backend delete endpoint may not be ready.');
+      console.error(t('teacher.submissions.deleteFailedLog', { defaultValue: 'Failed to delete submission:' }), e);
+      alert(t('teacher.submissions.deleteFailed', { defaultValue: 'Could not delete submission. Backend delete endpoint may not be ready.' }));
     }
   };
 
@@ -123,22 +127,22 @@ const SubmissionsDashboard = () => {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Global Submissions</h1>
-          <p className="page-subtitle">Review all incoming student work.</p>
+          <h1 className="page-title">{t('teacher.submissions.title', { defaultValue: 'Global Submissions' })}</h1>
+          <p className="page-subtitle">{t('teacher.submissions.subtitle', { defaultValue: 'Review all incoming student work.' })}</p>
         </div>
       </div>
 
       <div className="card card--toolbar">
-        <span className="card--toolbar__label">Filter Submissions:</span>
+        <span className="card--toolbar__label">{t('teacher.submissions.filterSubmissions', { defaultValue: 'Filter Submissions:' })}</span>
         <div className="card--toolbar__fields">
           <select
             className="form-input form-input--filter"
             value={selectedGroup}
             onChange={(e) => setSelectedGroup(e.target.value)}
-            aria-label="Filter by group"
+            aria-label={t('teacher.submissions.filterByGroup', { defaultValue: 'Filter by group' })}
           >
             {uniqueGroups.map(group => (
-              <option key={group} value={group}>{group === 'All' ? 'All Groups' : group}</option>
+              <option key={group} value={group}>{group === 'All' ? t('teacher.submissions.allGroups', { defaultValue: 'All Groups' }) : group}</option>
             ))}
           </select>
 
@@ -146,23 +150,23 @@ const SubmissionsDashboard = () => {
             className="form-input form-input--filter"
             value={selectedType}
             onChange={(e) => setSelectedType(e.target.value)}
-            aria-label="Filter by type"
+            aria-label={t('teacher.submissions.filterByType', { defaultValue: 'Filter by type' })}
           >
-            <option value="All">All Types</option>
-            <option value="Workshops">Workshops</option>
-            <option value="Agile Sprints">Agile Sprints</option>
-            <option value="PFE">PFE</option>
+            <option value="All">{t('teacher.submissions.allTypes', { defaultValue: 'All Types' })}</option>
+            <option value="Workshops">{t('teacher.submissions.workshops', { defaultValue: 'Workshops' })}</option>
+            <option value="Agile Sprints">{t('teacher.submissions.agileSprints', { defaultValue: 'Agile Sprints' })}</option>
+            <option value="PFE">{t('teacher.submissions.pfe', { defaultValue: 'PFE' })}</option>
           </select>
         </div>
       </div>
 
       <div className="grid-cards teacher-submissions-grid">
         {loading ? (
-          <div className="loading-state">Loading submissions...</div>
+          <div className="loading-state">{t('teacher.submissions.loading', { defaultValue: 'Loading submissions...' })}</div>
         ) : filteredSubmissions.length === 0 ? (
           <div className="empty-state-card card">
             <Folder size={48} className="empty-state-card__icon" />
-            <p>No submissions match the selected filters.</p>
+            <p>{t('teacher.submissions.emptyFiltered', { defaultValue: 'No submissions match the selected filters.' })}</p>
           </div>
         ) : (
           filteredSubmissions.map(sub => {
@@ -177,7 +181,7 @@ const SubmissionsDashboard = () => {
                     </div>
                     <div>
                         <div className="submission-card__name">{sub.student}</div>
-                        <div className="card__muted">Group: {sub.group}</div>
+                        <div className="card__muted">{t('teacher.submissions.groupLabel', { defaultValue: 'Group:' })} {sub.group}</div>
                     </div>
                   </div>
                 </div>
@@ -185,13 +189,13 @@ const SubmissionsDashboard = () => {
                 <div className="submission-meta-stack">
                     <div className="submission-type-box">
                         <div className="submission-type-box__title">{sub.type}</div>
-                        <div className="submission-type-box__sub">{sub.module || 'General'}</div>
+                        <div className="submission-type-box__sub">{sub.module || t('teacher.submissions.general', { defaultValue: 'General' })}</div>
                     </div>
                     <div className="meta-inline">
-                        <Clock size={12} /> {new Date(sub.date).toLocaleDateString()}
+                        <Clock size={12} /> {formatDate(sub.date, language)}
                     </div>
                     <div className="meta-inline submission-mark-row">
-                      <span className="submission-mark-label">Mark:</span>
+                      <span className="submission-mark-label">{t('teacher.submissions.mark', { defaultValue: 'Mark:' })}</span>
                       <div className="submission-reaction-list">
                         {REACTION_OPTIONS.map((emoji) => (
                           <button
@@ -199,7 +203,7 @@ const SubmissionsDashboard = () => {
                             type="button"
                             className={`icon-action-btn submission-reaction-btn ${currentReaction === emoji ? 'submission-reaction-btn--active' : ''}`}
                             onClick={() => handleReaction(sub, emoji)}
-                            title={`Set ${emoji} mark`}
+                            title={t('teacher.submissions.setMark', { defaultValue: 'Set {{emoji}} mark', emoji })}
                           >
                             <span aria-hidden className="submission-reaction-emoji">{emoji}</span>
                           </button>
@@ -211,22 +215,22 @@ const SubmissionsDashboard = () => {
 
               <div className="card__footer">
                 {sub.links.repo && (
-                  <a href={sub.links.repo} target="_blank" rel="noopener noreferrer" className="icon-action-btn" title="View Repository">
+                  <a href={sub.links.repo} target="_blank" rel="noopener noreferrer" className="icon-action-btn" title={t('teacher.submissions.viewRepository', { defaultValue: 'View Repository' })}>
                     <Link size={18} />
                   </a>
                 )}
                 {sub.links.demo && (
-                  <a href={sub.links.demo} target="_blank" rel="noopener noreferrer" className="icon-action-btn" title="View Demo">
+                  <a href={sub.links.demo} target="_blank" rel="noopener noreferrer" className="icon-action-btn" title={t('teacher.submissions.viewDemo', { defaultValue: 'View Demo' })}>
                     <ExternalLink size={18} />
                   </a>
                 )}
                 {sub.links.pdf && (
-                  <a href={sub.links.pdf} target="_blank" rel="noopener noreferrer" className="icon-action-btn" title="View Document">
+                  <a href={sub.links.pdf} target="_blank" rel="noopener noreferrer" className="icon-action-btn" title={t('teacher.submissions.viewDocument', { defaultValue: 'View Document' })}>
                     <FileText size={18} />
                   </a>
                 )}
                 {sub.links.video && (
-                  <a href={sub.links.video} target="_blank" rel="noopener noreferrer" className="icon-action-btn" title="Watch Video">
+                  <a href={sub.links.video} target="_blank" rel="noopener noreferrer" className="icon-action-btn" title={t('teacher.submissions.watchVideo', { defaultValue: 'Watch Video' })}>
                     <Video size={18} />
                   </a>
                 )}
@@ -234,12 +238,12 @@ const SubmissionsDashboard = () => {
                   type="button"
                   className="icon-action-btn icon-action-btn--danger"
                   onClick={() => handleDelete(sub)}
-                  title="Delete submission"
+                  title={t('teacher.submissions.deleteSubmission', { defaultValue: 'Delete submission' })}
                 >
                   <Trash2 size={18} />
                 </button>
                 {!sub.links.repo && !sub.links.demo && !sub.links.pdf && !sub.links.video && (
-                  <span className="no-links">No links provided</span>
+                  <span className="no-links">{t('teacher.submissions.noLinks', { defaultValue: 'No links provided' })}</span>
                 )}
               </div>
             </div>

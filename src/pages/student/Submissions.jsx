@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, Clock, ExternalLink, Link, FileText, Video, Trash2 } from 'lucide-react';
 import { studentService } from '../../services/studentService';
+import { useTranslation } from 'react-i18next';
+import { formatDate } from '../../utils/locale';
 
 
 const resolveModuleName = (submission) =>
@@ -16,6 +18,8 @@ const resolveModuleName = (submission) =>
   '';
 
 const StudentSubmissions = () => {
+  const { t, i18n } = useTranslation();
+  const language = i18n.resolvedLanguage || 'en';
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
@@ -33,7 +37,7 @@ const StudentSubmissions = () => {
         rawId: s.id,
         apiType: 'workshop',
         title: s.workshop_title,
-        type: 'Workshop',
+        type: t('student.submissions.workshop', { defaultValue: 'Workshop' }),
         module: resolveModuleName(s),
         date: s.submitted_at,
         reaction: s.teacher_reaction || s.reaction || null,
@@ -45,7 +49,7 @@ const StudentSubmissions = () => {
         rawId: s.id,
         apiType: 'sprint',
         title: s.sprint_title,
-        type: 'Sprint',
+        type: t('student.submissions.sprint', { defaultValue: 'Sprint' }),
         module: resolveModuleName(s),
         date: s.submitted_at,
         reaction: s.teacher_reaction || s.reaction || null,
@@ -56,8 +60,8 @@ const StudentSubmissions = () => {
         id: `pfe-${s.id}`,
         rawId: s.id,
         apiType: 'pfe',
-        title: s.project_title || 'PFE Final Project',
-        type: 'PFE',
+        title: s.project_title || t('student.submissions.pfeFinalProject', { defaultValue: 'PFE Final Project' }),
+        type: t('student.submissions.pfe', { defaultValue: 'PFE' }),
         date: s.submitted_at,
         reaction: s.teacher_reaction || s.reaction || null,
         links: {
@@ -74,7 +78,7 @@ const StudentSubmissions = () => {
 
       setSubmissions(all);
     } catch (e) {
-      console.error('Failed to fetch student submissions:', e);
+      console.error(t('student.submissions.fetchErrorLog', { defaultValue: 'Failed to fetch student submissions:' }), e);
       setSubmissions([]);
     } finally {
       setLoading(false);
@@ -82,13 +86,13 @@ const StudentSubmissions = () => {
   };
 
   const handleDelete = async (id, apiType, rawId) => {
-    if (!window.confirm('Are you sure you want to delete this submission?')) return;
+    if (!window.confirm(t('student.submissions.deleteConfirm', { defaultValue: 'Are you sure you want to delete this submission?' }))) return;
     try {
       setDeletingId(id);
       await studentService.deleteSubmission(apiType, rawId);
       setSubmissions(prev => prev.filter(s => s.id !== id));
     } catch (e) {
-      alert(e.response?.data?.message || 'Failed to delete submission');
+      alert(e.response?.data?.message || t('student.submissions.deleteFailed', { defaultValue: 'Failed to delete submission' }));
     } finally {
       setDeletingId(null);
     }
@@ -98,19 +102,19 @@ const StudentSubmissions = () => {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">My Submissions</h1>
-          <p className="page-subtitle">History of all your assignments, sprints, and tasks.</p>
+          <h1 className="page-title">{t('student.submissions.title', { defaultValue: 'My Submissions' })}</h1>
+          <p className="page-subtitle">{t('student.submissions.subtitle', { defaultValue: 'History of all your assignments, sprints, and tasks.' })}</p>
         </div>
       </div>
 
       <div className="grid-cards my-submissions-grid">
         {loading ? (
-          <div className="loading-state">Loading submissions...</div>
+          <div className="loading-state">{t('student.submissions.loading', { defaultValue: 'Loading submissions...' })}</div>
         ) : submissions.length === 0 ? (
           <div className="empty-state-card card">
             <CheckCircle size={48} className="empty-state-card__icon" />
-            <h3 className="empty-state-card__title">No Submissions Found</h3>
-            <p>You haven&apos;t submitted any assignments yet.</p>
+            <h3 className="empty-state-card__title">{t('student.submissions.emptyTitle', { defaultValue: 'No Submissions Found' })}</h3>
+            <p>{t('student.submissions.emptyText', { defaultValue: "You haven't submitted any assignments yet." })}</p>
           </div>
         ) : (
           submissions.map(sub => {
@@ -130,13 +134,13 @@ const StudentSubmissions = () => {
                 </div>
 
                 <div className="card__body">
-                  <div className="card__emphasis">{sub.module || 'General'}</div>
+                  <div className="card__emphasis">{sub.module || t('student.submissions.general', { defaultValue: 'General' })}</div>
                   <div className="meta-inline">
-                    <Clock size={12} /> Submitted on {new Date(sub.date).toLocaleDateString()}
+                    <Clock size={12} /> {t('student.submissions.submittedOn', { defaultValue: 'Submitted on' })} {formatDate(sub.date, language)}
                   </div>
                   {reaction && (
                     <div className="student-reaction-row">
-                      <span className="student-reaction-label">Teacher reacted</span>
+                      <span className="student-reaction-label">{t('student.submissions.teacherReacted', { defaultValue: 'Teacher reacted' })}</span>
                       <span aria-hidden className="student-reaction-emoji">{reaction}</span>
                     </div>
                   )}
@@ -149,13 +153,13 @@ const StudentSubmissions = () => {
                 {(sub.links.repo || sub.links.demo) && (
                   <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
                     {sub.links.repo && (
-                      <a href={sub.links.repo} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn--link-tight" style={{ flex: 1 }} title="Repository">
-                        <Link size={14} className="btn__icon-left" /> Repo
+                      <a href={sub.links.repo} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn--link-tight" style={{ flex: 1 }} title={t('student.submissions.repository', { defaultValue: 'Repository' })}>
+                        <Link size={14} className="btn__icon-left" /> {t('student.submissions.repo', { defaultValue: 'Repo' })}
                       </a>
                     )}
                     {sub.links.demo && (
-                      <a href={sub.links.demo} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn--link-tight" style={{ flex: 1 }} title="Live Demo">
-                        <ExternalLink size={14} className="btn__icon-left" /> Demo
+                      <a href={sub.links.demo} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn--link-tight" style={{ flex: 1 }} title={t('student.submissions.liveDemo', { defaultValue: 'Live Demo' })}>
+                        <ExternalLink size={14} className="btn__icon-left" /> {t('student.submissions.demo', { defaultValue: 'Demo' })}
                       </a>
                     )}
                   </div>
@@ -164,16 +168,16 @@ const StudentSubmissions = () => {
                 {/* Bottom row: Report, Video & Trash Container */}
                 <div style={{ display: 'flex', gap: 'var(--space-sm)', alignItems: 'center' }}>
                   {!sub.links.repo && !sub.links.demo && !sub.links.pdf && !sub.links.video && (
-                    <span className="no-links" style={{ flex: 1 }}>No links provided</span>
+                    <span className="no-links" style={{ flex: 1 }}>{t('student.submissions.noLinks', { defaultValue: 'No links provided' })}</span>
                   )}
                   {sub.links.pdf && (
-                    <a href={sub.links.pdf} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn--link-tight" style={{ flex: 1 }} title="PDF Report">
-                      <FileText size={14} className="btn__icon-left" /> Report
+                    <a href={sub.links.pdf} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn--link-tight" style={{ flex: 1 }} title={t('student.submissions.pdfReport', { defaultValue: 'PDF Report' })}>
+                      <FileText size={14} className="btn__icon-left" /> {t('student.submissions.report', { defaultValue: 'Report' })}
                     </a>
                   )}
                   {sub.links.video && (
-                    <a href={sub.links.video} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn--link-tight btn--video-link" style={{ flex: 1 }} title="Explanation Video">
-                      <Video size={14} className="btn__icon-left" /> Video
+                    <a href={sub.links.video} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn--link-tight btn--video-link" style={{ flex: 1 }} title={t('student.submissions.explanationVideo', { defaultValue: 'Explanation Video' })}>
+                      <Video size={14} className="btn__icon-left" /> {t('student.submissions.video', { defaultValue: 'Video' })}
                     </a>
                   )}
                   <button
@@ -182,7 +186,7 @@ const StudentSubmissions = () => {
                     style={{ flexShrink: 0 }}
                     onClick={() => handleDelete(sub.id, sub.apiType, sub.rawId)}
                     disabled={deletingId === sub.id}
-                    title="Delete Submission"
+                    title={t('student.submissions.deleteSubmission', { defaultValue: 'Delete Submission' })}
                   >
                     <Trash2 size={23} />
                   </button>

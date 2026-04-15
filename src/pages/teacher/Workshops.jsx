@@ -3,9 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, BookOpen, Upload, ExternalLink, Trash2, X, Edit2 } from 'lucide-react';
 import { teacherService } from '../../services/teacherService';
 import { workshopService } from '../../services/workshopService';
+import { useTranslation } from 'react-i18next';
+import { formatDate } from '../../utils/locale';
 
 
 const TeacherWorkshops = () => {
+  const { t, i18n } = useTranslation();
+  const language = i18n.resolvedLanguage || 'en';
   const [groups, setGroups] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState(null);
 
@@ -80,7 +84,7 @@ const TeacherWorkshops = () => {
       fetchWorkshops(selectedGroup);
     } catch (e) {
       console.error(e);
-      alert('Failed to save workshop to database.');
+      alert(t('teacher.workshops.saveFailed', { defaultValue: 'Failed to save workshop to database.' }));
     }
   };
 
@@ -103,7 +107,7 @@ const TeacherWorkshops = () => {
       fetchWorkshops(selectedGroup);
     } catch (e) {
       console.error(e);
-      alert('Failed to delete workshop.');
+      alert(t('teacher.workshops.deleteFailed', { defaultValue: 'Failed to delete workshop.' }));
     }
   };
 
@@ -111,16 +115,16 @@ const TeacherWorkshops = () => {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Workshops</h1>
-          <p className="page-subtitle">Assign workshops and review student code.</p>
+          <h1 className="page-title">{t('teacher.workshops.title', { defaultValue: 'Workshops' })}</h1>
+          <p className="page-subtitle">{t('teacher.workshops.subtitle', { defaultValue: 'Assign workshops and review student code.' })}</p>
         </div>
         <button type="button" className="btn btn-primary" onClick={() => { resetForm(); setShowModal(true); }}>
-          <Plus size={18} /> Add Workshop
+          <Plus size={18} /> {t('teacher.workshops.addWorkshop', { defaultValue: 'Add Workshop' })}
         </button>
       </div>
 
       <div className="card card--toolbar">
-        <label className="card--toolbar__label" htmlFor="workshop-group">Select Group:</label>
+        <label className="card--toolbar__label" htmlFor="workshop-group">{t('teacher.workshops.selectGroup', { defaultValue: 'Select Group:' })}</label>
         <div className="card--toolbar__fields">
           <select
             id="workshop-group"
@@ -137,12 +141,12 @@ const TeacherWorkshops = () => {
 
       <div className="grid-cards">
         {(loading || subLoading) ? (
-          <div className="loading-state">Loading workshops...</div>
+          <div className="loading-state">{t('teacher.workshops.loading', { defaultValue: 'Loading workshops...' })}</div>
         ) : workshops.length === 0 ? (
           <div className="empty-state-card card">
             <BookOpen size={48} className="empty-state-card__icon" />
-            <h3 className="empty-state-card__title">No Workshops Found</h3>
-            <p>You haven&apos;t created any workshops for this group yet.</p>
+            <h3 className="empty-state-card__title">{t('teacher.workshops.emptyTitle', { defaultValue: 'No Workshops Found' })}</h3>
+            <p>{t('teacher.workshops.emptyText', { defaultValue: "You haven't created any workshops for this group yet." })}</p>
           </div>
         ) : (
           <>
@@ -159,25 +163,25 @@ const TeacherWorkshops = () => {
                   </div>
 
                   <div className="card__body">
-                    <p className="card__desc">{ws.description || 'No description provided.'}</p>
-                    <div className="card__muted">Created: {new Date(ws.created_at).toLocaleDateString()}</div>
+                    <p className="card__desc">{ws.description || t('teacher.workshops.noDescription', { defaultValue: 'No description provided.' })}</p>
+                    <div className="card__muted">{t('teacher.workshops.created', { defaultValue: 'Created:' })} {formatDate(ws.created_at, language)}</div>
                   </div>
                 </div>
 
                 <div className="card__footer">
                   <button type="button" className="btn btn-secondary btn--edit-row" onClick={() => navigate('/teacher/submissions', { state: { filterType: 'Workshops' } })}>
-                    <Upload size={16} /> Submissions
+                  <Upload size={16} /> {t('teacher.workshops.submissions', { defaultValue: 'Submissions' })}
                   </button>
                   <div className="card__footer-actions">
-                    <button type="button" className="icon-action-btn" onClick={() => handleEdit(ws)} title="Edit Workshop">
+                    <button type="button" className="icon-action-btn" onClick={() => handleEdit(ws)} title={t('teacher.workshops.editWorkshop', { defaultValue: 'Edit Workshop' })}>
                       <Edit2 size={18} />
                     </button>
                     {ws.web_page && (
-                      <a href={ws.web_page} target="_blank" rel="noopener noreferrer" className="icon-action-btn" title="External Link">
+                      <a href={ws.web_page} target="_blank" rel="noopener noreferrer" className="icon-action-btn" title={t('teacher.workshops.externalLink', { defaultValue: 'External Link' })}>
                         <ExternalLink size={18} />
                       </a>
                     )}
-                    <button type="button" className="icon-action-btn icon-action-btn--danger" onClick={() => handleDelete(ws.id)} title="Delete Workshop">
+                    <button type="button" className="icon-action-btn icon-action-btn--danger" onClick={() => handleDelete(ws.id)} title={t('teacher.workshops.deleteWorkshop', { defaultValue: 'Delete Workshop' })}>
                       <Trash2 size={18} />
                     </button>
                   </div>
@@ -187,7 +191,7 @@ const TeacherWorkshops = () => {
 
             <div className="card-action" onClick={() => { resetForm(); setShowModal(true); }}>
               <Plus size={24} className="card-action__plus" />
-              <span className="font-medium">Add Another Workshop</span>
+              <span className="font-medium">{t('teacher.workshops.addAnother', { defaultValue: 'Add Another Workshop' })}</span>
             </div>
           </>
         )}
@@ -197,37 +201,37 @@ const TeacherWorkshops = () => {
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
-              <h2 className="font-bold">{editingId ? 'Edit Workshop' : 'Create Workshop'}</h2>
-              <button type="button" className="modal-close" onClick={() => { setShowModal(false); resetForm(); }} aria-label="Close">
+              <h2 className="font-bold">{editingId ? t('teacher.workshops.editWorkshop', { defaultValue: 'Edit Workshop' }) : t('teacher.workshops.createWorkshop', { defaultValue: 'Create Workshop' })}</h2>
+              <button type="button" className="modal-close" onClick={() => { setShowModal(false); resetForm(); }} aria-label={t('common.close')}>
                 <X size={20} />
               </button>
             </div>
 
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label className="form-label" htmlFor="ws-module">Select Module</label>
+                <label className="form-label" htmlFor="ws-module">{t('teacher.workshops.selectModule', { defaultValue: 'Select Module' })}</label>
                 <select id="ws-module" className="form-input" required value={formData.module_id} onChange={(e) => setFormData({...formData, module_id: e.target.value})}>
-                  <option value="" disabled>Select associated module...</option>
+                  <option value="" disabled>{t('teacher.workshops.selectAssociatedModule', { defaultValue: 'Select associated module...' })}</option>
                   {modules.map(m => (
                     <option key={m.id} value={m.id}>{m.title}</option>
                   ))}
                 </select>
               </div>
               <div className="form-group">
-                <label className="form-label" htmlFor="ws-title">Workshop Title</label>
+                <label className="form-label" htmlFor="ws-title">{t('teacher.workshops.workshopTitle', { defaultValue: 'Workshop Title' })}</label>
                 <input id="ws-title" type="text" className="form-input" required value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} />
               </div>
               <div className="form-group">
-                <label className="form-label" htmlFor="ws-desc">Instructions (Desc)</label>
+                <label className="form-label" htmlFor="ws-desc">{t('teacher.workshops.instructions', { defaultValue: 'Instructions (Desc)' })}</label>
                 <textarea id="ws-desc" className="form-input" rows={2} value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} />
               </div>
               <div className="form-group">
-                <label className="form-label" htmlFor="ws-link">Workshop Link (Resource/Demo URL)</label>
+                <label className="form-label" htmlFor="ws-link">{t('teacher.workshops.workshopLink', { defaultValue: 'Workshop Link (Resource/Demo URL)' })}</label>
                 <input id="ws-link" type="url" className="form-input" placeholder="https://..." value={formData.web_page} onChange={(e) => setFormData({...formData, web_page: e.target.value})} />
               </div>
 
               <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => { setShowModal(false); resetForm(); }}>Cancel</button>
+                <button type="button" className="btn btn-secondary" onClick={() => { setShowModal(false); resetForm(); }}>{t('teacher.workshops.cancel', { defaultValue: 'Cancel' })}</button>
                 <button type="submit" className="btn btn-primary">{editingId ? 'Update Workshop' : 'Save Workshop'}</button>
               </div>
             </form>

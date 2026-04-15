@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { BookOpen, Upload, ExternalLink, CheckCircle, X } from 'lucide-react';
 import { workshopService } from '../../services/workshopService';
+import { useTranslation } from 'react-i18next';
 
 
 const StudentWorkshops = () => {
+  const { t } = useTranslation();
   const [workshops, setWorkshops] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -22,8 +24,8 @@ const StudentWorkshops = () => {
       setWorkshops(data);
     } catch {
       setWorkshops([
-        { id: 1, title: 'Build React App', module: 'Web Dev', teacher: 'Mr. Smith', submitted: true },
-        { id: 2, title: 'MongoDB Aggregation', module: 'Database Design', teacher: 'Mrs. Davis', submitted: false }
+        { id: 1, title: t('student.workshops.sampleTitle1', { defaultValue: 'Build React App' }), module: 'Web Dev', teacher: 'Mr. Smith', submitted: true },
+        { id: 2, title: t('student.workshops.sampleTitle2', { defaultValue: 'MongoDB Aggregation' }), module: 'Database Design', teacher: 'Mrs. Davis', submitted: false }
       ]);
     } finally {
       setLoading(false);
@@ -50,7 +52,7 @@ const StudentWorkshops = () => {
       setShowModal(false);
     } catch (e) {
       console.error(e);
-      alert('Failed to submit workshop to database.');
+      alert(t('student.workshops.submitFailed', { defaultValue: 'Failed to submit workshop to database.' }));
     } finally {
       setSubmitting(false);
     }
@@ -60,19 +62,19 @@ const StudentWorkshops = () => {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Assigned Workshops</h1>
-          <p className="page-subtitle">View and submit assignments from your modules.</p>
+          <h1 className="page-title">{t('student.workshops.title', { defaultValue: 'Assigned Workshops' })}</h1>
+          <p className="page-subtitle">{t('student.workshops.subtitle', { defaultValue: 'View and submit assignments from your modules.' })}</p>
         </div>
       </div>
 
       <div className="grid-cards">
         {loading ? (
-          <div className="loading-state">Loading workshops...</div>
+          <div className="loading-state">{t('student.workshops.loading', { defaultValue: 'Loading workshops...' })}</div>
         ) : workshops.length === 0 ? (
           <div className="empty-state-card card">
             <BookOpen size={48} className="empty-state-card__icon" />
-            <h3 className="empty-state-card__title">No Workshops Found</h3>
-            <p>You don&apos;t have any assigned workshops yet.</p>
+            <h3 className="empty-state-card__title">{t('student.workshops.emptyTitle', { defaultValue: 'No Workshops Found' })}</h3>
+            <p>{t('student.workshops.emptyText', { defaultValue: "You don't have any assigned workshops yet." })}</p>
           </div>
         ) : (
           workshops.map(ws => (
@@ -87,14 +89,14 @@ const StudentWorkshops = () => {
                   </div>
                   {ws.submitted && (
                     <span className="badge badge-success badge--trailing">
-                      <CheckCircle size={14} className="btn__icon-left" /> Submitted
+                      <CheckCircle size={14} className="btn__icon-left" /> {t('student.workshops.submitted', { defaultValue: 'Submitted' })}
                     </span>
                   )}
                 </div>
 
                 <div className="card__body">
                   <div className="card__emphasis">{ws.module}</div>
-                  <div className="card__teacher-line"><strong>Teacher:</strong> {ws.teacher}</div>
+                  <div className="card__teacher-line"><strong>{t('student.workshops.teacherLabel', { defaultValue: 'Teacher:' })}</strong> {ws.teacher}</div>
                 </div>
               </div>
 
@@ -106,7 +108,7 @@ const StudentWorkshops = () => {
                     rel="noopener noreferrer"
                     className="btn btn-secondary btn--block"
                   >
-                    <ExternalLink size={16} /> View External Link
+                    <ExternalLink size={16} /> {t('student.workshops.viewExternalLink', { defaultValue: 'View External Link' })}
                   </a>
                 )}
 
@@ -115,7 +117,7 @@ const StudentWorkshops = () => {
                   className="btn btn-primary btn--block"
                   onClick={() => handleOpenSubmit(ws)}
                 >
-                  <Upload size={16} /> {ws.submitted ? 'Modify Submission' : 'Submit Work'}
+                  <Upload size={16} /> {ws.submitted ? t('student.workshops.modifySubmission', { defaultValue: 'Modify Submission' }) : t('student.workshops.submitWork', { defaultValue: 'Submit Work' })}
                 </button>
               </div>
             </div>
@@ -127,32 +129,32 @@ const StudentWorkshops = () => {
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
-              <h2 className="font-bold">{selectedWorkshop?.submitted ? 'Modify Submission' : 'Submit'}: {selectedWorkshop?.title}</h2>
-              <button type="button" className="modal-close" onClick={() => setShowModal(false)} aria-label="Close">
+              <h2 className="font-bold">{selectedWorkshop?.submitted ? t('student.workshops.modifySubmission', { defaultValue: 'Modify Submission' }) : t('student.workshops.submit', { defaultValue: 'Submit' })}: {selectedWorkshop?.title}</h2>
+              <button type="button" className="modal-close" onClick={() => setShowModal(false)} aria-label={t('common.close')}>
                 <X size={20} />
               </button>
             </div>
             <p className="modal-hint">
-              Fill in at least one field to submit your workshop. Links must be valid URLs.
+              {t('student.workshops.modalHint', { defaultValue: 'Fill in at least one field to submit your workshop. Links must be valid URLs.' })}
             </p>
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label className="form-label form-label--inline-icon"><ExternalLink size={14}/> Repository URL</label>
+                <label className="form-label form-label--inline-icon"><ExternalLink size={14}/>{t('student.workshops.repositoryUrl', { defaultValue: 'Repository URL' })}</label>
                 <input type="url" className="form-input" placeholder="https://github.com/..." value={formData.repo} onChange={(e) => setFormData({...formData, repo: e.target.value})} />
               </div>
               <div className="form-group">
-                <label className="form-label form-label--inline-icon"><ExternalLink size={14}/> Live Demo URL</label>
+                <label className="form-label form-label--inline-icon"><ExternalLink size={14}/>{t('student.workshops.liveDemoUrl', { defaultValue: 'Live Demo URL' })}</label>
                 <input type="url" className="form-input" placeholder="https://..." value={formData.web_page} onChange={(e) => setFormData({...formData, web_page: e.target.value})} />
               </div>
               <div className="form-group">
-                <label className="form-label form-label--inline-icon"><ExternalLink size={14}/> PDF Report URL</label>
+                <label className="form-label form-label--inline-icon"><ExternalLink size={14}/>{t('student.workshops.pdfReportUrl', { defaultValue: 'PDF Report URL' })}</label>
                 <input type="url" className="form-input" placeholder="https://drive.google.com/..." value={formData.pdf_report} onChange={(e) => setFormData({...formData, pdf_report: e.target.value})} />
               </div>
 
               <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)} disabled={submitting}>Cancel</button>
+                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)} disabled={submitting}>{t('student.workshops.cancel', { defaultValue: 'Cancel' })}</button>
                 <button type="submit" className="btn btn-primary" disabled={submitting || (!formData.repo && !formData.web_page && !formData.pdf_report)}>
-                  {submitting ? 'Saving...' : (selectedWorkshop?.submitted ? 'Save Changes' : 'Submit')}
+                  {submitting ? t('student.workshops.saving', { defaultValue: 'Saving...' }) : (selectedWorkshop?.submitted ? t('student.workshops.saveChanges', { defaultValue: 'Save Changes' }) : t('student.workshops.submit', { defaultValue: 'Submit' }))}
                 </button>
               </div>
             </form>

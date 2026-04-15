@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Building, Plus, X, Pencil, Trash2, FileText } from 'lucide-react';
 import { internshipService } from '../../services/internshipService';
+import { useTranslation } from 'react-i18next';
+import { formatDate } from '../../utils/locale';
 
 
 const StudentInternships = () => {
+  const { t, i18n } = useTranslation();
+  const language = i18n.resolvedLanguage || 'en';
   const [formData, setFormData] = useState({ company_name: '', supervisor_name: '', start_date: '', end_date: '', report_pdf: '' });
   const [loading, setLoading] = useState(true);
   const [internships, setInternships] = useState([]);
@@ -40,8 +44,8 @@ const StudentInternships = () => {
       handleCloseModal();
       fetchInternships();
     } catch (e) {
-      console.error('Failed to save internship', e.response?.data || e.message);
-      alert('Failed to save to database. Check connection.');
+      console.error(t('student.internships.saveErrorLog', { defaultValue: 'Failed to save internship' }), e.response?.data || e.message);
+      alert(t('student.internships.saveError', { defaultValue: 'Failed to save to database. Check connection.' }));
     } finally {
       setSubmitting(false);
     }
@@ -61,13 +65,13 @@ const StudentInternships = () => {
   };
 
   const handleDeleteClick = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this internship?')) return;
+    if (!window.confirm(t('student.internships.deleteConfirm', { defaultValue: 'Are you sure you want to delete this internship?' }))) return;
     try {
       await internshipService.deleteInternship(id);
       fetchInternships();
     } catch (e) {
-      console.error('Failed to delete internship', e);
-      alert('Failed to delete. Check connection.');
+      console.error(t('student.internships.deleteErrorLog', { defaultValue: 'Failed to delete internship' }), e);
+      alert(t('student.internships.deleteError', { defaultValue: 'Failed to delete. Check connection.' }));
     }
   };
 
@@ -82,24 +86,24 @@ const StudentInternships = () => {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">My Internships</h1>
-          <p className="page-subtitle">Submit and review your internship paperwork.</p>
+          <h1 className="page-title">{t('student.internships.title', { defaultValue: 'My Internships' })}</h1>
+          <p className="page-subtitle">{t('student.internships.subtitle', { defaultValue: 'Submit and review your internship paperwork.' })}</p>
         </div>
         <button type="button" className="btn btn-primary" onClick={() => setShowModal(true)}>
-          <Plus size={18} /> New Internship
+          <Plus size={18} /> {t('student.internships.new', { defaultValue: 'New Internship' })}
         </button>
       </div>
 
       <div className="grid-cards">
         {loading ? (
-          <div className="loading-state">Loading internships...</div>
+          <div className="loading-state">{t('student.internships.loading', { defaultValue: 'Loading internships...' })}</div>
         ) : internships.length === 0 ? (
           <div className="card-action" onClick={() => setShowModal(true)}>
             <div className="card-action__icon">
               <Building size={24} />
             </div>
-            <h3 className="card-action__title">Register Internship</h3>
-            <p className="card-action__text">Submit your first internship paperwork</p>
+            <h3 className="card-action__title">{t('student.internships.register', { defaultValue: 'Register Internship' })}</h3>
+            <p className="card-action__text">{t('student.internships.registerFirst', { defaultValue: 'Submit your first internship paperwork' })}</p>
           </div>
         ) : (
           <>
@@ -116,27 +120,27 @@ const StudentInternships = () => {
                   </div>
 
                   <div className="card__body">
-                    <div className="card__emphasis">Supervisor: {intern.supervisor_name}</div>
+                    <div className="card__emphasis">{t('student.internships.supervisor', { defaultValue: 'Supervisor' })}: {intern.supervisor_name}</div>
                     <div className="date-range">
-                       <span className="badge badge-primary">{new Date(intern.start_date).toLocaleDateString()}</span>
-                       <span>to</span>
-                       <span className="badge badge-primary">{new Date(intern.end_date).toLocaleDateString()}</span>
+                       <span className="badge badge-primary">{formatDate(intern.start_date, language)}</span>
+                       <span>{t('student.internships.to', { defaultValue: 'to' })}</span>
+                       <span className="badge badge-primary">{formatDate(intern.end_date, language)}</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="card__footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 'var(--space-sm)' }}>
-                  <div className="card__stamp">Active Internship</div>
+                  <div className="card__stamp">{t('student.internships.active', { defaultValue: 'Active Internship' })}</div>
                   <div className="card__footer-actions" style={{ display: 'flex', gap: 'var(--space-xs)' }}>
                     {intern.report_pdf && (
-                      <a href={intern.report_pdf} target="_blank" rel="noopener noreferrer" className="icon-action-btn" title="View Report">
+                      <a href={intern.report_pdf} target="_blank" rel="noopener noreferrer" className="icon-action-btn" title={t('student.internships.viewReport', { defaultValue: 'View Report' })}>
                         <FileText size={18} />
                       </a>
                     )}
-                    <button type="button" className="icon-action-btn" onClick={() => handleEditClick(intern)} title="Edit">
+                    <button type="button" className="icon-action-btn" onClick={() => handleEditClick(intern)} title={t('student.internships.edit', { defaultValue: 'Edit' })}>
                       <Pencil size={18} />
                     </button>
-                    <button type="button" className="icon-action-btn icon-action-btn--danger" onClick={() => handleDeleteClick(intern.id)} title="Delete">
+                    <button type="button" className="icon-action-btn icon-action-btn--danger" onClick={() => handleDeleteClick(intern.id)} title={t('student.internships.delete', { defaultValue: 'Delete' })}>
                       <Trash2 size={18} />
                     </button>
                   </div>
@@ -146,7 +150,7 @@ const StudentInternships = () => {
 
             <div className="card-action" onClick={() => setShowModal(true)}>
               <Plus size={24} className="card-action__plus" />
-              <span className="font-medium">Add Another Internship</span>
+              <span className="font-medium">{t('student.internships.addAnother', { defaultValue: 'Add Another Internship' })}</span>
             </div>
           </>
         )}
@@ -156,38 +160,38 @@ const StudentInternships = () => {
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
-              <h2 className="font-bold">{isEditing ? 'Edit Internship' : 'Register Internship'}</h2>
-              <button type="button" className="modal-close" onClick={handleCloseModal} aria-label="Close">
+              <h2 className="font-bold">{isEditing ? t('student.internships.editInternship', { defaultValue: 'Edit Internship' }) : t('student.internships.register', { defaultValue: 'Register Internship' })}</h2>
+              <button type="button" className="modal-close" onClick={handleCloseModal} aria-label={t('common.close')}>
                 <X size={20} />
               </button>
             </div>
 
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label className="form-label" htmlFor="co-name">Company Name</label>
+                <label className="form-label" htmlFor="co-name">{t('student.internships.companyName', { defaultValue: 'Company Name' })}</label>
                 <input id="co-name" type="text" className="form-input" required value={formData.company_name} onChange={e => setFormData({...formData, company_name: e.target.value})} />
               </div>
               <div className="form-group">
-                <label className="form-label" htmlFor="supervisor">Supervisor Name</label>
+                <label className="form-label" htmlFor="supervisor">{t('student.internships.supervisorName', { defaultValue: 'Supervisor Name' })}</label>
                 <input id="supervisor" type="text" className="form-input" required value={formData.supervisor_name} onChange={e => setFormData({...formData, supervisor_name: e.target.value})} />
               </div>
               <div className="form-row-split" style={{ marginBottom: '1.5rem' }}>
                 <div className="form-group">
-                  <label className="form-label" htmlFor="start-d">Start Date</label>
+                  <label className="form-label" htmlFor="start-d">{t('student.internships.startDate', { defaultValue: 'Start Date' })}</label>
                   <input id="start-d" type="date" className="form-input" required value={formData.start_date} onChange={e => setFormData({...formData, start_date: e.target.value})} />
                 </div>
                 <div className="form-group">
-                  <label className="form-label" htmlFor="end-d">End Date</label>
+                  <label className="form-label" htmlFor="end-d">{t('student.internships.endDate', { defaultValue: 'End Date' })}</label>
                   <input id="end-d" type="date" className="form-input" required value={formData.end_date} onChange={e => setFormData({...formData, end_date: e.target.value})} />
                 </div>
               </div>
               <div className="form-group">
-                <label className="form-label" htmlFor="report-url">Report URL (Optional Link)</label>
+                <label className="form-label" htmlFor="report-url">{t('student.internships.reportUrl', { defaultValue: 'Report URL (Optional Link)' })}</label>
                 <input id="report-url" type="url" className="form-input" placeholder="https://..." value={formData.report_pdf} onChange={e => setFormData({...formData, report_pdf: e.target.value})} />
               </div>
               <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={handleCloseModal} disabled={submitting}>Cancel</button>
-                <button type="submit" className="btn btn-primary" disabled={submitting}>{submitting ? 'Saving...' : 'Save Internship'}</button>
+                <button type="button" className="btn btn-secondary" onClick={handleCloseModal} disabled={submitting}>{t('student.internships.cancel', { defaultValue: 'Cancel' })}</button>
+                <button type="submit" className="btn btn-primary" disabled={submitting}>{submitting ? t('student.internships.saving', { defaultValue: 'Saving...' }) : t('student.internships.saveInternship', { defaultValue: 'Save Internship' })}</button>
               </div>
             </form>
           </div>

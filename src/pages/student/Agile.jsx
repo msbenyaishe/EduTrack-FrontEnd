@@ -3,9 +3,11 @@ import { Users, Plus, Layout, CheckCircle, Edit2, Trash2, X } from 'lucide-react
 import { useAuth } from '../../context/AuthContext';
 import { agileService } from '../../services/agileService';
 import { studentService } from '../../services/studentService';
+import { useTranslation } from 'react-i18next';
 
 
 const StudentAgile = () => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [teams, setTeams] = useState([]);
   const { user } = useAuth();
@@ -78,11 +80,11 @@ const StudentAgile = () => {
   const handleCreate = async (e) => {
     e.preventDefault();
     if (!selectedGroupId) {
-      alert("You need to be in a group to create a team.");
+      alert(t('student.agile.needGroup', { defaultValue: 'You need to be in a group to create a team.' }));
       return;
     }
     if (userInTeam) {
-      alert("You are already a member of an Agile team in this group.");
+      alert(t('student.agile.alreadyInTeamGroup', { defaultValue: 'You are already a member of an Agile team in this group.' }));
       return;
     }
     try {
@@ -92,40 +94,40 @@ const StudentAgile = () => {
       fetchTeams(selectedGroupId);
     } catch (e) {
       console.error(e);
-      const errorMsg = e.response?.data?.message || e.response?.data?.error || 'Failed to create team.';
+      const errorMsg = e.response?.data?.message || e.response?.data?.error || t('student.agile.createFailed', { defaultValue: 'Failed to create team.' });
       alert(errorMsg);
     }
   };
 
   const handleJoin = async (id) => {
     if (userInTeam) {
-      alert("You are already a member of an Agile team in this group.");
+      alert(t('student.agile.alreadyInTeamGroup', { defaultValue: 'You are already a member of an Agile team in this group.' }));
       return;
     }
     try {
       await agileService.joinTeam(id);
-      alert('Joined Team Successfully!');
+      alert(t('student.agile.joinedSuccess', { defaultValue: 'Joined Team Successfully!' }));
       fetchTeams(selectedGroupId);
     } catch (e) {
       if (e.response && e.response.status === 409) {
-        alert('You are already a member of this team!');
+        alert(t('student.agile.alreadyInTeam', { defaultValue: 'You are already a member of this team!' }));
       } else {
         console.error(e);
-        const errorMsg = e.response?.data?.message || 'Failed to join team.';
+        const errorMsg = e.response?.data?.message || t('student.agile.joinFailed', { defaultValue: 'Failed to join team.' });
         alert(errorMsg);
       }
     }
   };
 
   const handleDelete = async (teamId) => {
-    if (!window.confirm("Are you sure you want to delete this team? This action cannot be undone.")) return;
+    if (!window.confirm(t('student.agile.deleteConfirm', { defaultValue: 'Are you sure you want to delete this team? This action cannot be undone.' }))) return;
     try {
       await agileService.deleteTeam(teamId);
-      alert("Team deleted successfully.");
+      alert(t('student.agile.deletedSuccess', { defaultValue: 'Team deleted successfully.' }));
       fetchTeams(selectedGroupId);
     } catch (e) {
       console.error(e);
-      alert(e.response?.data?.message || "Failed to delete team.");
+      alert(e.response?.data?.message || t('student.agile.deleteFailed', { defaultValue: 'Failed to delete team.' }));
     }
   };
 
@@ -147,7 +149,7 @@ const StudentAgile = () => {
       fetchTeams(selectedGroupId);
     } catch (e) {
       console.error(e);
-      alert(e.response?.data?.message || "Failed to rename team.");
+      alert(e.response?.data?.message || t('student.agile.renameFailed', { defaultValue: 'Failed to rename team.' }));
     }
   };
 
@@ -187,12 +189,12 @@ const StudentAgile = () => {
       // Update available students
       setAvailableStudents(prev => prev.filter(s => Number(s.id) !== Number(studentId)));
     } catch (e) {
-      alert(e.response?.data?.message || "Failed to add member.");
+      alert(e.response?.data?.message || t('student.agile.addMemberFailed', { defaultValue: 'Failed to add member.' }));
     }
   };
 
   const handleRemoveMember = async (studentId) => {
-    if (!window.confirm("Are you sure you want to remove this member?")) return;
+    if (!window.confirm(t('student.agile.removeMemberConfirm', { defaultValue: 'Are you sure you want to remove this member?' }))) return;
     try {
       await agileService.removeMember(selectedTeam.id, studentId);
       // Refresh
@@ -208,7 +210,7 @@ const StudentAgile = () => {
         setAvailableStudents(classmates.filter(c => !allMemberIds.has(Number(c.id))));
       }
     } catch (e) {
-      alert(e.response?.data?.message || "Failed to remove member.");
+      alert(e.response?.data?.message || t('student.agile.removeMemberFailed', { defaultValue: 'Failed to remove member.' }));
     }
   };
 
@@ -250,13 +252,13 @@ const StudentAgile = () => {
         web_page: submissionForm.web_page,
         pdf_report: submissionForm.pdf_report
       });
-      alert("Sprint submitted successfully!");
+      alert(t('student.agile.sprintSubmitted', { defaultValue: 'Sprint submitted successfully!' }));
       // Reset and refresh
       setSubmissionForm({ sprintId: null, repo: '', web_page: '', pdf_report: '' });
       const subsData = await agileService.getTeamSubmissions(selectedTeam.id);
       setTeamSubmissions(subsData);
     } catch (e) {
-      alert(e.response?.data?.message || "Failed to submit sprint.");
+      alert(e.response?.data?.message || t('student.agile.submitSprintFailed', { defaultValue: 'Failed to submit sprint.' }));
     }
   };
 
@@ -264,27 +266,27 @@ const StudentAgile = () => {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Agile Teams</h1>
-          <p className="page-subtitle">Join or create a team to submit sprints.</p>
+          <h1 className="page-title">{t('student.agile.title', { defaultValue: 'Agile Teams' })}</h1>
+          <p className="page-subtitle">{t('student.agile.subtitle', { defaultValue: 'Join or create a team to submit sprints.' })}</p>
         </div>
         {!userInTeam && (
           <button className="btn btn-primary" onClick={() => setShowCreate(true)}>
-            <Plus size={18} /> Create Team
+            <Plus size={18} /> {t('student.agile.createTeam', { defaultValue: 'Create Team' })}
           </button>
         )}
       </div>
 
       <div className="grid-cards">
         {loading ? (
-          <div className="loading-state grid-cards__full">Loading teams...</div>
+          <div className="loading-state grid-cards__full">{t('student.agile.loadingTeams', { defaultValue: 'Loading teams...' })}</div>
         ) : teams.length === 0 ? (
           <div className="empty-state-card card grid-cards__full">
             <Layout size={48} className="empty-state-card__icon" />
-            <h3 className="empty-state-card__title">No Teams Found</h3>
-            <p>There are no Agile teams in this group yet. Create your team to get started.</p>
+            <h3 className="empty-state-card__title">{t('student.agile.emptyTitle', { defaultValue: 'No Teams Found' })}</h3>
+            <p>{t('student.agile.emptyText', { defaultValue: 'There are no Agile teams in this group yet. Create your team to get started.' })}</p>
             {!userInTeam && (
               <button type="button" className="btn btn-primary" onClick={() => setShowCreate(true)}>
-                <Plus size={18} /> Create New Team
+                <Plus size={18} /> {t('student.agile.createNewTeam', { defaultValue: 'Create New Team' })}
               </button>
             )}
           </div>
@@ -303,7 +305,8 @@ const StudentAgile = () => {
                     </div>
                     {isMember ? (
                       <span className="badge badge-success badge--trailing">
-                        <CheckCircle size={14} /> My Team
+                        <CheckCircle size={14} />
+                        <span>{t('student.agile.myTeam', { defaultValue: 'My Team' })}</span>
                       </span>
                     ) : null}
                   </div>
@@ -327,7 +330,7 @@ const StudentAgile = () => {
                         type="button"
                         className="icon-action-btn"
                         onClick={() => handleRenameClick(team)}
-                        title="Rename Team"
+                        title={t('student.agile.renameTeam', { defaultValue: 'Rename Team' })}
                       >
                         <Edit2 size={18} />
                       </button>
@@ -335,7 +338,7 @@ const StudentAgile = () => {
                         type="button"
                         className="icon-action-btn"
                         onClick={() => handleViewSprints(team)}
-                        title="View Sprints"
+                        title={t('student.agile.viewSprints', { defaultValue: 'View Sprints' })}
                       >
                         <Layout size={18} />
                       </button>
@@ -343,7 +346,7 @@ const StudentAgile = () => {
                         type="button"
                         className="icon-action-btn icon-action-btn--danger"
                         onClick={() => handleDelete(team.id)}
-                        title="Delete Team"
+                        title={t('student.agile.deleteTeam', { defaultValue: 'Delete Team' })}
                       >
                         <Trash2 size={18} />
                       </button>
@@ -355,7 +358,7 @@ const StudentAgile = () => {
                       onClick={() => handleJoin(team.id)}
                       disabled={userInTeam}
                     >
-                      Join Team
+                      {t('student.agile.joinTeam', { defaultValue: 'Join Team' })}
                     </button>
                   )}
                 </div>
@@ -369,18 +372,18 @@ const StudentAgile = () => {
          <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
-              <h2 className="font-bold">Create New Team</h2>
-              <button type="button" className="modal-close" onClick={() => setShowCreate(false)} aria-label="Close"><X size={20} /></button>
+              <h2 className="font-bold">{t('student.agile.createNewTeam', { defaultValue: 'Create New Team' })}</h2>
+              <button type="button" className="modal-close" onClick={() => setShowCreate(false)} aria-label={t('common.close')}><X size={20} /></button>
             </div>
 
             <form onSubmit={handleCreate}>
               <div className="form-group">
-                <label className="form-label" htmlFor="new-team-name">Team Name</label>
+                <label className="form-label" htmlFor="new-team-name">{t('student.agile.teamName', { defaultValue: 'Team Name' })}</label>
                 <input id="new-team-name" type="text" className="form-input" required value={teamName} onChange={(e) => setTeamName(e.target.value)} />
               </div>
               <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowCreate(false)}>Cancel</button>
-                <button type="submit" className="btn btn-primary">Create</button>
+                <button type="button" className="btn btn-secondary" onClick={() => setShowCreate(false)}>{t('student.agile.cancel', { defaultValue: 'Cancel' })}</button>
+                <button type="submit" className="btn btn-primary">{t('student.agile.create', { defaultValue: 'Create' })}</button>
               </div>
             </form>
           </div>
@@ -390,13 +393,13 @@ const StudentAgile = () => {
          <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
-              <h2 className="font-bold">Rename Team</h2>
-              <button type="button" className="modal-close" onClick={() => setShowRenameModal(false)} aria-label="Close"><X size={20} /></button>
+              <h2 className="font-bold">{t('student.agile.renameTeam', { defaultValue: 'Rename Team' })}</h2>
+              <button type="button" className="modal-close" onClick={() => setShowRenameModal(false)} aria-label={t('common.close')}><X size={20} /></button>
             </div>
 
             <form onSubmit={handleRenameSubmit}>
               <div className="form-group">
-                <label className="form-label" htmlFor="rename-team">New Team Name</label>
+                <label className="form-label" htmlFor="rename-team">{t('student.agile.newTeamName', { defaultValue: 'New Team Name' })}</label>
                 <input
                   id="rename-team"
                   type="text"
@@ -408,8 +411,8 @@ const StudentAgile = () => {
                 />
               </div>
               <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowRenameModal(false)}>Cancel</button>
-                <button type="submit" className="btn btn-primary">Save Changes</button>
+                <button type="button" className="btn btn-secondary" onClick={() => setShowRenameModal(false)}>{t('student.agile.cancel', { defaultValue: 'Cancel' })}</button>
+                <button type="submit" className="btn btn-primary">{t('student.agile.saveChanges', { defaultValue: 'Save Changes' })}</button>
               </div>
             </form>
           </div>
@@ -420,10 +423,9 @@ const StudentAgile = () => {
           <div className="modal-content modal-content--narrow">
             <div className="modal-header">
               <h2 className="font-bold modal-title-row">
-                <Users size={20} />
                 {viewingTeamName} Members
               </h2>
-              <button type="button" className="modal-close" onClick={() => setShowMembersModal(false)} aria-label="Close"><X size={20} /></button>
+              <button type="button" className="modal-close" onClick={() => setShowMembersModal(false)} aria-label={t('common.close')}><X size={20} /></button>
             </div>
 
             <div className="member-list-stack scroll-region--sm">
@@ -444,7 +446,7 @@ const StudentAgile = () => {
                         type="button"
                         className="btn-icon-danger"
                         onClick={() => handleRemoveMember(member.id)}
-                        title="Remove Member"
+                        title={t('student.agile.removeMember', { defaultValue: 'Remove Member' })}
                       >
                         <Trash2 size={16} />
                       </button>
@@ -452,13 +454,13 @@ const StudentAgile = () => {
                   </div>
                 ))
               ) : (
-                <div className="text-italic-muted padded-y-muted">No members in this team yet.</div>
+                <div className="text-italic-muted padded-y-muted">{t('student.agile.noMembers', { defaultValue: 'No members in this team yet.' })}</div>
               )}
             </div>
 
             {isUserTeamMember && availableStudents.length > 0 && (
               <div className="add-member-block">
-                <label className="label-caps" htmlFor="add-member-select">Add Member</label>
+                <label className="label-caps" htmlFor="add-member-select">{t('student.agile.addMember', { defaultValue: 'Add Member' })}</label>
                 <select
                   id="add-member-select"
                   className="form-input form-input--compact-select"
@@ -468,7 +470,7 @@ const StudentAgile = () => {
                   }}
                   defaultValue=""
                 >
-                  <option value="" disabled>Select a classmate...</option>
+                  <option value="" disabled>{t('student.agile.selectClassmate', { defaultValue: 'Select a classmate...' })}</option>
                   {availableStudents.map(student => (
                     <option key={student.id} value={student.id}>{student.name}</option>
                   ))}
@@ -477,7 +479,7 @@ const StudentAgile = () => {
             )}
 
             <div className="modal-footer modal-footer--stack modal-footer--mt">
-              <button type="button" className="btn btn-secondary btn--block" onClick={() => setShowMembersModal(false)}>Close</button>
+              <button type="button" className="btn btn-secondary btn--block" onClick={() => setShowMembersModal(false)}>{t('common.close')}</button>
             </div>
           </div>
         </div>
@@ -488,24 +490,23 @@ const StudentAgile = () => {
           <div className="modal-content modal-content--wide">
             <div className="modal-header">
               <h2 className="font-bold modal-title-row modal-title-row--muted">
-                <Layout size={20} />
                 Team Sprints: {selectedTeam?.name}
               </h2>
               <button type="button" className="modal-close" onClick={() => {
                 setShowSprintsModal(false);
                 setSubmissionForm({ sprintId: null, repo: '', web_page: '', pdf_report: '' });
-              }} aria-label="Close"><X size={20} /></button>
+              }} aria-label={t('common.close')}><X size={20} /></button>
             </div>
 
             <div className="scroll-region--mt">
               {loadingSprints ? (
-                <div className="loading-state">Loading sprints...</div>
+                <div className="loading-state">{t('student.agile.loadingSprints', { defaultValue: 'Loading sprints...' })}</div>
               ) : groupSprints.length === 0 ? (
-                <div className="empty-modal-message">No sprints have been defined for this group yet.</div>
+                <div className="empty-modal-message">{t('student.agile.noSprintsDefined', { defaultValue: 'No sprints have been defined for this group yet.' })}</div>
               ) : (
                 <div className="sprint-layout">
                   <div className="sprint-list-panel">
-                    <h3 className="sprint-list-panel__title">Available Sprints</h3>
+                    <h3 className="sprint-list-panel__title">{t('student.agile.availableSprints', { defaultValue: 'Available Sprints' })}</h3>
                     {groupSprints.map(sprint => {
                       const submission = teamSubmissions.find(sub => sub.sprint_id === sprint.id);
                       const isSelected = submissionForm.sprintId === sprint.id;
@@ -536,9 +537,9 @@ const StudentAgile = () => {
                               <div className="card__muted">{sprint.module_title}</div>
                             </div>
                             {submission ? (
-                              <span className="badge badge-success badge--tiny">Submitted</span>
+                              <span className="badge badge-success badge--tiny">{t('student.agile.submitted', { defaultValue: 'Submitted' })}</span>
                             ) : (
-                              <span className="badge badge-primary badge--tiny">Pending</span>
+                              <span className="badge badge-primary badge--tiny">{t('student.agile.pending', { defaultValue: 'Pending' })}</span>
                             )}
                           </div>
                         </div>
@@ -554,10 +555,10 @@ const StudentAgile = () => {
                       {submissionForm.sprintId ? (
                       <form className="form-compact" onSubmit={handleSubmitSprint}>
                           {teamSubmissions.some(sub => sub.sprint_id === submissionForm.sprintId) && (
-                            <div className="status-banner">Editing existing submission</div>
+                            <div className="status-banner">{t('student.agile.editingExistingSubmission', { defaultValue: 'Editing existing submission' })}</div>
                           )}
                         <div className="form-group">
-                          <label className="form-label" htmlFor="sprint-repo">Repository Link</label>
+                          <label className="form-label" htmlFor="sprint-repo">{t('student.agile.repositoryLink', { defaultValue: 'Repository Link' })}</label>
                           <input
                             id="sprint-repo"
                             type="url"
@@ -568,7 +569,7 @@ const StudentAgile = () => {
                           />
                         </div>
                         <div className="form-group">
-                          <label className="form-label" htmlFor="sprint-demo">Live Demo Link</label>
+                          <label className="form-label" htmlFor="sprint-demo">{t('student.agile.liveDemoLink', { defaultValue: 'Live Demo Link' })}</label>
                           <input
                             id="sprint-demo"
                             type="url"
@@ -579,7 +580,7 @@ const StudentAgile = () => {
                           />
                         </div>
                         <div className="form-group">
-                          <label className="form-label" htmlFor="sprint-pdf">PDF Report Link / URL</label>
+                          <label className="form-label" htmlFor="sprint-pdf">{t('student.agile.pdfReportLink', { defaultValue: 'PDF Report Link / URL' })}</label>
                           <input
                             id="sprint-pdf"
                             type="text"
@@ -606,7 +607,7 @@ const StudentAgile = () => {
                     ) : (
                       <div className="sprint-placeholder">
                         <Layout size={32} className="sprint-placeholder__icon" />
-                        <p className="card__muted">Select a pending sprint from the list to start your submission.</p>
+                        <p className="card__muted">{t('student.agile.selectPendingSprint', { defaultValue: 'Select a pending sprint from the list to start your submission.' })}</p>
                       </div>
                     )}
                   </div>
@@ -615,7 +616,7 @@ const StudentAgile = () => {
             </div>
 
             <div className="modal-footer modal-footer--stack modal-footer--mt">
-              <button type="button" className="btn btn-secondary btn--block" onClick={() => setShowSprintsModal(false)}>Close Window</button>
+              <button type="button" className="btn btn-secondary btn--block" onClick={() => setShowSprintsModal(false)}>{t('student.agile.closeWindow', { defaultValue: 'Close Window' })}</button>
             </div>
           </div>
         </div>

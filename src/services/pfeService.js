@@ -28,5 +28,17 @@ export const pfeService = {
   getTeamSubmissions: async (teamId) => {
     const res = await api.get(`/pfe/submissions/team/${teamId}`);
     return res.data;
+  },
+  removeMember: async (teamId, studentId) => {
+    const res = await api.delete(`/pfe/teams/${teamId}/members/${studentId}`);
+    return res.data;
+  },
+  updateTeam: async (teamId, data) => {
+    const res = await api.put(`/pfe/teams/${teamId}`, data);
+    return res.data;
+  },
+  addMember: async (data) => {
+    const res = await api.post('/pfe/teams/members', data);
+    return res.data;
   }
 };

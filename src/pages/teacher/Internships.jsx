@@ -2,9 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Building, Users, FileText } from 'lucide-react';
 import { teacherService } from '../../services/teacherService';
 import { internshipService } from '../../services/internshipService';
+import { useTranslation } from 'react-i18next';
+import { formatDate } from '../../utils/locale';
 
 
 const TeacherInternships = () => {
+  const { t, i18n } = useTranslation();
+  const language = i18n.resolvedLanguage || 'en';
   const [groups, setGroups] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [internships, setInternships] = useState([]);
@@ -47,13 +51,13 @@ const TeacherInternships = () => {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Internships</h1>
-          <p className="page-subtitle">Track student internships and paperwork.</p>
+          <h1 className="page-title">{t('teacher.internships.title', { defaultValue: 'Internships' })}</h1>
+          <p className="page-subtitle">{t('teacher.internships.subtitle', { defaultValue: 'Track student internships and paperwork.' })}</p>
         </div>
       </div>
 
       <div className="card card--toolbar">
-        <label className="card--toolbar__label" htmlFor="intern-group">Select Group:</label>
+        <label className="card--toolbar__label" htmlFor="intern-group">{t('teacher.internships.selectGroup', { defaultValue: 'Select Group:' })}</label>
         <div className="card--toolbar__fields">
           <select
             id="intern-group"
@@ -70,12 +74,12 @@ const TeacherInternships = () => {
 
       <div className="grid-cards">
         {(loading) ? (
-          <div className="loading-state">Loading internships...</div>
+          <div className="loading-state">{t('teacher.internships.loading', { defaultValue: 'Loading internships...' })}</div>
         ) : internships.length === 0 ? (
           <div className="empty-state-card card">
             <Building size={48} className="empty-state-card__icon" />
-            <h3 className="empty-state-card__title">No Internships Found</h3>
-            <p>No students in this group have registered internships yet.</p>
+            <h3 className="empty-state-card__title">{t('teacher.internships.emptyTitle', { defaultValue: 'No Internships Found' })}</h3>
+            <p>{t('teacher.internships.emptyText', { defaultValue: 'No students in this group have registered internships yet.' })}</p>
           </div>
         ) : (
           internships.map(intern => (
@@ -95,15 +99,15 @@ const TeacherInternships = () => {
                     <Building size={16} />
                     {intern.company_name}
                   </div>
-                  <div className="card__muted card__muted--spaced"><strong>Supervisor:</strong> {intern.supervisor_name}</div>
-                  <div className="card__muted"> {new Date(intern.start_date).toLocaleDateString()} — {new Date(intern.end_date).toLocaleDateString()}</div>
+                  <div className="card__muted card__muted--spaced"><strong>{t('teacher.internships.supervisor', { defaultValue: 'Supervisor:' })}</strong> {intern.supervisor_name}</div>
+                  <div className="card__muted"> {formatDate(intern.start_date, language)} — {formatDate(intern.end_date, language)}</div>
                 </div>
               </div>
 
               <div className="card__footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 'var(--space-sm)' }}>
-                <div className="card__stamp">Registered Internship</div>
+                <div className="card__stamp">{t('teacher.internships.registered', { defaultValue: 'Registered Internship' })}</div>
                 {intern.report_pdf && (
-                  <a href={intern.report_pdf} target="_blank" rel="noopener noreferrer" className="icon-action-btn" title="View Report">
+                  <a href={intern.report_pdf} target="_blank" rel="noopener noreferrer" className="icon-action-btn" title={t('teacher.internships.viewReport', { defaultValue: 'View Report' })}>
                     <FileText size={18} />
                   </a>
                 )}

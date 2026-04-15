@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Users, BookOpen, AlertCircle, X, Calendar } from 'lucide-react';
 import { studentService } from '../../services/studentService';
+import { useTranslation } from 'react-i18next';
+import { formatDate } from '../../utils/locale';
 
 
 function formatJoinedDate(value) {
@@ -11,6 +13,8 @@ function formatJoinedDate(value) {
 }
 
 const StudentGroups = () => {
+  const { t, i18n } = useTranslation();
+  const language = i18n.resolvedLanguage || 'en';
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -49,10 +53,10 @@ const StudentGroups = () => {
       if (status === 404) {
         setJoinError(
           msg ||
-            'Invite not found, or the join API is missing. If this keeps happening, confirm VITE_API_URL ends with /api and matches your backend.'
+            t('student.groups.inviteNotFound', { defaultValue: 'Invite not found, or the join API is missing. If this keeps happening, confirm VITE_API_URL ends with /api and matches your backend.' })
         );
       } else {
-        setJoinError(msg || 'Invalid invite code or group already joined.');
+        setJoinError(msg || t('student.groups.invalidCode', { defaultValue: 'Invalid invite code or group already joined.' }));
       }
     } finally {
       setJoining(false);
@@ -63,24 +67,24 @@ const StudentGroups = () => {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">My Groups</h1>
-          <p className="page-subtitle">Groups you are currently enrolled in.</p>
+          <h1 className="page-title">{t('student.groups.title', { defaultValue: 'My Groups' })}</h1>
+          <p className="page-subtitle">{t('student.groups.subtitle', { defaultValue: 'Groups you are currently enrolled in.' })}</p>
         </div>
         <button type="button" className="btn btn-primary" onClick={() => setShowModal(true)}>
-          <Plus size={18} /> Join Group
+          <Plus size={18} /> {t('student.groups.joinGroup', { defaultValue: 'Join Group' })}
         </button>
       </div>
 
       <div className="grid-cards">
         {loading ? (
-          <div className="loading-state">Loading groups...</div>
+          <div className="loading-state">{t('student.groups.loading', { defaultValue: 'Loading groups...' })}</div>
         ) : groups.length === 0 ? (
           <div className="empty-state-card card">
             <Users size={48} className="empty-state-card__icon" />
-            <h3 className="empty-state-card__title">No Groups Yet</h3>
-            <p>You haven&apos;t joined any groups yet. Join a group using an invite code provided by your teacher.</p>
+            <h3 className="empty-state-card__title">{t('student.groups.emptyTitle', { defaultValue: 'No Groups Yet' })}</h3>
+            <p>{t('student.groups.emptyText', { defaultValue: "You haven't joined any groups yet. Join a group using an invite code provided by your teacher." })}</p>
             <button type="button" className="btn btn-primary" onClick={() => setShowModal(true)}>
-              <Plus size={18} /> Join Your First Group
+              <Plus size={18} /> {t('student.groups.joinFirst', { defaultValue: 'Join Your First Group' })}
             </button>
           </div>
         ) : (
@@ -94,7 +98,7 @@ const StudentGroups = () => {
                       <div className="media-icon media-icon--primary">
                         <Users size={20} />
                       </div>
-                      <span>{group.name || 'Unnamed Group'}</span>
+                      <span>{group.name || t('student.groups.unnamed', { defaultValue: 'Unnamed Group' })}</span>
                     </div>
                     {group.year ? (
                       <span className="badge badge-primary badge--trailing">{group.year}</span>
@@ -103,14 +107,14 @@ const StudentGroups = () => {
 
                   <div className="card__body">
                     <p className="card__teacher-line">
-                      <strong>Teacher:</strong> {group.teacher_name || 'TBD'}
+                      <strong>{t('student.groups.teacherLabel', { defaultValue: 'Teacher:' })}</strong> {group.teacher_name || t('student.groups.tbd', { defaultValue: 'TBD' })}
                     </p>
                     <div className="student-group-card__joined">
                       <Calendar size={14} className="student-group-card__joined-icon" aria-hidden />
-                      <span className="student-group-card__joined-kicker">Joined</span>
+                      <span className="student-group-card__joined-kicker">{t('student.groups.joined', { defaultValue: 'Joined' })}</span>
                       <span className="student-group-card__joined-value">
                         {joined
-                          ? joined.toLocaleDateString(undefined, {
+                          ? formatDate(joined, language, {
                               year: 'numeric',
                               month: 'short',
                               day: 'numeric',
@@ -127,7 +131,7 @@ const StudentGroups = () => {
                     className="btn btn-secondary btn--block"
                     onClick={() => navigate('/student/workshops')}
                   >
-                    <BookOpen size={16} /> View tasks
+                    <BookOpen size={16} /> {t('student.groups.viewTasks', { defaultValue: 'View tasks' })}
                   </button>
                 </div>
               </div>
@@ -140,8 +144,8 @@ const StudentGroups = () => {
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
-              <h2 className="font-bold">Join Group</h2>
-              <button type="button" className="modal-close" onClick={() => setShowModal(false)} aria-label="Close">
+              <h2 className="font-bold">{t('student.groups.joinGroup', { defaultValue: 'Join Group' })}</h2>
+              <button type="button" className="modal-close" onClick={() => setShowModal(false)} aria-label={t('common.close')}>
                 <X size={20} />
               </button>
             </div>
@@ -155,7 +159,7 @@ const StudentGroups = () => {
 
             <form onSubmit={handleJoin}>
               <div className="form-group">
-                <label className="form-label form-label--centered" htmlFor="invite-code">Enter your 8-character invite code</label>
+                <label className="form-label form-label--centered" htmlFor="invite-code">{t('student.groups.inviteLabel', { defaultValue: 'Enter your 8-character invite code' })}</label>
                 <input
                   id="invite-code"
                   type="text"
@@ -170,9 +174,9 @@ const StudentGroups = () => {
               </div>
               <div className="modal-footer modal-footer--stack">
                 <button type="submit" className="btn btn-primary btn--full-sm" disabled={joining}>
-                  {joining ? 'Joining...' : 'Join Group'}
+                  {joining ? t('student.groups.joining', { defaultValue: 'Joining...' }) : t('student.groups.joinGroup', { defaultValue: 'Join Group' })}
                 </button>
-                <button type="button" className="btn btn-secondary btn--block" onClick={() => setShowModal(false)} disabled={joining}>Cancel</button>
+                <button type="button" className="btn btn-secondary btn--block" onClick={() => setShowModal(false)} disabled={joining}>{t('student.groups.cancel', { defaultValue: 'Cancel' })}</button>
               </div>
             </form>
           </div>

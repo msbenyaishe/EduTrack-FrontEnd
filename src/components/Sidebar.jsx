@@ -10,39 +10,41 @@ import {
   FileBox, 
   GraduationCap 
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import '../styles/sidebar.css';
 
 const Sidebar = ({ role, onNavigate, id }) => {
+  const { t } = useTranslation();
   const teacherLinks = [
-    { to: '/teacher/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-    { to: '/teacher/modules', icon: BookOpen, label: 'Modules' },
-    { to: '/teacher/groups', icon: Users, label: 'Groups' },
-    { to: '/teacher/workshops', icon: Briefcase, label: 'Workshops' },
-    { to: '/teacher/agile', icon: CheckSquare, label: 'Agile Teams' },
-    { to: '/teacher/pfe', icon: GraduationCap, label: 'PFE' },
-    { to: '/teacher/internships', icon: FileBox, label: 'Internships' },
-    { to: '/teacher/submissions', icon: Upload, label: 'Submissions' },
+    { to: '/teacher/dashboard', icon: LayoutDashboard, label: t('sidebar.dashboard') },
+    { to: '/teacher/modules', icon: BookOpen, label: t('sidebar.modules') },
+    { to: '/teacher/groups', icon: Users, label: t('sidebar.groups') },
+    { to: '/teacher/workshops', icon: Briefcase, label: t('sidebar.workshops') },
+    { to: '/teacher/agile', icon: CheckSquare, label: t('sidebar.agileTeams') },
+    { to: '/teacher/pfe', icon: GraduationCap, label: t('sidebar.pfe') },
+    { to: '/teacher/internships', icon: FileBox, label: t('sidebar.internships') },
+    { to: '/teacher/submissions', icon: Upload, label: t('sidebar.submissions') },
   ];
 
   const studentLinks = [
-    { to: '/student/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-    { to: '/student/modules', icon: BookOpen, label: 'My Modules' },
-    { to: '/student/groups', icon: Users, label: 'My Groups' },
-    { to: '/student/workshops', icon: Briefcase, label: 'Workshops' },
-    { to: '/student/agile', icon: CheckSquare, label: 'Agile Teams' },
-    { to: '/student/pfe', icon: GraduationCap, label: 'PFE' },
-    { to: '/student/internships', icon: FileBox, label: 'Internship' },
-    { to: '/student/submissions', icon: Upload, label: 'My Submissions' },
+    { to: '/student/dashboard', icon: LayoutDashboard, label: t('sidebar.dashboard') },
+    { to: '/student/modules', icon: BookOpen, label: t('sidebar.myModules') },
+    { to: '/student/groups', icon: Users, label: t('sidebar.myGroups') },
+    { to: '/student/workshops', icon: Briefcase, label: t('sidebar.workshops') },
+    { to: '/student/agile', icon: CheckSquare, label: t('sidebar.agileTeams') },
+    { to: '/student/pfe', icon: GraduationCap, label: t('sidebar.pfe') },
+    { to: '/student/internships', icon: FileBox, label: t('sidebar.internship') },
+    { to: '/student/submissions', icon: Upload, label: t('sidebar.mySubmissions') },
   ];
 
   const links = role === 'teacher' ? teacherLinks : studentLinks;
 
   return (
-    <aside className="sidebar" id={id} aria-label="Main navigation">
+    <aside className="sidebar" id={id} aria-label={t('nav.mainNavigation')}>
       <div className="sidebar-header">
         <div className="logo">
           <BookOpen className="logo-icon" size={28} />
-          <span>EduTrack</span>
+          <span>{t('common.appName')}</span>
         </div>
       </div>
       
@@ -64,7 +66,7 @@ const Sidebar = ({ role, onNavigate, id }) => {
       </nav>
       
       <div className="sidebar-footer">
-        <span className="version">EduTrack v1.0</span>
+        <span className="version">{t('common.appName')} v1.0</span>
       </div>
     </aside>
   );

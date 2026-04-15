@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { authService } from '../../services/authService';
 import { BookOpen, AlertCircle, Loader } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -11,6 +12,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,7 +26,7 @@ const Login = () => {
       // But we can manually push them:
       navigate(`/${data.role}/dashboard`);
     } catch (err) {
-      setError(err.response?.data?.message || 'Invalid email or password');
+      setError(err.response?.data?.message || t('auth.invalidCredentials'));
     } finally {
       setIsLoading(false);
     }
@@ -36,8 +38,8 @@ const Login = () => {
         <div className="auth-logo">
           <BookOpen size={24} />
         </div>
-        <h1 className="auth-title">Welcome Back</h1>
-        <p className="auth-subtitle">Sign in to your EduTrack account</p>
+        <h1 className="auth-title">{t('auth.welcomeBack')}</h1>
+        <p className="auth-subtitle">{t('auth.signInSubtitle')}</p>
       </div>
 
       {error && (
@@ -49,28 +51,28 @@ const Login = () => {
 
       <form onSubmit={handleSubmit} className="auth-form">
         <div className="form-group">
-          <label className="form-label" htmlFor="email">Email Address</label>
+          <label className="form-label" htmlFor="email">{t('auth.email')}</label>
           <input
             id="email"
             type="email"
             className="form-input"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter your email"
+            placeholder={t('auth.placeholderEmail')}
             required
             disabled={isLoading}
           />
         </div>
 
         <div className="form-group">
-          <label className="form-label" htmlFor="password">Password</label>
+          <label className="form-label" htmlFor="password">{t('auth.password')}</label>
           <input
             id="password"
             type="password"
             className="form-input"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter your password"
+            placeholder={t('auth.placeholderPassword')}
             required
             disabled={isLoading}
           />
@@ -84,18 +86,18 @@ const Login = () => {
           {isLoading ? (
             <>
               <Loader size={18} className="spin" />
-              Signing in...
+              {t('auth.signingIn')}
             </>
           ) : (
-            'Sign In'
+            t('auth.signIn')
           )}
         </button>
       </form>
 
       <div className="auth-footer">
         <p>
-          Don't have an account?{' '}
-          <Link to="/register" className="auth-link">Create one here</Link>
+          {t('auth.noAccount')}{' '}
+          <Link to="/register" className="auth-link">{t('auth.createOneHere')}</Link>
         </p>
       </div>
     </div>

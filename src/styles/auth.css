@@ -95,7 +95,7 @@
   .public-shell__main--auth {
     align-items: stretch;
     justify-content: flex-start;
-    padding-top: max(var(--space-2xl), env(safe-area-inset-top));
+    padding-top: max(calc(var(--space-2xl) + var(--space-sm)), env(safe-area-inset-top));
   }
 
   .auth-card {

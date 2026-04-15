@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { GraduationCap, Trash2, Users, X } from 'lucide-react';
 import { teacherService } from '../../services/teacherService';
 import { pfeService } from '../../services/pfeService';
+import { useTranslation } from 'react-i18next';
 
 
 const TeacherPFE = () => {
+  const { t } = useTranslation();
   const [groups, setGroups] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState(null);
 
@@ -47,18 +49,18 @@ const TeacherPFE = () => {
   };
 
   const handleDelete = async (id) => {
-    const confirmed = window.confirm('Are you sure you want to delete this PFE team?');
+    const confirmed = window.confirm(t('teacher.pfe.deleteConfirm', { defaultValue: 'Are you sure you want to delete this PFE team?' }));
     if (!confirmed) {
-      alert('Deletion cancelled.');
+      alert(t('teacher.pfe.deletionCancelled', { defaultValue: 'Deletion cancelled.' }));
       return;
     }
     try {
       await pfeService.deleteTeam(id);
       fetchPfeTeams(selectedGroup);
-      alert('PFE team deleted successfully.');
+      alert(t('teacher.pfe.deletedSuccess', { defaultValue: 'PFE team deleted successfully.' }));
     } catch (e) {
       console.error(e);
-      alert(e.response?.data?.message || 'Failed to delete PFE team from database.');
+      alert(e.response?.data?.message || t('teacher.pfe.deleteFailed', { defaultValue: 'Failed to delete PFE team from database.' }));
     }
   };
 
@@ -71,13 +73,13 @@ const TeacherPFE = () => {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">PFE Teams</h1>
-          <p className="page-subtitle">End-of-study projects (Projet de Fin d&apos;Études)</p>
+          <h1 className="page-title">{t('teacher.pfe.title', { defaultValue: 'PFE Teams' })}</h1>
+          <p className="page-subtitle">{t('teacher.pfe.subtitle', { defaultValue: "End-of-study projects (Projet de Fin d'Études)" })}</p>
         </div>
       </div>
 
       <div className="card card--toolbar">
-        <label className="card--toolbar__label" htmlFor="pfe-group">Select Group:</label>
+        <label className="card--toolbar__label" htmlFor="pfe-group">{t('teacher.pfe.selectGroup', { defaultValue: 'Select Group:' })}</label>
         <div className="card--toolbar__fields">
           <select
             id="pfe-group"
@@ -94,12 +96,12 @@ const TeacherPFE = () => {
 
       <div className="grid-cards">
         {(loading) ? (
-          <div className="loading-state">Loading PFE teams...</div>
+          <div className="loading-state">{t('teacher.pfe.loading', { defaultValue: 'Loading PFE teams...' })}</div>
         ) : pfeTeams.length === 0 ? (
           <div className="empty-state-card card">
             <GraduationCap size={48} className="empty-state-card__icon" />
-            <h3 className="empty-state-card__title">No PFE Teams Found</h3>
-            <p>No students in this group have created PFE teams yet.</p>
+            <h3 className="empty-state-card__title">{t('teacher.pfe.emptyTitle', { defaultValue: 'No PFE Teams Found' })}</h3>
+            <p>{t('teacher.pfe.emptyText', { defaultValue: 'No students in this group have created PFE teams yet.' })}</p>
           </div>
         ) : (
           pfeTeams.map(team => (
@@ -121,15 +123,15 @@ const TeacherPFE = () => {
                     onClick={() => handleViewMembers(team)}
                   >
                     <Users size={14} />
-                    {Array.isArray(team.members) ? team.members.length : (team.members || 0)} Members
+                    {Array.isArray(team.members) ? team.members.length : (team.members || 0)} {t('teacher.pfe.members', { defaultValue: 'Members' })}
                   </button>
-                  <div className="card__muted">Final graduation project team</div>
+                  <div className="card__muted">{t('teacher.pfe.teamHint', { defaultValue: 'Final graduation project team' })}</div>
                 </div>
               </div>
 
               <div className="card__footer">
-                <div className="card__stamp">Registered PFE Team</div>
-                <button type="button" className="icon-action-btn icon-action-btn--danger" onClick={() => handleDelete(team.id)} title="Delete Team">
+                <div className="card__stamp">{t('teacher.pfe.registeredTeam', { defaultValue: 'Registered PFE Team' })}</div>
+                <button type="button" className="icon-action-btn icon-action-btn--danger" onClick={() => handleDelete(team.id)} title={t('teacher.pfe.deleteTeam', { defaultValue: 'Delete Team' })}>
                   <Trash2 size={18} />
                 </button>
               </div>
@@ -143,14 +145,13 @@ const TeacherPFE = () => {
           <div className="modal-content modal-content--narrow">
             <div className="modal-header">
               <h2 className="font-bold modal-title-row">
-                <Users size={20} />
-                {membersModalTeam.name} — Members
+                {membersModalTeam.name} {t('teacher.pfe.members', { defaultValue: 'Members' })}
               </h2>
               <button
                 type="button"
                 className="modal-close"
                 onClick={() => setShowMembersModal(false)}
-                aria-label="Close"
+                aria-label={t('common.close')}
               >
                 <X size={24} />
               </button>
@@ -174,8 +175,8 @@ const TeacherPFE = () => {
               ) : (
                 <div className="text-italic-muted padded-y-muted">
                   {Array.isArray(membersModalTeam.members) && membersModalTeam.members.length === 0
-                    ? 'No students in this team yet.'
-                    : 'Member names are not available for this team. The list will appear once the server returns a members array on each team.'}
+                    ? t('teacher.pfe.noStudents', { defaultValue: 'No students in this team yet.' })
+                    : t('teacher.pfe.memberNamesUnavailable', { defaultValue: 'Member names are not available for this team. The list will appear once the server returns a members array on each team.' })}
                 </div>
               )}
             </div>
@@ -186,7 +187,7 @@ const TeacherPFE = () => {
                 className="btn btn-secondary btn--block"
                 onClick={() => setShowMembersModal(false)}
               >
-                Close
+                {t('common.close')}
               </button>
             </div>
           </div>

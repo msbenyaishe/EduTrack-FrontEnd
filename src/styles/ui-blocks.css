@@ -146,17 +146,17 @@
 .card__title-group {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1.25rem;
   font-weight: 700;
-  font-size: 1.25rem;
+  font-size: 1.375rem;
   line-height: 1.3;
   color: var(--secondary-color);
   min-width: 0;
 }
 
 .media-icon {
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 3rem;
+  height: 3rem;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -392,7 +392,7 @@
 }
 
 .modal-content--narrow {
-  max-width: 400px;
+  max-width: 500px;
 }
 
 .modal-content--assign {
@@ -1369,23 +1369,35 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-sm);
-  padding: var(--space-sm);
-  border-radius: var(--radius-md);
+  gap: var(--space-md);
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-lg);
   background: var(--bg-main);
   border: 1px solid var(--border-color);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.member-line:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
 }
 
 .member-line__left {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1.125rem;
 }
 
 .member-line__name {
   font-weight: 600;
+  font-size: 1.0625rem;
+  line-height: 1.4;
+  color: var(--secondary-color);
+}
+
+.member-line .card__muted {
   font-size: 0.9375rem;
-  line-height: 1.35;
+  margin-top: 0.125rem;
 }
 
 .padded-y-muted {
@@ -1401,9 +1413,10 @@
 }
 
 .member-avatar--sm {
-  width: 2rem;
-  height: 2rem;
-  font-size: 0.75rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  font-size: 1.0625rem;
+  font-weight: 700;
 }
 
 .add-member-block {

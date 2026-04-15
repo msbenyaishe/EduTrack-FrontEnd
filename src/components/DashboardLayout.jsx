@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
+import { useTranslation } from 'react-i18next';
 import '../styles/dashboard.css';
 
 /**
  * Shared shell for teacher/student dashboards: mobile sidebar drawer + backdrop.
  */
 const DashboardLayout = ({ role, children }) => {
+  const { t } = useTranslation();
   const [navOpen, setNavOpen] = useState(false);
 
   useEffect(() => {
@@ -43,7 +45,7 @@ const DashboardLayout = ({ role, children }) => {
       <button
         type="button"
         className="sidebar-backdrop"
-        aria-label="Close navigation menu"
+        aria-label={t('nav.closeNavigationMenu', { defaultValue: 'Close navigation menu' })}
         tabIndex={-1}
         onClick={closeNav}
       />

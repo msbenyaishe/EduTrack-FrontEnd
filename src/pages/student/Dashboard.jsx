@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Users, BookOpen, Upload, Clock } from 'lucide-react';
 import { studentService } from '../../services/studentService';
+import { useTranslation } from 'react-i18next';
+import { formatDate } from '../../utils/locale';
 
 const StudentDashboard = () => {
+  const { t, i18n } = useTranslation();
+  const language = i18n.resolvedLanguage || 'en';
   const [stats, setStats] = useState({ groupsCount: 0, modulesCount: 0, recentSubmissions: [] });
   const [loading, setLoading] = useState(true);
 
@@ -15,7 +19,7 @@ const StudentDashboard = () => {
         const flattened = [
           ...(submissions.workshopSubmissions || []).map(s => ({ ...s, title: s.workshop_title, status: 'Workshop', date: s.submitted_at, reaction: s.teacher_reaction || s.reaction || null })),
           ...(submissions.sprintSubmissions || []).map(s => ({ ...s, title: s.sprint_title, status: 'Sprint', date: s.submitted_at, reaction: s.teacher_reaction || s.reaction || null })),
-          ...(submissions.pfeSubmissions || []).map(s => ({ ...s, title: s.project_title || 'PFE Final', status: 'PFE', date: s.submitted_at, reaction: s.teacher_reaction || s.reaction || null }))
+          ...(submissions.pfeSubmissions || []).map(s => ({ ...s, title: s.project_title || t('student.dashboard.pfeFinal', { defaultValue: 'PFE Final' }), status: 'PFE', date: s.submitted_at, reaction: s.teacher_reaction || s.reaction || null }))
         ].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
 
         setStats({
@@ -36,8 +40,8 @@ const StudentDashboard = () => {
     <div className="dashboard-page">
       <div className="page-header">
         <div>
-          <h1 className="page-title">My Dashboard</h1>
-          <p className="page-subtitle">Track your classes, modules, and submissions.</p>
+          <h1 className="page-title">{t('student.dashboard.title', { defaultValue: 'My Dashboard' })}</h1>
+          <p className="page-subtitle">{t('student.dashboard.subtitle', { defaultValue: 'Track your classes, modules, and submissions.' })}</p>
         </div>
       </div>
 
@@ -48,7 +52,7 @@ const StudentDashboard = () => {
           </div>
           <div className="stat-info">
             <span className="stat-value">{loading ? '-' : stats.groupsCount}</span>
-            <span className="stat-label">My Groups</span>
+            <span className="stat-label">{t('student.dashboard.myGroups', { defaultValue: 'My Groups' })}</span>
           </div>
         </div>
 
@@ -58,7 +62,7 @@ const StudentDashboard = () => {
           </div>
           <div className="stat-info">
             <span className="stat-value">{loading ? '-' : stats.modulesCount}</span>
-            <span className="stat-label">My Modules</span>
+            <span className="stat-label">{t('student.dashboard.myModules', { defaultValue: 'My Modules' })}</span>
           </div>
         </div>
 
@@ -68,12 +72,12 @@ const StudentDashboard = () => {
           </div>
           <div className="stat-info">
             <span className="stat-value">{loading ? '-' : stats.totalSubmissions || 0}</span>
-            <span className="stat-label">Total Submissions</span>
+            <span className="stat-label">{t('student.dashboard.totalSubmissions', { defaultValue: 'Total Submissions' })}</span>
           </div>
         </div>
       </div>
 
-      <h3 className="section-heading">Recent Activity</h3>
+      <h3 className="section-heading">{t('student.dashboard.recentActivity', { defaultValue: 'Recent Activity' })}</h3>
       <div className="card activity-card">
         {stats.recentSubmissions.length > 0 ? (
           <ul className="activity-list">
@@ -91,17 +95,17 @@ const StudentDashboard = () => {
                   <div className="activity-item__body">
                     <div className="activity-item__top">
                       <p className="activity-text__title">
-                        {sub.title || 'Assignment'} — {sub.status}
+                        {sub.title || t('student.dashboard.assignment', { defaultValue: 'Assignment' })} — {sub.status}
                       </p>
                       <span className="activity-inline-date">
                         <Clock size={14} aria-hidden />
-                        {sub.date ? new Date(sub.date).toLocaleDateString() : 'Just now'}
+                        {sub.date ? formatDate(sub.date, language) : t('student.dashboard.justNow', { defaultValue: 'Just now' })}
                       </span>
                     </div>
                     <p className="activity-text__sub">
                       {reaction
-                        ? `Teacher mark: ${reaction}`
-                        : 'Successfully submitted'}
+                        ? t('student.dashboard.teacherMark', { defaultValue: 'Teacher mark: {{reaction}}', reaction })
+                        : t('student.dashboard.submitted', { defaultValue: 'Successfully submitted' })}
                     </p>
                   </div>
                 </div>
@@ -111,7 +115,7 @@ const StudentDashboard = () => {
           </ul>
         ) : (
           <div className="activity-empty">
-            No recent activity.
+            {t('student.dashboard.noRecentActivity', { defaultValue: 'No recent activity.' })}
           </div>
         )}
       </div>

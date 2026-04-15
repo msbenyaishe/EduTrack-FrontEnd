@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { BookOpen, Menu, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const PublicNavbar = () => {
   const [open, setOpen] = useState(false);
-  const { pathname } = useLocation();
-
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!open) return;
@@ -45,15 +43,16 @@ const PublicNavbar = () => {
           <span className="public-nav__logo-mark" aria-hidden>
             <BookOpen size={22} strokeWidth={2.25} />
           </span>
-          <span className="public-nav__logo-text">EduTrack</span>
+          <span className="public-nav__logo-text">{t('common.appName')}</span>
         </Link>
 
-        <nav className="public-nav__desktop" aria-label="Primary">
+        <nav className="public-nav__desktop" aria-label={t('nav.primary')}>
+          <LanguageSwitcher compact />
           <NavLink to="/login" className={navLink(false)} end>
-            Sign In
+            {t('nav.signIn')}
           </NavLink>
           <NavLink to="/register" className={navLink(true)} end>
-            Sign Up
+            {t('nav.signUp')}
           </NavLink>
         </nav>
 
@@ -63,7 +62,7 @@ const PublicNavbar = () => {
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
           aria-controls="public-nav-mobile"
-          aria-label={open ? 'Close menu' : 'Open menu'}
+          aria-label={open ? t('nav.closeMenu') : t('nav.openMenu')}
         >
           {open ? <X size={22} strokeWidth={2} /> : <Menu size={22} strokeWidth={2} />}
         </button>
@@ -72,7 +71,7 @@ const PublicNavbar = () => {
       <button
         type="button"
         className={`public-nav__backdrop${open ? ' is-visible' : ''}`}
-        aria-label="Close menu"
+        aria-label={t('nav.closeMenu')}
         tabIndex={-1}
         onClick={close}
       />
@@ -82,11 +81,12 @@ const PublicNavbar = () => {
         className={`public-nav__mobile${open ? ' is-open' : ''}`}
         aria-hidden={!open}
       >
+        <LanguageSwitcher />
         <NavLink to="/login" className={navLink(false)} end onClick={close}>
-          Sign In
+          {t('nav.signIn')}
         </NavLink>
         <NavLink to="/register" className={navLink(true)} end onClick={close}>
-          Sign Up
+          {t('nav.signUp')}
         </NavLink>
       </div>
     </header>

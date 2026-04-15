@@ -56,6 +56,10 @@
   gap: var(--space-md);
 }
 
+.navbar-right .lang-switcher {
+  flex-shrink: 0;
+}
+
 .navbar .icon-btn {
   position: relative;
   width: 44px;
@@ -129,6 +133,18 @@
 .logout-btn {
   margin-left: var(--space-2xs);
   background-color: transparent;
+}
+
+html[dir='rtl'] .user-profile {
+  padding-left: 0;
+  border-left: none;
+  padding-right: var(--space-md);
+  border-right: 2px solid var(--border-color);
+}
+
+html[dir='rtl'] .logout-btn {
+  margin-left: 0;
+  margin-right: var(--space-2xs);
 }
 
 .logout-btn:hover {
