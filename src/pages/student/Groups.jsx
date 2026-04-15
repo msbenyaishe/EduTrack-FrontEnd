@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Users, BookOpen, AlertCircle, X, Calendar } from 'lucide-react';
 import { studentService } from '../../services/studentService';
-import '../../styles/tables.css';
+
 
 function formatJoinedDate(value) {
   if (value == null || value === '') return null;

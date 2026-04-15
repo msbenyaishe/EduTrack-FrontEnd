@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Building, Plus, X, Pencil, Trash2 } from 'lucide-react';
+import { Building, Plus, X, Pencil, Trash2, FileText } from 'lucide-react';
 import { internshipService } from '../../services/internshipService';
-import '../../styles/tables.css';
+
 
 const StudentInternships = () => {
-  const [formData, setFormData] = useState({ company_name: '', supervisor_name: '', start_date: '', end_date: '' });
+  const [formData, setFormData] = useState({ company_name: '', supervisor_name: '', start_date: '', end_date: '', report_pdf: '' });
   const [loading, setLoading] = useState(true);
   const [internships, setInternships] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -52,7 +52,8 @@ const StudentInternships = () => {
       company_name: intern.company_name,
       supervisor_name: intern.supervisor_name,
       start_date: new Date(intern.start_date).toISOString().split('T')[0],
-      end_date: new Date(intern.end_date).toISOString().split('T')[0]
+      end_date: new Date(intern.end_date).toISOString().split('T')[0],
+      report_pdf: intern.report_pdf || ''
     });
     setCurrentInternshipId(intern.id);
     setIsEditing(true);
@@ -74,7 +75,7 @@ const StudentInternships = () => {
     setShowModal(false);
     setIsEditing(false);
     setCurrentInternshipId(null);
-    setFormData({ company_name: '', supervisor_name: '', start_date: '', end_date: '' });
+    setFormData({ company_name: '', supervisor_name: '', start_date: '', end_date: '', report_pdf: '' });
   };
 
   return (
@@ -124,14 +125,19 @@ const StudentInternships = () => {
                   </div>
                 </div>
 
-                <div className="card__footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div className="card__footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 'var(--space-sm)' }}>
                   <div className="card__stamp">Active Internship</div>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <button type="button" className="btn btn-secondary" style={{ padding: '4px 8px' }} onClick={() => handleEditClick(intern)} title="Edit">
-                      <Pencil size={16} />
+                  <div className="card__footer-actions" style={{ display: 'flex', gap: 'var(--space-xs)' }}>
+                    {intern.report_pdf && (
+                      <a href={intern.report_pdf} target="_blank" rel="noopener noreferrer" className="icon-action-btn" title="View Report">
+                        <FileText size={18} />
+                      </a>
+                    )}
+                    <button type="button" className="icon-action-btn" onClick={() => handleEditClick(intern)} title="Edit">
+                      <Pencil size={18} />
                     </button>
-                    <button type="button" className="btn btn-danger" style={{ padding: '4px 8px', backgroundColor: '#fee2e2', color: '#dc2626', borderColor: '#fca5a5' }} onClick={() => handleDeleteClick(intern.id)} title="Delete">
-                      <Trash2 size={16} />
+                    <button type="button" className="icon-action-btn icon-action-btn--danger" onClick={() => handleDeleteClick(intern.id)} title="Delete">
+                      <Trash2 size={18} />
                     </button>
                   </div>
                 </div>
@@ -165,7 +171,7 @@ const StudentInternships = () => {
                 <label className="form-label" htmlFor="supervisor">Supervisor Name</label>
                 <input id="supervisor" type="text" className="form-input" required value={formData.supervisor_name} onChange={e => setFormData({...formData, supervisor_name: e.target.value})} />
               </div>
-              <div className="form-row-split">
+              <div className="form-row-split" style={{ marginBottom: '1.5rem' }}>
                 <div className="form-group">
                   <label className="form-label" htmlFor="start-d">Start Date</label>
                   <input id="start-d" type="date" className="form-input" required value={formData.start_date} onChange={e => setFormData({...formData, start_date: e.target.value})} />
@@ -174,6 +180,10 @@ const StudentInternships = () => {
                   <label className="form-label" htmlFor="end-d">End Date</label>
                   <input id="end-d" type="date" className="form-input" required value={formData.end_date} onChange={e => setFormData({...formData, end_date: e.target.value})} />
                 </div>
+              </div>
+              <div className="form-group">
+                <label className="form-label" htmlFor="report-url">Report URL (Optional Link)</label>
+                <input id="report-url" type="url" className="form-input" placeholder="https://..." value={formData.report_pdf} onChange={e => setFormData({...formData, report_pdf: e.target.value})} />
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" onClick={handleCloseModal} disabled={submitting}>Cancel</button>

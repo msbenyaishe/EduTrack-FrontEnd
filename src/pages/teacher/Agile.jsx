@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Users, Layout, Trash2, Plus, ExternalLink, FileText, Link, X } from 'lucide-react';
 import { teacherService } from '../../services/teacherService';
 import { agileService } from '../../services/agileService';
-import '../../styles/tables.css';
+
 
 const TeacherAgile = () => {
   const [groups, setGroups] = useState([]);

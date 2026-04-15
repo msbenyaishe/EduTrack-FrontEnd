@@ -3,7 +3,7 @@ import { GraduationCap, ExternalLink, Plus, Upload, X, Video, FileText, Trash2 }
 import { useAuth } from '../../context/AuthContext';
 import { studentService } from '../../services/studentService';
 import { pfeService } from '../../services/pfeService';
-import '../../styles/tables.css';
+
 
 const StudentPFE = () => {
   const [loading, setLoading] = useState(true);

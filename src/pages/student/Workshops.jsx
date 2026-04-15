@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BookOpen, Upload, ExternalLink, CheckCircle, X } from 'lucide-react';
 import { workshopService } from '../../services/workshopService';
-import '../../styles/tables.css';
+
 
 const StudentWorkshops = () => {
   const [workshops, setWorkshops] = useState([]);

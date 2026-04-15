@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Folder, CheckCircle, Clock, Link, ExternalLink, FileText, Video, Trash2 } from 'lucide-react';
 import { teacherService } from '../../services/teacherService';
-import '../../styles/tables.css';
+
 
 const REACTION_OPTIONS = ['👍', '👏', '🔥', '✅', '🎉'];
 

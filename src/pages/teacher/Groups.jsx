@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Check, Copy, Share2, Users, X, Edit2, Trash2 } from 'lucide-react';
 import { teacherService } from '../../services/teacherService';
-import '../../styles/tables.css';
+
 
 const Groups = () => {
   const [groups, setGroups] = useState([]);

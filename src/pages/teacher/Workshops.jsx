@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, BookOpen, Upload, ExternalLink, Trash2, X, Edit2 } from 'lucide-react';
 import { teacherService } from '../../services/teacherService';
 import { workshopService } from '../../services/workshopService';
-import '../../styles/tables.css';
+
 
 const TeacherWorkshops = () => {
   const [groups, setGroups] = useState([]);

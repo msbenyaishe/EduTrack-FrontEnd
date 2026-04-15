@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Building, Users } from 'lucide-react';
+import { Building, Users, FileText } from 'lucide-react';
 import { teacherService } from '../../services/teacherService';
 import { internshipService } from '../../services/internshipService';
-import '../../styles/tables.css';
+
 
 const TeacherInternships = () => {
   const [groups, setGroups] = useState([]);
@@ -100,8 +100,13 @@ const TeacherInternships = () => {
                 </div>
               </div>
 
-              <div className="card__footer">
+              <div className="card__footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 'var(--space-sm)' }}>
                 <div className="card__stamp">Registered Internship</div>
+                {intern.report_pdf && (
+                  <a href={intern.report_pdf} target="_blank" rel="noopener noreferrer" className="icon-action-btn" title="View Report">
+                    <FileText size={18} />
+                  </a>
+                )}
               </div>
             </div>
           ))

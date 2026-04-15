@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Users, Mail, Clock, Trash2, Plus, BookOpen, Share2, Calendar, X } from 'lucide-react';
 import { teacherService } from '../../services/teacherService';
-import '../../styles/tables.css';
+
 
 const GroupDetails = () => {
   const { id } = useParams();

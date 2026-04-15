@@ -3,7 +3,7 @@ import { Users, Plus, Layout, CheckCircle, Edit2, Trash2, X } from 'lucide-react
 import { useAuth } from '../../context/AuthContext';
 import { agileService } from '../../services/agileService';
 import { studentService } from '../../services/studentService';
-import '../../styles/tables.css';
+
 
 const StudentAgile = () => {
   const [loading, setLoading] = useState(true);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, Clock, ExternalLink, Link, FileText, Video, Trash2 } from 'lucide-react';
 import { studentService } from '../../services/studentService';
-import '../../styles/tables.css';
+
 
 const resolveModuleName = (submission) =>
   submission?.module_title ||

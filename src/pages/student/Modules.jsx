@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BookOpen } from 'lucide-react';
 import { studentService } from '../../services/studentService';
-import '../../styles/tables.css';
+
 
 const StudentModules = () => {
   const [modules, setModules] = useState([]);

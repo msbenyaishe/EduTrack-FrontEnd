@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { GraduationCap, Trash2, Users, X } from 'lucide-react';
 import { teacherService } from '../../services/teacherService';
 import { pfeService } from '../../services/pfeService';
-import '../../styles/tables.css';
+
 
 const TeacherPFE = () => {
   const [groups, setGroups] = useState([]);
