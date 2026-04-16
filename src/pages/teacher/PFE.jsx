@@ -49,18 +49,17 @@ const TeacherPFE = () => {
   };
 
   const handleDelete = async (id) => {
-    const confirmed = window.confirm(t('teacher.pfe.deleteConfirm', { defaultValue: 'Are you sure you want to delete this PFE team?' }));
-    if (!confirmed) {
-      alert(t('teacher.pfe.deletionCancelled', { defaultValue: 'Deletion cancelled.' }));
-      return;
-    }
+    const confirmed = window.confirm(t('teacher.pfe.deleteConfirm', { defaultValue: 'Are you sure you want to permanently delete this PFE team? This action cannot be undone.' }));
+    if (!confirmed) return;
+    
     try {
-      await pfeService.deleteTeam(id);
+      const response = await pfeService.deleteTeam(id);
       fetchPfeTeams(selectedGroup);
-      alert(t('teacher.pfe.deletedSuccess', { defaultValue: 'PFE team deleted successfully.' }));
+      alert(response.message || t('teacher.pfe.deletedSuccess', { defaultValue: 'PFE team deleted successfully.' }));
     } catch (e) {
       console.error(e);
-      alert(e.response?.data?.message || t('teacher.pfe.deleteFailed', { defaultValue: 'Failed to delete PFE team from database.' }));
+      const errorMsg = e.response?.data?.message || t('teacher.pfe.deleteFailed', { defaultValue: 'Failed to delete PFE team from database.' });
+      alert(errorMsg);
     }
   };
 

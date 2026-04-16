@@ -20,10 +20,10 @@ const StudentPFE = () => {
   const [showCreateTeam, setShowCreateTeam] = useState(false);
   const [newTeamName, setNewTeamName] = useState('');
   const [existingSubmission, setExistingSubmission] = useState(null);
-
-  const [selectedGroupId, setSelectedGroupId] = useState(null);
   const [showMembersModal, setShowMembersModal] = useState(false);
   const [membersModalTeam, setMembersModalTeam] = useState(null);
+
+  const [selectedGroupId, setSelectedGroupId] = useState(null);
 
   // Renaming State
   const [showRenameModal, setShowRenameModal] = useState(false);
@@ -87,15 +87,15 @@ const StudentPFE = () => {
       setShowCreateTeam(false);
       setNewTeamName('');
       fetchTeams(selectedGroupId);
-    } catch {
-      alert(t('student.pfe.createTeamFailed', { defaultValue: 'Failed to create PFE team.' }));
+    } catch (e) {
+      alert(e.response?.data?.message || t('student.pfe.createTeamFailed', { defaultValue: 'Failed to create PFE team.' }));
     }
   };
 
   const handleJoin = async (id) => {
     try {
-      await pfeService.joinTeam(id);
-      alert(t('student.pfe.joinSuccess', { defaultValue: 'Joined PFE Team Successfully!' }));
+      const response = await pfeService.joinTeam(id);
+      alert(response.message || t('student.pfe.joinSuccess', { defaultValue: 'Joined PFE Team Successfully!' }));
       fetchTeams(selectedGroupId);
     } catch (e) {
       if (e.response && e.response.status === 409) {
@@ -129,8 +129,8 @@ const StudentPFE = () => {
   const handleDeleteTeam = async (teamId) => {
     if (!window.confirm(t('student.pfe.deleteConfirm', { defaultValue: 'Are you sure you want to delete this PFE team? This action cannot be undone.' }))) return;
     try {
-      await pfeService.deleteTeam(teamId);
-      alert(t('student.pfe.deleted', { defaultValue: 'PFE team deleted successfully.' }));
+      const response = await pfeService.deleteTeam(teamId);
+      alert(response.message || t('student.pfe.deleted', { defaultValue: 'PFE team deleted successfully.' }));
       fetchTeams(selectedGroupId);
     } catch (e) {
       console.error(e);
@@ -178,11 +178,11 @@ const StudentPFE = () => {
     }
     setSubmitting(true);
     try {
-      await pfeService.submitPfe(formData);
+      const response = await pfeService.submitPfe(formData);
+      alert(response.message || t('student.pfe.submitted', { defaultValue: 'PFE submitted successfully!' }));
       setShowModal(false);
       setExistingSubmission(null);
       setFormData(prev => ({ ...prev, project_title: '', description: '', project_repo: '', project_demo: '', explanation_video: '', report_pdf: '' }));
-      alert(t('student.pfe.submitted', { defaultValue: 'PFE submitted to database!' }));
     } catch (e) {
       console.error(e);
       alert(e.response?.data?.message || t('student.pfe.submitFailed', { defaultValue: 'Failed to submit to DB.' }));
@@ -201,10 +201,10 @@ const StudentPFE = () => {
     e.preventDefault();
     if (!newRenameName.trim()) return;
     try {
-      await pfeService.updateTeam(teamToRename.id, { name: newRenameName });
+      const response = await pfeService.updateTeam(teamToRename.id, { name: newRenameName });
+      alert(response.message || t('student.pfe.renamed', { defaultValue: 'Team renamed successfully.' }));
       setShowRenameModal(false);
       fetchTeams(selectedGroupId);
-      alert(t('student.pfe.renamed', { defaultValue: 'Team renamed successfully.' }));
     } catch (e) {
       alert(e.response?.data?.message || t('student.pfe.renameFailed', { defaultValue: 'Failed to rename team.' }));
     }
@@ -248,8 +248,7 @@ const StudentPFE = () => {
         setMembersModalTeam(updatedTeam);
         fetchAvailableStudents(updatedTeam);
       }
-      
-      alert(t('student.pfe.memberAdded', { defaultValue: 'Member added successfully!' }));
+      alert(response.message || t('student.pfe.memberAdded', { defaultValue: 'Member added successfully!' }));
     } catch (e) {
       alert(e.response?.data?.message || t('student.pfe.addMemberFailed', { defaultValue: 'Failed to add member.' }));
     } finally {
@@ -269,7 +268,7 @@ const StudentPFE = () => {
       const updatedTeam = updatedTeams.find(t => t.id === teamId);
       if (updatedTeam) setMembersModalTeam(updatedTeam);
       
-      alert(t('student.pfe.memberRemoved', { defaultValue: 'Member removed successfully.' }));
+      alert(response.message || t('student.pfe.memberRemoved', { defaultValue: 'Member removed successfully.' }));
     } catch (e) {
       console.error(e);
       alert(e.response?.data?.message || t('student.pfe.removeMemberFailed', { defaultValue: 'Failed to remove member.' }));

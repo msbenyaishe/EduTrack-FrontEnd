@@ -84,7 +84,8 @@ const TeacherWorkshops = () => {
       fetchWorkshops(selectedGroup);
     } catch (e) {
       console.error(e);
-      alert(t('teacher.workshops.saveFailed', { defaultValue: 'Failed to save workshop to database.' }));
+      const errorMsg = e.response?.data?.message || t('teacher.workshops.saveFailed', { defaultValue: 'Failed to save workshop to database.' });
+      alert(errorMsg);
     }
   };
 
@@ -107,7 +108,8 @@ const TeacherWorkshops = () => {
       fetchWorkshops(selectedGroup);
     } catch (e) {
       console.error(e);
-      alert(t('teacher.workshops.deleteFailed', { defaultValue: 'Failed to delete workshop.' }));
+      const errorMsg = e.response?.data?.message || t('teacher.workshops.deleteFailed', { defaultValue: 'Failed to delete workshop.' });
+      alert(errorMsg);
     }
   };
 

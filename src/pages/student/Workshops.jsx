@@ -34,9 +34,9 @@ const StudentWorkshops = () => {
 
   const handleOpenSubmit = (ws) => {
     setFormData({
-      repo: ws.repo || '',
-      web_page: ws.web_page || '',
-      pdf_report: ws.pdf_report || ''
+      repo: ws.submitted_repo || '',
+      web_page: ws.submitted_web_page || '',
+      pdf_report: ws.submitted_pdf_report || ''
     });
     setSelectedWorkshop(ws);
     setShowModal(true);
@@ -46,13 +46,15 @@ const StudentWorkshops = () => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await workshopService.submitWorkshop({ ...formData, workshop_id: selectedWorkshop.id });
+      const response = await workshopService.submitWorkshop({ ...formData, workshop_id: selectedWorkshop.id });
+      alert(response.message || t('student.workshops.submitSuccess', { defaultValue: 'Workshop submitted successfully!' }));
       fetchWorkshops();
       setFormData({ repo: '', web_page: '', pdf_report: '' });
       setShowModal(false);
     } catch (e) {
       console.error(e);
-      alert(t('student.workshops.submitFailed', { defaultValue: 'Failed to submit workshop to database.' }));
+      const errorMsg = e.response?.data?.message || t('student.workshops.submitFailed', { defaultValue: 'Failed to submit workshop to database.' });
+      alert(errorMsg);
     } finally {
       setSubmitting(false);
     }

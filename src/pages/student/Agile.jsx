@@ -246,13 +246,13 @@ const StudentAgile = () => {
   const handleSubmitSprint = async (e) => {
     e.preventDefault();
     try {
-      await agileService.submitSprint(submissionForm.sprintId, {
+      const response = await agileService.submitSprint(submissionForm.sprintId, {
         agile_team_id: selectedTeam.id,
         repo: submissionForm.repo,
         web_page: submissionForm.web_page,
         pdf_report: submissionForm.pdf_report
       });
-      alert(t('student.agile.sprintSubmitted', { defaultValue: 'Sprint submitted successfully!' }));
+      alert(response.message || t('student.agile.sprintSubmitted', { defaultValue: 'Sprint submitted successfully!' }));
       // Reset and refresh
       setSubmissionForm({ sprintId: null, repo: '', web_page: '', pdf_report: '' });
       const subsData = await agileService.getTeamSubmissions(selectedTeam.id);
