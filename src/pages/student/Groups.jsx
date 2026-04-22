@@ -4,7 +4,7 @@ import { Plus, Users, BookOpen, AlertCircle, X, Calendar } from 'lucide-react';
 import { studentService } from '../../services/studentService';
 import { useTranslation } from 'react-i18next';
 import { formatDate } from '../../utils/locale';
-import { formatGroupTitle } from '../../utils/groupFormatters';
+import { formatGroupTitle, formatAcademicYear } from '../../utils/groupFormatters';
 
 
 function formatJoinedDate(value) {
@@ -99,8 +99,11 @@ const StudentGroups = () => {
                       <div className="media-icon media-icon--primary">
                         <Users size={20} />
                       </div>
-                      <span>{formatGroupTitle(group.name || t('student.groups.unnamed', { defaultValue: 'Unnamed Group' }), group.year)}</span>
+                      <span>{group.name || t('student.groups.unnamed', { defaultValue: 'Unnamed Group' })}</span>
                     </div>
+                    <span className="badge badge--success badge--trailing">
+                      {formatAcademicYear(group.year)}
+                    </span>
                   </div>
 
                   <div className="card__body">

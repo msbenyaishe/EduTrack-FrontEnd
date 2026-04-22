@@ -16,6 +16,7 @@ const Groups = () => {
   const [formData, setFormData] = useState({ name: '', year: formatAcademicYear(new Date().getFullYear().toString()) });
   const [generatingCode, setGeneratingCode] = useState(false);
   const [copiedCode, setCopiedCode] = useState(null);
+  const [selectedYear, setSelectedYear] = useState('All');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -111,9 +112,22 @@ const Groups = () => {
           <h1 className="page-title">{t('teacher.groups.title', { defaultValue: 'Groups' })}</h1>
           <p className="page-subtitle">{t('teacher.groups.subtitle', { defaultValue: 'Manage your student groups and invites.' })}</p>
         </div>
-        <button type="button" className="btn btn-primary" onClick={handleOpenCreateModal}>
-          <Plus size={18} /> {t('teacher.groups.newGroup', { defaultValue: 'New Group' })}
-        </button>
+        <div className="page-header__actions">
+          <select
+            className="form-input form-input--filter"
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(e.target.value)}
+            aria-label={t('teacher.groups.filterByYear', { defaultValue: 'Filter by academic year' })}
+          >
+            <option value="All">{t('teacher.groups.allYears', { defaultValue: 'All Years' })}</option>
+            {[...new Set(groups.map(g => formatAcademicYear(g.year)).filter(Boolean))].sort().reverse().map(year => (
+              <option key={year} value={year}>{year}</option>
+            ))}
+          </select>
+          <button type="button" className="btn btn-primary" onClick={handleOpenCreateModal}>
+            <Plus size={18} /> {t('teacher.groups.newGroup', { defaultValue: 'New Group' })}
+          </button>
+        </div>
       </div>
 
       <div className="grid-cards">
@@ -129,7 +143,9 @@ const Groups = () => {
           </div>
         ) : (
           <>
-            {groups.map(group => (
+            {groups
+              .filter(g => selectedYear === 'All' || formatAcademicYear(g.year) === selectedYear)
+              .map(group => (
               <div key={group.id} className="card card--col">
                 <div>
                   <div className="card__head">
@@ -137,8 +153,11 @@ const Groups = () => {
                       <div className="media-icon media-icon--primary">
                         <Users size={20} />
                       </div>
-                      {formatGroupTitle(group.name, group.year)}
+                      {group.name}
                     </div>
+                    <span className="badge badge--success badge--trailing">
+                      {formatAcademicYear(group.year)}
+                    </span>
                   </div>
 
                   <div className="card__body">
