@@ -4,6 +4,7 @@ import { Folder, CheckCircle, Clock, Link, ExternalLink, FileText, Video, Trash2
 import { teacherService } from '../../services/teacherService';
 import { useTranslation } from 'react-i18next';
 import { formatDate } from '../../utils/locale';
+import { formatGroupTitle } from '../../utils/groupFormatters';
 
 
 const REACTION_OPTIONS = ['👍', '👏', '🔥', '✅', '🎉'];
@@ -31,7 +32,7 @@ const SubmissionsDashboard = () => {
         student: s.student_name,
         type: `Workshop: ${s.workshop_title}`,
         module: s.module_title,
-        group: s.group_name,
+        group: formatGroupTitle(s.group_name, s.group_year),
         date: s.submitted_at,
         reaction: s.teacher_reaction || s.reaction || null,
         links: { repo: s.repo, demo: s.web_page, pdf: s.pdf_report }
@@ -44,7 +45,7 @@ const SubmissionsDashboard = () => {
         student: s.team_name,
         type: `Sprint: ${s.sprint_title}`,
         module: s.module_title,
-        group: s.group_name,
+        group: formatGroupTitle(s.group_name, s.group_year),
         date: s.submitted_at,
         reaction: s.teacher_reaction || s.reaction || null,
         links: { repo: s.repo, demo: s.web_page, pdf: s.pdf_report }
@@ -56,7 +57,7 @@ const SubmissionsDashboard = () => {
         submissionType: 'pfe',
         student: s.team_name,
         type: `PFE: ${s.project_title || 'Final Project'}`,
-        group: s.group_name,
+        group: formatGroupTitle(s.group_name, s.group_year),
         date: s.submitted_at,
         reaction: s.teacher_reaction || s.reaction || null,
         links: {

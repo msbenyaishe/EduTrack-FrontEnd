@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, Check, Copy, Share2, Users, X, Edit2, Trash2 } from 'lucide-react';
 import { teacherService } from '../../services/teacherService';
 import { useTranslation } from 'react-i18next';
+import { formatAcademicYear, formatGroupTitle } from '../../utils/groupFormatters';
 
 
 const Groups = () => {
@@ -12,7 +13,7 @@ const Groups = () => {
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
-  const [formData, setFormData] = useState({ name: '', year: new Date().getFullYear().toString() });
+  const [formData, setFormData] = useState({ name: '', year: formatAcademicYear(new Date().getFullYear().toString()) });
   const [generatingCode, setGeneratingCode] = useState(false);
   const [copiedCode, setCopiedCode] = useState(null);
   const navigate = useNavigate();
@@ -46,7 +47,7 @@ const Groups = () => {
       setShowModal(false);
       setIsEditing(false);
       setEditId(null);
-      setFormData({ name: '', year: new Date().getFullYear().toString() });
+      setFormData({ name: '', year: formatAcademicYear(new Date().getFullYear().toString()) });
       fetchGroups();
     } catch (e) {
       console.error(e);
@@ -73,7 +74,7 @@ const Groups = () => {
   };
 
   const handleOpenCreateModal = () => {
-    setFormData({ name: '', year: new Date().getFullYear().toString() });
+    setFormData({ name: '', year: formatAcademicYear(new Date().getFullYear().toString()) });
     setIsEditing(false);
     setEditId(null);
     setShowModal(true);
@@ -131,9 +132,8 @@ const Groups = () => {
                       <div className="media-icon media-icon--primary">
                         <Users size={20} />
                       </div>
-                      {group.name}
+                      {formatGroupTitle(group.name, group.year)}
                     </div>
-                    <span className="badge badge-primary badge--trailing">{group.year}</span>
                   </div>
 
                   <div className="card__body">

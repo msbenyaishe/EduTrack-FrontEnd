@@ -4,6 +4,7 @@ import { ArrowLeft, Users, Mail, Clock, Trash2, Plus, BookOpen, Share2, Calendar
 import { teacherService } from '../../services/teacherService';
 import { useTranslation } from 'react-i18next';
 import { formatDate } from '../../utils/locale';
+import { formatAcademicYear, formatGroupTitle } from '../../utils/groupFormatters';
 
 
 const GroupDetails = () => {
@@ -129,8 +130,8 @@ const GroupDetails = () => {
             <ArrowLeft size={20} />
           </button>
           <div>
-            <h1 className="page-title">{group?.name}</h1>
-            <p className="page-subtitle">{t('teacher.groupDetails.academicYear', { defaultValue: 'Academic Year:' })} {group?.year}</p>
+            <h1 className="page-title">{formatGroupTitle(group?.name, group?.year)}</h1>
+            <p className="page-subtitle">{t('teacher.groupDetails.academicYear', { defaultValue: 'Academic Year:' })} {formatAcademicYear(group?.year)}</p>
           </div>
         </div>
       </div>

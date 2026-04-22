@@ -17,3 +17,8 @@ export const formatDate = (value, language, options) => {
   // Bidi isolate keeps date order stable inside Arabic/LTR mixed text.
   return `\u2068${formatted}\u2069`;
 };
+
+export const formatAcademicYear = (year) => {
+  if (!year || isNaN(year)) return year || '';
+  return `${year}–${parseInt(year, 10) + 1}`;
+};

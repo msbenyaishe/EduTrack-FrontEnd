@@ -3,6 +3,7 @@ import { Users, BookOpen, Upload, Clock } from 'lucide-react';
 import { teacherService } from '../../services/teacherService';
 import { useTranslation } from 'react-i18next';
 import { formatDate } from '../../utils/locale';
+import { formatGroupTitle } from '../../utils/groupFormatters';
 
 const TeacherDashboard = () => {
   const { t, i18n } = useTranslation();
@@ -21,7 +22,8 @@ const TeacherDashboard = () => {
           ...(submissions.sprintSubmissions || []).map(s => ({ ...s, student: s.team_name, type: `Sprint: ${s.sprint_title}`, date: s.submitted_at })),
           ...(submissions.pfeSubmissions || []).map(s => ({ ...s, student: s.team_name, type: `PFE: ${s.project_title || t('teacher.dashboard.final', { defaultValue: 'Final' })}`, date: s.submitted_at }))
         ].map(sub => {
-          const group = sub.group_name ? `Group: ${sub.group_name}` : null;
+          const groupTitle = formatGroupTitle(sub.group_name, sub.group_year);
+          const group = groupTitle ? `Group: ${groupTitle}` : null;
           const module = sub.module_title ? `Module: ${sub.module_title}` : null;
 
           return {

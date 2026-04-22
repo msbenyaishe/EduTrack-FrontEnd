@@ -4,7 +4,7 @@ import { Plus, BookOpen, Upload, ExternalLink, Trash2, X, Edit2 } from 'lucide-r
 import { teacherService } from '../../services/teacherService';
 import { workshopService } from '../../services/workshopService';
 import { useTranslation } from 'react-i18next';
-import { formatDate } from '../../utils/locale';
+import { formatDate, formatAcademicYear } from '../../utils/locale';
 
 
 const TeacherWorkshops = () => {
@@ -135,7 +135,7 @@ const TeacherWorkshops = () => {
             onChange={(e) => setSelectedGroup(e.target.value)}
           >
             {groups.map(g => (
-              <option key={g.id} value={g.id}>{g.name} - {g.year || ''}</option>
+              <option key={g.id} value={g.id}>{g.name} - {formatAcademicYear(g.year)}</option>
             ))}
           </select>
         </div>

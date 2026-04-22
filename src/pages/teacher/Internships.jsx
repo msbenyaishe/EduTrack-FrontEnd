@@ -4,6 +4,7 @@ import { teacherService } from '../../services/teacherService';
 import { internshipService } from '../../services/internshipService';
 import { useTranslation } from 'react-i18next';
 import { formatDate } from '../../utils/locale';
+import { formatGroupTitle } from '../../utils/groupFormatters';
 
 
 const TeacherInternships = () => {
@@ -66,7 +67,7 @@ const TeacherInternships = () => {
             onChange={(e) => setSelectedGroup(e.target.value)}
           >
             {groups.map(g => (
-              <option key={g.id} value={g.id}>{g.name}</option>
+              <option key={g.id} value={g.id}>{formatGroupTitle(g.name, g.year)}</option>
             ))}
           </select>
         </div>
