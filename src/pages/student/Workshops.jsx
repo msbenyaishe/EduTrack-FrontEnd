@@ -89,7 +89,7 @@ const StudentWorkshops = () => {
                     </div>
                     {ws.title}
                   </div>
-                  {ws.submitted && (
+                  {!!ws.submitted && (
                     <span className="badge badge-success badge--trailing">
                       <CheckCircle size={14} className="btn__icon-left" /> {t('student.workshops.submitted', { defaultValue: 'Submitted' })}
                     </span>

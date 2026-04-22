@@ -138,7 +138,7 @@ const StudentSubmissions = () => {
                   <div className="meta-inline">
                     <Clock size={12} /> {t('student.submissions.submittedOn', { defaultValue: 'Submitted on' })} {formatDate(sub.date, language)}
                   </div>
-                  {reaction && (
+                  {!!reaction && (
                     <div className="student-reaction-row">
                       <span className="student-reaction-label">{t('student.submissions.teacherReacted', { defaultValue: 'Teacher reacted' })}</span>
                       <span aria-hidden className="student-reaction-emoji">{reaction}</span>

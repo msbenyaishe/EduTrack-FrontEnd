@@ -132,7 +132,7 @@ const StudentInternships = () => {
                 <div className="card__footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 'var(--space-sm)' }}>
                   <div className="card__stamp">{t('student.internships.active', { defaultValue: 'Active Internship' })}</div>
                   <div className="card__footer-actions" style={{ display: 'flex', gap: 'var(--space-xs)' }}>
-                    {intern.report_pdf && (
+                     {!!intern.report_pdf && (
                       <a href={intern.report_pdf} target="_blank" rel="noopener noreferrer" className="icon-action-btn" title={t('student.internships.viewReport', { defaultValue: 'View Report' })}>
                         <FileText size={18} />
                       </a>
