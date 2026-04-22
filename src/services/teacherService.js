@@ -12,7 +12,8 @@ export const teacherService = {
     return {
       groupsCount: groupsRes.data.length || 0,
       modulesCount: modulesRes.data.length || 0,
-      recentSubmissions: submissionsRes.data || []
+      recentSubmissions: submissionsRes.data || [],
+      groups: groupsRes.data || []
     };
   },
   updateSubmissionReaction: async (submissionType, submissionId, reaction) => {

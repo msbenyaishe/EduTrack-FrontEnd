@@ -39,10 +39,15 @@ const Groups = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const dataToSubmit = {
+        ...formData,
+        year: formData.year.substring(0, 4)
+      };
+      
       if (isEditing) {
-        await teacherService.updateGroup(editId, formData);
+        await teacherService.updateGroup(editId, dataToSubmit);
       } else {
-        await teacherService.createGroup(formData);
+        await teacherService.createGroup(dataToSubmit);
       }
       setShowModal(false);
       setIsEditing(false);
@@ -56,7 +61,7 @@ const Groups = () => {
   };
 
   const handleEdit = (group) => {
-    setFormData({ name: group.name, year: group.year });
+    setFormData({ name: group.name, year: formatAcademicYear(group.year) });
     setEditId(group.id);
     setIsEditing(true);
     setShowModal(true);

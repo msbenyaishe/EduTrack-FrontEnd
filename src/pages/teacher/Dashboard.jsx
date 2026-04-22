@@ -17,12 +17,18 @@ const TeacherDashboard = () => {
         const data = await teacherService.getDashboardStats();
 
         const submissions = data.recentSubmissions || {};
+        const groupYearMap = {};
+        (data.groups || []).forEach(g => {
+          if (g.name && g.year) groupYearMap[g.name] = g.year;
+        });
+
         const flattened = [
           ...(submissions.workshopSubmissions || []).map(s => ({ ...s, student: s.student_name, type: `WS: ${s.workshop_title}`, date: s.submitted_at })),
           ...(submissions.sprintSubmissions || []).map(s => ({ ...s, student: s.team_name, type: `Sprint: ${s.sprint_title}`, date: s.submitted_at })),
           ...(submissions.pfeSubmissions || []).map(s => ({ ...s, student: s.team_name, type: `PFE: ${s.project_title || t('teacher.dashboard.final', { defaultValue: 'Final' })}`, date: s.submitted_at }))
         ].map(sub => {
-          const groupTitle = formatGroupTitle(sub.group_name, sub.group_year);
+          const year = sub.group_year || groupYearMap[sub.group_name];
+          const groupTitle = formatGroupTitle(sub.group_name, year);
           const group = groupTitle ? `Group: ${groupTitle}` : null;
           const module = sub.module_title ? `Module: ${sub.module_title}` : null;
 

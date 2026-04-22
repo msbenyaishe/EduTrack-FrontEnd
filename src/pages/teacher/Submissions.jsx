@@ -4,7 +4,7 @@ import { Folder, CheckCircle, Clock, Link, ExternalLink, FileText, Video, Trash2
 import { teacherService } from '../../services/teacherService';
 import { useTranslation } from 'react-i18next';
 import { formatDate } from '../../utils/locale';
-import { formatGroupTitle } from '../../utils/groupFormatters';
+import { formatGroupTitle, formatAcademicYear } from '../../utils/groupFormatters';
 
 
 const REACTION_OPTIONS = ['👍', '👏', '🔥', '✅', '🎉'];
@@ -16,6 +16,7 @@ const SubmissionsDashboard = () => {
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedGroup, setSelectedGroup] = useState('All');
+  const [selectedYear, setSelectedYear] = useState('All');
   const [selectedType, setSelectedType] = useState(location.state?.filterType || 'All');
   useEffect(() => {
     fetchSubmissions();
@@ -23,41 +24,57 @@ const SubmissionsDashboard = () => {
 
   const fetchSubmissions = async () => {
     try {
-      const { recentSubmissions } = await teacherService.getDashboardStats();
+      const { recentSubmissions, groups } = await teacherService.getDashboardStats();
 
-      const workshops = (recentSubmissions.workshopSubmissions || []).map(s => ({
+      const groupYearMap = {};
+      (groups || []).forEach(g => {
+        if (g.name && g.year) groupYearMap[g.name] = g.year;
+      });
+
+      const workshops = (recentSubmissions.workshopSubmissions || []).map(s => {
+        const year = s.group_year || groupYearMap[s.group_name];
+        return {
         id: `ws-${s.id}`,
         submissionId: s.id,
         submissionType: 'workshop',
         student: s.student_name,
         type: `Workshop: ${s.workshop_title}`,
         module: s.module_title,
-        group: formatGroupTitle(s.group_name, s.group_year),
+        group: formatGroupTitle(s.group_name, year),
+        groupYear: year ? formatAcademicYear(year) : null,
         date: s.submitted_at,
         reaction: s.teacher_reaction || s.reaction || null,
         links: { repo: s.repo, demo: s.web_page, pdf: s.pdf_report }
-      }));
+      };
+      });
 
-      const sprints = (recentSubmissions.sprintSubmissions || []).map(s => ({
+      const sprints = (recentSubmissions.sprintSubmissions || []).map(s => {
+        const year = s.group_year || groupYearMap[s.group_name];
+        return {
         id: `sp-${s.id}`,
         submissionId: s.id,
         submissionType: 'sprint',
         student: s.team_name,
         type: `Sprint: ${s.sprint_title}`,
         module: s.module_title,
-        group: formatGroupTitle(s.group_name, s.group_year),
+        group: formatGroupTitle(s.group_name, year),
+        groupYear: year ? formatAcademicYear(year) : null,
         date: s.submitted_at,
         reaction: s.teacher_reaction || s.reaction || null,
         links: { repo: s.repo, demo: s.web_page, pdf: s.pdf_report }
-      }));
+      };
+      });
 
-      const pfes = (recentSubmissions.pfeSubmissions || []).map(s => ({
+      const pfes = (recentSubmissions.pfeSubmissions || []).map(s => {
+        const year = s.group_year || groupYearMap[s.group_name];
+        return {
         id: `pfe-${s.id}`,
         submissionId: s.id,
         submissionType: 'pfe',
         student: s.team_name,
         type: `PFE: ${s.project_title || 'Final Project'}`,
-        group: formatGroupTitle(s.group_name, s.group_year),
+        group: formatGroupTitle(s.group_name, year),
+        groupYear: year ? formatAcademicYear(year) : null,
         date: s.submitted_at,
         reaction: s.teacher_reaction || s.reaction || null,
         links: {
@@ -66,7 +83,8 @@ const SubmissionsDashboard = () => {
           pdf: s.report_pdf || s.final_report || s.pdf_report,
           video: s.explanation_video || s.project_video || s.video_url
         }
-      }));
+      };
+      });
 
       const allSubmissions = [...workshops, ...sprints, ...pfes].sort((a, b) =>
         new Date(b.date) - new Date(a.date)
@@ -82,14 +100,16 @@ const SubmissionsDashboard = () => {
   };
 
   const uniqueGroups = ['All', ...new Set(submissions.map(s => s.group).filter(Boolean))];
+  const uniqueYears = ['All', ...new Set(submissions.map(s => s.groupYear).filter(Boolean))];
 
   const filteredSubmissions = submissions.filter(sub => {
     const matchGroup = selectedGroup === 'All' || sub.group === selectedGroup;
+    const matchYear = selectedYear === 'All' || sub.groupYear === selectedYear;
     let matchType = true;
     if (selectedType === 'Workshops') matchType = sub.type.startsWith('Workshop');
     if (selectedType === 'Agile Sprints') matchType = sub.type.startsWith('Sprint');
     if (selectedType === 'PFE') matchType = sub.type.startsWith('PFE');
-    return matchGroup && matchType;
+    return matchGroup && matchYear && matchType;
   });
 
   const handleReaction = async (submission, reaction) => {
@@ -157,6 +177,17 @@ const SubmissionsDashboard = () => {
             <option value="Workshops">{t('teacher.submissions.workshops', { defaultValue: 'Workshops' })}</option>
             <option value="Agile Sprints">{t('teacher.submissions.agileSprints', { defaultValue: 'Agile Sprints' })}</option>
             <option value="PFE">{t('teacher.submissions.pfe', { defaultValue: 'PFE' })}</option>
+          </select>
+
+          <select
+            className="form-input form-input--filter"
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(e.target.value)}
+            aria-label={t('teacher.submissions.filterByYear', { defaultValue: 'Filter by year' })}
+          >
+            {uniqueYears.map(year => (
+              <option key={year} value={year}>{year === 'All' ? t('teacher.submissions.allYears', { defaultValue: 'All Years' }) : year}</option>
+            ))}
           </select>
         </div>
       </div>
