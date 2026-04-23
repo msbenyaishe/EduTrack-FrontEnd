@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { GraduationCap, Trash2, Users, X } from 'lucide-react';
+import { GraduationCap, Trash2, Users, X, Upload } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { teacherService } from '../../services/teacherService';
 import { pfeService } from '../../services/pfeService';
 import { useTranslation } from 'react-i18next';
@@ -129,7 +130,13 @@ const TeacherPFE = () => {
               </div>
 
               <div className="card__footer">
-                <div className="card__stamp">{t('teacher.pfe.registeredTeam', { defaultValue: 'Registered PFE Team' })}</div>
+                <Link
+                  to="/teacher/submissions"
+                  state={{ filterType: 'PFE', teamName: team.name }}
+                  className="btn btn-secondary btn--edit-row"
+                >
+                  <Upload size={16} /> {t('teacher.pfe.submissions', { defaultValue: 'Submissions' })}
+                </Link>
                 <button type="button" className="icon-action-btn icon-action-btn--danger" onClick={() => handleDelete(team.id)} title={t('teacher.pfe.deleteTeam', { defaultValue: 'Delete Team' })}>
                   <Trash2 size={18} />
                 </button>

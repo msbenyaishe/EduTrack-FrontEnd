@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Building, Plus, X, Pencil, Trash2, FileText } from 'lucide-react';
 import { internshipService } from '../../services/internshipService';
+import { companyService } from '../../services/companyService';
 import { useTranslation } from 'react-i18next';
 import { formatDate } from '../../utils/locale';
 
@@ -8,7 +9,10 @@ import { formatDate } from '../../utils/locale';
 const StudentInternships = () => {
   const { t, i18n } = useTranslation();
   const language = i18n.resolvedLanguage || 'en';
-  const [formData, setFormData] = useState({ company_name: '', supervisor_name: '', start_date: '', end_date: '', report_pdf: '' });
+  const [formData, setFormData] = useState({ company_id: '', supervisor_name: '', start_date: '', end_date: '', report_pdf: '' });
+  const [newCompanyData, setNewCompanyData] = useState({ name: '', phone: '', email: '' });
+  const [isAddingNewCompany, setIsAddingNewCompany] = useState(false);
+  const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [internships, setInternships] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -18,7 +22,17 @@ const StudentInternships = () => {
 
   useEffect(() => {
     fetchInternships();
+    fetchCompanies();
   }, []);
+
+  const fetchCompanies = async () => {
+    try {
+      const data = await companyService.getCompanies();
+      setCompanies(data);
+    } catch (e) {
+      console.error('Failed to fetch companies', e);
+    }
+  };
 
   const fetchInternships = async () => {
     try {
@@ -36,10 +50,31 @@ const StudentInternships = () => {
     e.preventDefault();
     setSubmitting(true);
     try {
+      let companyId = formData.company_id;
+
+      if (isAddingNewCompany) {
+        if (!newCompanyData.name.trim()) {
+          alert(t('student.internships.companyNameRequired', { defaultValue: 'Company name is required' }));
+          setSubmitting(false);
+          return;
+        }
+        const newCompany = await companyService.createCompany(newCompanyData);
+        companyId = newCompany.id;
+        await fetchCompanies();
+      }
+
+      if (!companyId) {
+        alert(t('student.internships.selectCompany', { defaultValue: 'Please select a company or add a new one' }));
+        setSubmitting(false);
+        return;
+      }
+
+      const submissionData = { ...formData, company_id: companyId };
+
       if (isEditing) {
-        await internshipService.updateInternship(currentInternshipId, formData);
+        await internshipService.updateInternship(currentInternshipId, submissionData);
       } else {
-        await internshipService.submitInternship(formData);
+        await internshipService.submitInternship(submissionData);
       }
       handleCloseModal();
       fetchInternships();
@@ -53,12 +88,13 @@ const StudentInternships = () => {
 
   const handleEditClick = (intern) => {
     setFormData({
-      company_name: intern.company_name,
+      company_id: intern.company_id,
       supervisor_name: intern.supervisor_name,
       start_date: new Date(intern.start_date).toISOString().split('T')[0],
       end_date: new Date(intern.end_date).toISOString().split('T')[0],
       report_pdf: intern.report_pdf || ''
     });
+    setIsAddingNewCompany(false);
     setCurrentInternshipId(intern.id);
     setIsEditing(true);
     setShowModal(true);
@@ -78,8 +114,10 @@ const StudentInternships = () => {
   const handleCloseModal = () => {
     setShowModal(false);
     setIsEditing(false);
+    setIsAddingNewCompany(false);
     setCurrentInternshipId(null);
-    setFormData({ company_name: '', supervisor_name: '', start_date: '', end_date: '', report_pdf: '' });
+    setFormData({ company_id: '', supervisor_name: '', start_date: '', end_date: '', report_pdf: '' });
+    setNewCompanyData({ name: '', phone: '', email: '' });
   };
 
   return (
@@ -168,9 +206,71 @@ const StudentInternships = () => {
 
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label className="form-label" htmlFor="co-name">{t('student.internships.companyName', { defaultValue: 'Company Name' })}</label>
-                <input id="co-name" type="text" className="form-input" required value={formData.company_name} onChange={e => setFormData({...formData, company_name: e.target.value})} />
+                <label className="form-label" htmlFor="co-select">{t('student.internships.company', { defaultValue: 'Company' })}</label>
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                  <select 
+                    id="co-select" 
+                    className="form-input" 
+                    required={!isAddingNewCompany} 
+                    disabled={isAddingNewCompany}
+                    value={formData.company_id} 
+                    onChange={e => setFormData({...formData, company_id: e.target.value})}
+                  >
+                    <option value="">{t('student.internships.selectCompany', { defaultValue: 'Select a company' })}</option>
+                    {companies.map(co => (
+                      <option key={co.id} value={co.id}>{co.name}</option>
+                    ))}
+                  </select>
+                  <button 
+                    type="button" 
+                    className={`btn ${isAddingNewCompany ? 'btn-secondary' : 'btn-primary'}`} 
+                    style={{ padding: '0.5rem', minWidth: 'auto' }}
+                    onClick={() => setIsAddingNewCompany(!isAddingNewCompany)}
+                    title={isAddingNewCompany ? t('student.internships.cancelNew', { defaultValue: 'Cancel' }) : t('student.internships.addNew', { defaultValue: 'Add New' })}
+                  >
+                    {isAddingNewCompany ? <X size={18} /> : <Plus size={18} />}
+                  </button>
+                </div>
               </div>
+
+              {isAddingNewCompany && (
+                <div className="new-company-fields" style={{ padding: '1rem', background: 'var(--bg-light)', borderRadius: 'var(--radius-md)', marginBottom: '1rem' }}>
+                  <h4 style={{ marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('student.internships.newCompanyDetails', { defaultValue: 'New Company Details' })}</h4>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="new-co-name">{t('student.internships.companyName', { defaultValue: 'Company Name' })}</label>
+                    <input 
+                      id="new-co-name" 
+                      type="text" 
+                      className="form-input" 
+                      required={isAddingNewCompany} 
+                      value={newCompanyData.name} 
+                      onChange={e => setNewCompanyData({...newCompanyData, name: e.target.value})} 
+                    />
+                  </div>
+                  <div className="form-row-split">
+                    <div className="form-group">
+                      <label className="form-label" htmlFor="new-co-email">{t('student.internships.companyEmail', { defaultValue: 'Email (Optional)' })}</label>
+                      <input 
+                        id="new-co-email" 
+                        type="email" 
+                        className="form-input" 
+                        value={newCompanyData.email} 
+                        onChange={e => setNewCompanyData({...newCompanyData, email: e.target.value})} 
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label" htmlFor="new-co-phone">{t('student.internships.companyPhone', { defaultValue: 'Phone (Optional)' })}</label>
+                      <input 
+                        id="new-co-phone" 
+                        type="text" 
+                        className="form-input" 
+                        value={newCompanyData.phone} 
+                        onChange={e => setNewCompanyData({...newCompanyData, phone: e.target.value})} 
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
               <div className="form-group">
                 <label className="form-label" htmlFor="supervisor">{t('student.internships.supervisorName', { defaultValue: 'Supervisor Name' })}</label>
                 <input id="supervisor" type="text" className="form-input" required value={formData.supervisor_name} onChange={e => setFormData({...formData, supervisor_name: e.target.value})} />
