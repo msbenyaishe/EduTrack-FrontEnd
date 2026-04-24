@@ -12,5 +12,9 @@ export const companyService = {
   updateCompany: async (id, companyData) => {
     const response = await api.put(`/companies/${id}`, companyData);
     return response.data;
+  },
+  deleteCompany: async (id) => {
+    const response = await api.delete(`/companies/${id}`);
+    return response.data;
   }
 };

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Building, Phone, Mail } from 'lucide-react';
+import { Building, Phone, Mail, Trash2 } from 'lucide-react';
 import { companyService } from '../../services/companyService';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
 
 const Companies = () => {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -21,6 +23,18 @@ const Companies = () => {
       setCompanies([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm(t('companies.deleteConfirm', { defaultValue: 'Are you sure you want to delete this company?' }))) return;
+    
+    try {
+      await companyService.deleteCompany(id);
+      fetchCompanies();
+    } catch (e) {
+      console.error('Failed to delete company', e);
+      alert(e.response?.data?.message || t('companies.deleteFailed', { defaultValue: 'Failed to delete company. It might be linked to existing internships.' }));
     }
   };
 
@@ -76,6 +90,16 @@ const Companies = () => {
 
               <div className="card__footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div className="card__stamp">{t('companies.registeredCompany', { defaultValue: 'Registered Company' })}</div>
+                {user?.role === 'teacher' && (
+                  <button 
+                    type="button" 
+                    className="icon-action-btn icon-action-btn--danger" 
+                    onClick={() => handleDelete(company.id)}
+                    title={t('companies.delete', { defaultValue: 'Delete Company' })}
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                )}
               </div>
             </div>
           ))
