@@ -112,7 +112,7 @@ const Profile = () => {
       <div className="page-header">
         <div>
           <h1 className="page-title">{t('profile.title', { defaultValue: 'My Profile' })}</h1>
-          <p className="page-subtitle">{t('profile.subtitle', { defaultValue: 'Manage your account settings and personal information.' })}</p>
+          <p className="page-subtitle">{t('profile.subtitle', { defaultValue: 'Manage your account settings and personal informations.' })}</p>
         </div>
       </div>
 
