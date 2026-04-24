@@ -1,10 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Users, Mail, Clock, Trash2, Plus, BookOpen, Share2, Calendar, X } from 'lucide-react';
+import { ArrowLeft, Users, Mail, Clock, Trash2, Plus, BookOpen, Share2, Calendar, X, Link as LinkIcon } from 'lucide-react';
 import { teacherService } from '../../services/teacherService';
 import { useTranslation } from 'react-i18next';
 import { formatDate } from '../../utils/locale';
 import { formatAcademicYear, formatGroupTitle } from '../../utils/groupFormatters';
+
+function pickStudentPhoto(student) {
+  if (!student || typeof student !== 'object') return null;
+  return (
+    student.personal_image ||
+    student.personal_image_url ||
+    student.profile_picture ||
+    student.profile_picture_url ||
+    student.avatar ||
+    student.avatarUrl ||
+    student.photo ||
+    student.photoUrl ||
+    null
+  );
+}
+
+function pickPortfolioLink(student) {
+  if (!student || typeof student !== 'object') return null;
+  return student.portfolio_link || student.portfolioLink || student.portfolio || null;
+}
 
 
 const GroupDetails = () => {
@@ -154,13 +174,34 @@ const GroupDetails = () => {
                   <div key={student.id} className="member-row">
                     <div className="member-row__main">
                       <div className="member-avatar">
-                        {student.name?.charAt(0).toUpperCase()}
+                        {pickStudentPhoto(student) ? (
+                          <img
+                            src={pickStudentPhoto(student)}
+                            alt={student.name || t('roles.student')}
+                            className="member-avatar__img"
+                            loading="lazy"
+                            referrerPolicy="no-referrer"
+                          />
+                        ) : (
+                          student.name?.charAt(0).toUpperCase()
+                        )}
                       </div>
                       <div>
                         <div className="member-name">{student.name}</div>
                         <div className="member-meta">
                           <span className="member-meta__item"><Mail size={12} /> {student.email}</span>
                           <span className="member-meta__item"><Clock size={12} /> {formatDate(student.joined_at, language)}</span>
+                          {pickPortfolioLink(student) ? (
+                            <a
+                              className="member-meta__item"
+                              href={pickPortfolioLink(student)}
+                              target="_blank"
+                              rel="noreferrer"
+                              title={t('teacher.groupDetails.openPortfolio', { defaultValue: 'Open portfolio' })}
+                            >
+                              <LinkIcon size={12} /> {t('teacher.groupDetails.portfolio', { defaultValue: 'Portfolio' })}
+                            </a>
+                          ) : null}
                         </div>
                       </div>
                     </div>

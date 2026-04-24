@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BookOpen } from 'lucide-react';
 import { studentService } from '../../services/studentService';
 import { useTranslation } from 'react-i18next';
-import { formatGroupTitle } from '../../utils/groupFormatters';
+
 
 
 const StudentModules = () => {
@@ -57,7 +57,7 @@ const StudentModules = () => {
                     </div>
                     {mod.title}
                   </div>
-                  <span className="badge badge-primary badge--trailing">{formatGroupTitle(mod.group_name, mod.group_year)}</span>
+                  <span className="badge badge-primary badge--trailing">{mod.group_name}</span>
                 </div>
 
                 <div className="card__body">

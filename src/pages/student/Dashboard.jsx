@@ -16,11 +16,17 @@ const StudentDashboard = () => {
         const data = await studentService.getDashboardStats();
 
         const submissions = data.recentSubmissions || {};
+        const threeDaysAgo = new Date();
+        threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+
         const flattened = [
           ...(submissions.workshopSubmissions || []).map(s => ({ ...s, title: s.workshop_title, status: 'Workshop', date: s.submitted_at, reaction: s.teacher_reaction || s.reaction || null })),
           ...(submissions.sprintSubmissions || []).map(s => ({ ...s, title: s.sprint_title, status: 'Sprint', date: s.submitted_at, reaction: s.teacher_reaction || s.reaction || null })),
           ...(submissions.pfeSubmissions || []).map(s => ({ ...s, title: s.project_title || t('student.dashboard.pfeFinal', { defaultValue: 'PFE Final' }), status: 'PFE', date: s.submitted_at, reaction: s.teacher_reaction || s.reaction || null }))
-        ].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+        ]
+        .filter(sub => new Date(sub.date) >= threeDaysAgo)
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(0, 5);
 
         setStats({
           ...data,
@@ -77,7 +83,7 @@ const StudentDashboard = () => {
         </div>
       </div>
 
-      <h3 className="section-heading">{t('student.dashboard.recentActivity', { defaultValue: 'Recent Activity' })}</h3>
+      <h3 className="section-heading">{t('student.dashboard.recentActivity', { defaultValue: 'Recent Activities' })}</h3>
       <div className="card activity-card">
         {stats.recentSubmissions.length > 0 ? (
           <ul className="activity-list">
@@ -115,7 +121,7 @@ const StudentDashboard = () => {
           </ul>
         ) : (
           <div className="activity-empty">
-            {t('student.dashboard.noRecentActivity', { defaultValue: 'No recent activity.' })}
+            {t('student.dashboard.noRecentActivity', { defaultValue: 'No recent activities.' })}
           </div>
         )}
       </div>

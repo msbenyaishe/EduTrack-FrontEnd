@@ -22,11 +22,16 @@ const TeacherDashboard = () => {
           if (g.name && g.year) groupYearMap[g.name] = g.year;
         });
 
+        const threeDaysAgo = new Date();
+        threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+
         const flattened = [
           ...(submissions.workshopSubmissions || []).map(s => ({ ...s, student: s.student_name, type: `WS: ${s.workshop_title}`, date: s.submitted_at })),
           ...(submissions.sprintSubmissions || []).map(s => ({ ...s, student: s.team_name, type: `Sprint: ${s.sprint_title}`, date: s.submitted_at })),
           ...(submissions.pfeSubmissions || []).map(s => ({ ...s, student: s.team_name, type: `PFE: ${s.project_title || t('teacher.dashboard.final', { defaultValue: 'Final' })}`, date: s.submitted_at }))
-        ].map(sub => {
+        ]
+        .filter(sub => new Date(sub.date) >= threeDaysAgo)
+        .map(sub => {
           const year = sub.group_year || groupYearMap[sub.group_name];
           const groupTitle = formatGroupTitle(sub.group_name, year);
           const group = groupTitle ? `Group: ${groupTitle}` : null;
@@ -93,7 +98,7 @@ const TeacherDashboard = () => {
         </div>
       </div>
 
-      <h3 className="section-heading">{t('teacher.dashboard.recentActivity', { defaultValue: 'Recent Activity' })}</h3>
+      <h3 className="section-heading">{t('teacher.dashboard.recentActivity', { defaultValue: 'Recent Activities' })}</h3>
       <div className="card activity-card">
         {stats.recentSubmissions.length > 0 ? (
           <ul className="activity-list">

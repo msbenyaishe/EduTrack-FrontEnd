@@ -10,6 +10,9 @@ const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [portfolioLink, setPortfolioLink] = useState('');
+  const [personalImage, setPersonalImage] = useState(null);
+  const [additionalData, setAdditionalData] = useState('');
   
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -27,7 +30,15 @@ const Register = () => {
       if (role === 'teacher') {
         data = await authService.registerTeacher({ name, email, password });
       } else {
-        data = await authService.registerStudent({ name, email, password });
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('email', email);
+        formData.append('password', password);
+        if (portfolioLink) formData.append('portfolio_link', portfolioLink);
+        if (personalImage) formData.append('personal_image', personalImage);
+        if (additionalData) formData.append('additional_profile_data', additionalData);
+
+        data = await authService.registerStudent(formData);
       }
       login(data);
       navigate(`/${data.role}/dashboard`);
@@ -115,6 +126,48 @@ const Register = () => {
             minLength={6}
           />
         </div>
+
+        {role === 'student' && (
+          <>
+            <div className="form-group">
+              <label className="form-label" htmlFor="portfolioLink">Portfolio Link (Optional)</label>
+              <input
+                id="portfolioLink"
+                type="url"
+                className="form-input"
+                value={portfolioLink}
+                onChange={(e) => setPortfolioLink(e.target.value)}
+                placeholder="https://yourportfolio.com"
+                disabled={isLoading}
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" htmlFor="personalImage">Personal Image (Optional)</label>
+              <input
+                id="personalImage"
+                type="file"
+                accept="image/*"
+                className="form-input"
+                onChange={(e) => setPersonalImage(e.target.files[0])}
+                disabled={isLoading}
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" htmlFor="additionalData">Additional Profile Data (Optional)</label>
+              <textarea
+                id="additionalData"
+                className="form-input"
+                rows="3"
+                value={additionalData}
+                onChange={(e) => setAdditionalData(e.target.value)}
+                placeholder="Tell us a little bit about your skills and background..."
+                disabled={isLoading}
+              />
+            </div>
+          </>
+        )}
 
         <button 
           type="submit" 

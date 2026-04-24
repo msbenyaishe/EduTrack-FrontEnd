@@ -1,0 +1,301 @@
+.profile-page {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.profile-detail-layout {
+  margin-top: var(--space-lg);
+}
+
+/* Override shared `.sidebar-card { position: sticky; }` for this page.
+   We only want sticky behavior on wide/desktop layouts. */
+.detail-layout.profile-detail-layout .profile-sidebar-card {
+  position: static;
+  top: auto;
+  z-index: auto;
+}
+
+/* Restore previous layout widths: 320px sidebar + flexible main */
+@media (min-width: 1100px) {
+  .detail-layout.profile-detail-layout {
+    grid-template-columns: 320px 1fr;
+  }
+
+  .detail-layout.profile-detail-layout .profile-sidebar-card {
+    position: sticky;
+    top: var(--space-sm);
+    z-index: 1;
+  }
+}
+
+.profile-email {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-avatar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: var(--space-xl);
+}
+
+.profile-avatar-large {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-lg);
+  margin-bottom: var(--space-md);
+  overflow: hidden;
+}
+
+.profile-avatar-large img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  color: white;
+  font-size: 3rem;
+  font-weight: 700;
+}
+
+.avatar-upload-btn {
+  position: absolute;
+  bottom: -10px;
+  right: -10px;
+  width: 44px;
+  height: 44px;
+  background-color: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--primary-color);
+  box-shadow: var(--shadow-md);
+  transition: all 0.2s ease;
+}
+
+.avatar-upload-btn:hover {
+  transform: scale(1.1);
+  background-color: var(--primary-light);
+}
+
+.profile-name-display {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--secondary-color);
+  margin-bottom: var(--space-xs);
+}
+
+.profile-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--border-color);
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+}
+
+.info-icon {
+  color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--space-lg);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border-color);
+}
+
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-icon .input-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--text-muted);
+}
+
+.input-with-icon.align-top .input-icon {
+  top: 14px;
+}
+
+.input-with-icon .form-input {
+  padding-left: 40px;
+}
+
+.input-with-icon textarea.form-input {
+  padding-top: 12px;
+}
+
+@media (max-width: 1024px) {
+  .profile-sidebar-card {
+    position: static;
+    top: auto;
+    z-index: auto;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.profile-sidebar-card {
+  padding: var(--space-md);
+}
+
+/* -------- Minimal centered sidebar style (current) -------- */
+.profile-sidebar-card--minimal {
+  padding: var(--space-md);
+}
+
+.profile-minimal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.6rem;
+}
+
+.profile-avatar-minimal {
+  position: relative;
+  width: 144px;
+  height: 144px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-main);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-avatar-minimal--empty {
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+  border: none;
+  box-shadow: var(--shadow-md);
+}
+
+.profile-avatar-minimal--has-image {
+  background: var(--bg-card);
+}
+
+.profile-avatar-minimal img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: inherit;
+}
+
+.avatar-upload-btn--minimal {
+  width: 36px;
+  height: 36px;
+  right: 8px;
+  bottom: 8px;
+  border-radius: 12px;
+  border-width: 1px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(6px);
+}
+
+.profile-minimal__name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--secondary-color);
+  margin-top: var(--space-xs);
+}
+
+.profile-role-badge {
+  width: fit-content;
+  font-size: 0.8125rem;
+  padding: 0.35rem 0.75rem;
+}
+
+.profile-minimal__email {
+  margin-top: var(--space-sm);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--border-color);
+  color: var(--text-muted);
+}
+
+/* ---------- Responsive (phones/tablets) ---------- */
+@media (max-width: 768px) {
+  .profile-detail-layout {
+    margin-top: var(--space-md);
+  }
+
+  .profile-sidebar-card,
+  .profile-sidebar-card--minimal {
+    padding: var(--space-sm);
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-minimal {
+    gap: 0.5rem;
+  }
+
+  /* Keep avatar prominent, but fit narrow screens */
+  .profile-avatar-minimal {
+    width: 132px;
+    height: 132px;
+  }
+
+  .avatar-upload-btn--minimal {
+    width: 34px;
+    height: 34px;
+    right: 7px;
+    bottom: 7px;
+  }
+
+  .profile-minimal__name {
+    font-size: 1.1875rem;
+  }
+
+  /* Allow email to wrap instead of awkward truncation */
+  .profile-email {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  .profile-minimal__email {
+    flex-direction: column;
+    gap: 0.4rem;
+    padding-top: 0.85rem;
+  }
+}

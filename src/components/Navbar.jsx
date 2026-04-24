@@ -51,9 +51,18 @@ const Navbar = ({ onMenuClick, navOpen = false }) => {
       <div className="navbar-right">
         <LanguageSwitcher compact />
         
-        <div className="user-profile">
-          <div className="avatar">
-            {user?.name ? user.name.charAt(0).toUpperCase() : <User size={20} />}
+        <div 
+          className="user-profile" 
+          onClick={() => navigate(`/${user?.role}/profile`)}
+          style={{ cursor: 'pointer' }}
+          title={t('profile.viewProfile', { defaultValue: 'View Profile' })}
+        >
+          <div className={`avatar${user?.personal_image ? ' avatar--has-image' : ''}`}>
+            {user?.personal_image ? (
+              <img src={user.personal_image} alt={userName} className="avatar-img" />
+            ) : (
+              user?.name ? user.name.charAt(0).toUpperCase() : <User size={20} />
+            )}
           </div>
           <div className="user-info">
             <span className="user-name">{userName}</span>

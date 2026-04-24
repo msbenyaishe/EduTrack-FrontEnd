@@ -55,8 +55,12 @@ const StudentInternships = () => {
       handleCloseModal();
       fetchInternships();
     } catch (e) {
-      console.error(t('student.internships.saveErrorLog', { defaultValue: 'Failed to save internship' }), e.response?.data || e.message);
-      alert(t('student.internships.saveError', { defaultValue: 'Failed to save to database. Check connection.' }));
+      if (e.response?.status === 409) {
+        alert(t('student.internships.companyExists', { defaultValue: 'This company already exists in the database. Please enter a different company name.' }));
+      } else {
+        console.error(t('student.internships.saveErrorLog', { defaultValue: 'Failed to save internship' }), e.response?.data || e.message);
+        alert(t('student.internships.saveError', { defaultValue: 'Failed to save to database. Check connection.' }));
+      }
     } finally {
       setSubmitting(false);
     }
