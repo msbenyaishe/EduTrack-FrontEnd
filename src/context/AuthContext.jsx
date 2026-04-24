@@ -4,31 +4,60 @@ import api from '../services/api';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(() => {
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
+    const userId = localStorage.getItem('userId');
+    const userName = localStorage.getItem('userName');
+    const personalImage = localStorage.getItem('personalImage');
+    const portfolioLink = localStorage.getItem('portfolioLink');
+    const additionalProfileData = localStorage.getItem('additionalProfileData');
+
+    if (token && role) {
+      return { 
+        token, 
+        role, 
+        id: userId, 
+        name: userName, 
+        personal_image: personalImage,
+        portfolio_link: portfolioLink,
+        additional_profile_data: additionalProfileData
+      };
+    }
+    return null;
+  });
+  
+  const [loading, setLoading] = useState(!localStorage.getItem('token'));
 
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem('token');
-      const role = localStorage.getItem('role');
-      
-      if (token && role) {
-        try {
-          const response = await api.get('/auth/me');
-          setUser({ ...response.data, token });
-          
-          // Update localStorage with latest data
-          localStorage.setItem('userName', response.data.name);
-          if (response.data.personal_image) localStorage.setItem('personalImage', response.data.personal_image);
-          if (response.data.portfolio_link) localStorage.setItem('portfolioLink', response.data.portfolio_link);
-          if (response.data.additional_profile_data) localStorage.setItem('additionalProfileData', response.data.additional_profile_data);
-        } catch (err) {
-          console.error("Failed to fetch user data:", err);
-          // If token is invalid, logout
-          if (err.response?.status === 401) logout();
-        }
+      if (!token) {
+        setLoading(false);
+        return;
       }
-      setLoading(false);
+
+      try {
+        const response = await api.get('/auth/me');
+        const updatedData = { ...response.data, token };
+        setUser(updatedData);
+        
+        // Update localStorage with latest data
+        localStorage.setItem('userName', response.data.name);
+        if (response.data.personal_image) {
+          localStorage.setItem('personalImage', response.data.personal_image);
+        } else {
+          localStorage.removeItem('personalImage');
+        }
+        
+        if (response.data.portfolio_link) localStorage.setItem('portfolioLink', response.data.portfolio_link);
+        if (response.data.additional_profile_data) localStorage.setItem('additionalProfileData', response.data.additional_profile_data);
+      } catch (err) {
+        console.error("Failed to refresh user data:", err);
+        if (err.response?.status === 401) logout();
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchUser();
