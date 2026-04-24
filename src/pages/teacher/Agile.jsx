@@ -14,6 +14,7 @@ const TeacherAgile = () => {
   
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingTeams, setLoadingTeams] = useState(false);
   
   // Sprint Management State
   const [sprints, setSprints] = useState([]);
@@ -119,11 +120,14 @@ const TeacherAgile = () => {
   };
 
   const fetchTeams = async (groupId) => {
+    setLoadingTeams(true);
     try {
       const data = await agileService.getTeams(groupId);
       setTeams(data);
     } catch {
       setTeams([{ id: 1, name: 'Team Alpha', members: 3, created_at: new Date().toISOString() }]);
+    } finally {
+      setLoadingTeams(false);
     }
   };
 
@@ -166,7 +170,7 @@ const TeacherAgile = () => {
       </div>
 
       <div className="grid-cards">
-        {loading ? (
+        {loading || loadingTeams ? (
           <div className="loading-state">{t('teacher.agile.loadingTeams', { defaultValue: 'Loading teams...' })}</div>
         ) : teams.length === 0 ? (
           <div className="empty-state-card card">

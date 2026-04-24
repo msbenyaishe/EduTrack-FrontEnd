@@ -3,12 +3,27 @@ import api from '../services/api';
 
 const AuthContext = createContext();
 
+const getInitialUser = () => {
+  const token = localStorage.getItem('token');
+  const role = localStorage.getItem('role');
+  if (!token || !role) return null;
+
+  return {
+    token,
+    role,
+    id: localStorage.getItem('userId') || undefined,
+    name: localStorage.getItem('userName') || undefined,
+    personal_image: localStorage.getItem('personalImage') || undefined,
+    portfolio_link: localStorage.getItem('portfolioLink') || undefined,
+    additional_profile_data: localStorage.getItem('additionalProfileData') || undefined,
+  };
+};
+
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(getInitialUser);
   const [loading, setLoading] = useState(true);
 
   const logout = () => {
-    console.log("Logging out...");
     localStorage.removeItem('token');
     localStorage.removeItem('role');
     localStorage.removeItem('userId');
@@ -28,40 +43,33 @@ export const AuthProvider = ({ children }) => {
     if (userData.portfolio_link) localStorage.setItem('portfolioLink', userData.portfolio_link);
     if (userData.additional_profile_data) localStorage.setItem('additionalProfileData', userData.additional_profile_data);
     
-    setUser(userData);
+    setUser((prev) => ({ ...(prev || {}), ...userData }));
   };
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const token = localStorage.getItem('token');
-      const role = localStorage.getItem('role');
-      
-      if (token && role) {
-        try {
-          const response = await api.get('/auth/me');
-          setUser({ ...response.data, token });
-        } catch (err) {
-          console.error("Auth initialization failed:", err);
-          if (err.response?.status === 401) {
-            logout();
-          }
-        }
-      }
-      setLoading(false);
-    };
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
+    setUser(getInitialUser());
+    setLoading(false);
+    if (!token || !role) return;
 
-    fetchUser();
+    // Keep UI responsive: refresh auth profile in background.
+    api
+      .get('/auth/me')
+      .then((response) => {
+        const me = response?.data || {};
+        setUser((prev) => ({ ...(prev || {}), ...me, token, role: me.role || role }));
+      })
+      .catch((err) => {
+        if (err.response?.status === 401) {
+          logout();
+        }
+      });
   }, []);
 
   return (
     <AuthContext.Provider value={{ user, login, logout, loading }}>
-      {loading ? (
-        <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc' }}>
-          <div className="skeleton" style={{ width: '120px', height: '40px' }}></div>
-        </div>
-      ) : (
-        children
-      )}
+      {!loading && children}
     </AuthContext.Provider>
   );
 };

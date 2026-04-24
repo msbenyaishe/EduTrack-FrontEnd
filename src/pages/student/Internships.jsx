@@ -22,10 +22,14 @@ const StudentInternships = () => {
     fetchInternships();
   }, []);
 
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
   const fetchInternships = async () => {
     try {
-      const data = await internshipService.getStudentInternships();
-      setInternships(Array.isArray(data) ? data : (data ? [data] : []));
+      setLoading(true);
+      const normalize = (payload) => (Array.isArray(payload) ? payload : (payload ? [payload] : []));
+      const data = normalize(await internshipService.getStudentInternships());
+      setInternships(data);
     } catch (e) {
       console.error(e);
       setInternships([]);

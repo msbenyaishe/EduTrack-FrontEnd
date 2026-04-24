@@ -6,9 +6,29 @@ import { useTranslation } from 'react-i18next';
 import { formatDate } from '../../utils/locale';
 import { formatAcademicYear, formatGroupTitle } from '../../utils/groupFormatters';
 
+const API_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/api\/?$/, '');
+
+function normalizeMediaUrl(url) {
+  if (!url || typeof url !== 'string') return null;
+  if (/^https?:\/\//i.test(url)) return url;
+  if (!API_BASE) return url;
+  return `${API_BASE}${url.startsWith('/') ? '' : '/'}${url}`;
+}
+
+function parseAdditionalData(value) {
+  if (!value) return null;
+  if (typeof value === 'object') return value;
+  if (typeof value !== 'string') return null;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return null;
+  }
+}
+
 function pickStudentPhoto(student) {
   if (!student || typeof student !== 'object') return null;
-  return (
+  const raw =
     student.personal_image ||
     student.personal_image_url ||
     student.profile_picture ||
@@ -17,13 +37,35 @@ function pickStudentPhoto(student) {
     student.avatarUrl ||
     student.photo ||
     student.photoUrl ||
-    null
-  );
+    student.user?.personal_image ||
+    student.user?.personal_image_url ||
+    student.user?.avatar ||
+    student.user?.avatarUrl ||
+    student.profile?.personal_image ||
+    student.profile?.personal_image_url ||
+    null;
+  return normalizeMediaUrl(raw);
 }
 
 function pickPortfolioLink(student) {
   if (!student || typeof student !== 'object') return null;
-  return student.portfolio_link || student.portfolioLink || student.portfolio || null;
+  const additional =
+    parseAdditionalData(student.additional_profile_data) ||
+    parseAdditionalData(student.user?.additional_profile_data) ||
+    parseAdditionalData(student.profile?.additional_profile_data);
+
+  return (
+    student.portfolio_link ||
+    student.portfolioLink ||
+    student.portfolio ||
+    student.user?.portfolio_link ||
+    student.user?.portfolioLink ||
+    student.profile?.portfolio_link ||
+    student.profile?.portfolioLink ||
+    additional?.portfolio_link ||
+    additional?.portfolioLink ||
+    null
+  );
 }
 
 
@@ -54,7 +96,10 @@ const GroupDetails = () => {
         teacherService.getModules()
       ]);
       setGroup(groupData);
-      setStudents(studentsData);
+      const studentsRows = Array.isArray(studentsData)
+        ? studentsData
+        : studentsData?.students || studentsData?.data || [];
+      setStudents(studentsRows);
       setModules(groupModules);
       setAllModules(allTeacherModules);
 
@@ -170,13 +215,16 @@ const GroupDetails = () => {
               {students.length === 0 ? (
                 <div className="empty-modal-message">{t('teacher.groupDetails.noStudentsYet', { defaultValue: 'No students have joined this group yet.' })}</div>
               ) : (
-                students.map((student) => (
-                  <div key={student.id} className="member-row">
+                students.map((student) => {
+                  const photoUrl = pickStudentPhoto(student);
+                  const portfolioUrl = pickPortfolioLink(student);
+                  return (
+                  <div key={student.id} className="member-row member-row--group-details">
                     <div className="member-row__main">
-                      <div className="member-avatar">
-                        {pickStudentPhoto(student) ? (
+                      <div className="member-avatar member-avatar--group-details">
+                        {photoUrl ? (
                           <img
-                            src={pickStudentPhoto(student)}
+                            src={photoUrl}
                             alt={student.name || t('roles.student')}
                             className="member-avatar__img"
                             loading="lazy"
@@ -191,10 +239,10 @@ const GroupDetails = () => {
                         <div className="member-meta">
                           <span className="member-meta__item"><Mail size={12} /> {student.email}</span>
                           <span className="member-meta__item"><Clock size={12} /> {formatDate(student.joined_at, language)}</span>
-                          {pickPortfolioLink(student) ? (
+                          {portfolioUrl ? (
                             <a
                               className="member-meta__item"
-                              href={pickPortfolioLink(student)}
+                              href={portfolioUrl}
                               target="_blank"
                               rel="noreferrer"
                               title={t('teacher.groupDetails.openPortfolio', { defaultValue: 'Open portfolio' })}
@@ -214,7 +262,7 @@ const GroupDetails = () => {
                       <Trash2 size={18}/>
                     </button>
                   </div>
-                ))
+                )})
               )}
             </div>
           </div>

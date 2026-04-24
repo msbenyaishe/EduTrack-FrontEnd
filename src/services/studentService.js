@@ -1,5 +1,27 @@
 import api from './api';
 
+const cache = new Map();
+const DEFAULT_TTL_MS = 30 * 1000;
+
+function withCache(key, fetcher, ttl = DEFAULT_TTL_MS) {
+  const now = Date.now();
+  const cached = cache.get(key);
+  const isFresh = cached && now - cached.ts < ttl;
+
+  if (isFresh) {
+    // Refresh cache in background without blocking UI.
+    fetcher()
+      .then((data) => cache.set(key, { data, ts: Date.now() }))
+      .catch(() => {});
+    return Promise.resolve(cached.data);
+  }
+
+  return fetcher().then((data) => {
+    cache.set(key, { data, ts: Date.now() });
+    return data;
+  });
+}
+
 /** Resolve when the student joined the group (API shape varies). */
 function pickStudentJoinedAt(g) {
   if (!g || typeof g !== 'object') return null;
@@ -24,47 +46,55 @@ function pickStudentJoinedAt(g) {
 
 export const studentService = {
   getDashboardStats: async () => {
-    const [groupsRes, modulesRes, submissionsRes] = await Promise.all([
-      api.get('/groups/student/my-groups'),
-      api.get('/students/modules'), // Assuming this returns some counts
-      api.get('/students/submissions')
-    ]);
+    return withCache('student:getDashboardStats', async () => {
+      const [groupsRes, modulesRes, submissionsRes] = await Promise.all([
+        api.get('/groups/student/my-groups'),
+        api.get('/students/modules'), // Assuming this returns some counts
+        api.get('/students/submissions')
+      ]);
 
-    const groupsRaw = groupsRes.data;
-    const groupsArr = Array.isArray(groupsRaw) ? groupsRaw : groupsRaw?.groups ?? [];
+      const groupsRaw = groupsRes.data;
+      const groupsArr = Array.isArray(groupsRaw) ? groupsRaw : groupsRaw?.groups ?? [];
 
-    // Create distinct module count based on ID
-    const uniqueModules = new Set((modulesRes.data || []).map(m => m.id));
+      // Create distinct module count based on ID
+      const uniqueModules = new Set((modulesRes.data || []).map(m => m.id));
 
-    return {
-      groupsCount: groupsArr.length || 0,
-      modulesCount: uniqueModules.size || 0,
-      recentSubmissions: submissionsRes.data || {}
-    };
+      return {
+        groupsCount: groupsArr.length || 0,
+        modulesCount: uniqueModules.size || 0,
+        recentSubmissions: submissionsRes.data || {}
+      };
+    });
   },
   
   // MODULES
   getModules: async () => {
-    const res = await api.get('/students/modules');
-    return res.data;
+    return withCache('student:getModules', async () => {
+      const res = await api.get('/students/modules');
+      return res.data;
+    });
   },
 
   // GROUPS
   getMyGroups: async () => {
-    const res = await api.get('/groups/student/my-groups');
-    const raw = res.data;
-    const rows = Array.isArray(raw) ? raw : raw?.groups ?? [];
-    return rows.map((g) => ({
-      ...g,
-      joined_at: pickStudentJoinedAt(g),
-    }));
+    return withCache('student:getMyGroups', async () => {
+      const res = await api.get('/groups/student/my-groups');
+      const raw = res.data;
+      const rows = Array.isArray(raw) ? raw : raw?.groups ?? [];
+      return rows.map((g) => ({
+        ...g,
+        joined_at: pickStudentJoinedAt(g),
+      }));
+    });
   },
   joinGroup: async (invite_code) => {
     const res = await api.post('/groups/join', { invite_code });
+    cache.clear();
     return res.data;
   },
   deleteSubmission: async (submissionType, submissionId) => {
     const res = await api.delete('/students/submissions', { data: { submissionType, submissionId } });
+    cache.clear();
     return res.data;
   }
 };

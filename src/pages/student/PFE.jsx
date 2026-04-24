@@ -38,6 +38,8 @@ const StudentPFE = () => {
     loadInitialData();
   }, []);
 
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
   const loadInitialData = async () => {
     try {
       setLoading(true);
@@ -57,7 +59,11 @@ const StudentPFE = () => {
 
   const fetchTeams = async (groupId) => {
     try {
-      const data = await pfeService.getTeams(groupId || selectedGroupId);
+      setLoading(true);
+      const targetGroupId = groupId || selectedGroupId;
+      const normalize = (payload) => (Array.isArray(payload) ? payload : payload?.teams || payload?.data || []);
+
+      const data = normalize(await pfeService.getTeams(targetGroupId));
       setTeams(data);
       if (data.length > 0) {
         setFormData(prev => ({ ...prev, pfe_team_id: data[0].id }));

@@ -14,6 +14,7 @@ const TeacherInternships = () => {
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [internships, setInternships] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingInternships, setLoadingInternships] = useState(false);
 
   useEffect(() => {
     fetchInitialData();
@@ -37,6 +38,7 @@ const TeacherInternships = () => {
   };
 
   const fetchInternships = async (groupId) => {
+    setLoadingInternships(true);
     try {
       const data = await internshipService.getGroupInternships(groupId);
       setInternships(data);
@@ -45,6 +47,8 @@ const TeacherInternships = () => {
         id: 1, student_name: 'John Doe', company_name: 'Google',
         supervisor_name: 'Jane Smith', start_date: '2025-02-01', end_date: '2025-06-01'
       }]);
+    } finally {
+      setLoadingInternships(false);
     }
   };
 
@@ -74,7 +78,7 @@ const TeacherInternships = () => {
       </div>
 
       <div className="grid-cards">
-        {(loading) ? (
+        {loading || loadingInternships ? (
           <div className="loading-state">{t('teacher.internships.loading', { defaultValue: 'Loading internships...' })}</div>
         ) : internships.length === 0 ? (
           <div className="empty-state-card card">

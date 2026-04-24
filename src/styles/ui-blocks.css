@@ -713,6 +713,25 @@
   display: block;
 }
 
+/* Group Details: larger rounded-square avatars for enrolled students */
+.member-avatar--group-details {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: var(--radius-md);
+  font-size: 1.0625rem;
+  border: 2px solid #cbd5e1;
+}
+
+.member-row--group-details .member-name {
+  font-size: 1.125rem;
+  line-height: 1.3;
+}
+
+.member-row--group-details .member-meta__item {
+  font-size: 0.9375rem;
+  line-height: 1.4;
+}
+
 .member-name {
   font-weight: 600;
   color: var(--secondary-color);

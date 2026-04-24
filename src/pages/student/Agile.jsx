@@ -45,6 +45,8 @@ const StudentAgile = () => {
     loadInitialData();
   }, []);
 
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
   const loadInitialData = async () => {
     try {
       setLoading(true);
@@ -64,8 +66,13 @@ const StudentAgile = () => {
 
   const fetchTeams = async (groupId) => {
     try {
-      const data = await agileService.getTeams(groupId || selectedGroupId);
+      setLoading(true);
+      const targetGroupId = groupId || selectedGroupId;
+      const normalize = (payload) => (Array.isArray(payload) ? payload : payload?.teams || payload?.data || []);
+
+      const data = normalize(await agileService.getTeams(targetGroupId));
       setTeams(data);
+      
       // Check if user is in any team
       const inTeam = data.some(t => t.members?.some(m => Number(m.id) === Number(user?.id)));
       setUserInTeam(inTeam);

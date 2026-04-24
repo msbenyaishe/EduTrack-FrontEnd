@@ -13,6 +13,7 @@ const TeacherPFE = () => {
 
   const [pfeTeams, setPfeTeams] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingTeams, setLoadingTeams] = useState(false);
 
   const [showMembersModal, setShowMembersModal] = useState(false);
   const [membersModalTeam, setMembersModalTeam] = useState(null);
@@ -41,11 +42,14 @@ const TeacherPFE = () => {
   };
 
   const fetchPfeTeams = async (groupId) => {
+    setLoadingTeams(true);
     try {
       const data = await pfeService.getTeams(groupId);
       setPfeTeams(data);
     } catch {
       setPfeTeams([{ id: 1, name: 'PFE EduTrack', members: 2 }]);
+    } finally {
+      setLoadingTeams(false);
     }
   };
 
@@ -95,7 +99,7 @@ const TeacherPFE = () => {
       </div>
 
       <div className="grid-cards">
-        {(loading) ? (
+        {loading || loadingTeams ? (
           <div className="loading-state">{t('teacher.pfe.loading', { defaultValue: 'Loading PFE teams...' })}</div>
         ) : pfeTeams.length === 0 ? (
           <div className="empty-state-card card">
