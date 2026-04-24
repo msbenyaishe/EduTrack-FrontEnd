@@ -93,11 +93,11 @@ const Companies = () => {
                 {user?.role === 'teacher' && (
                   <button 
                     type="button" 
-                    className="icon-action-btn icon-action-btn--danger" 
+                    className="icon-action-btn icon-action-btn--danger icon-action-btn--lg" 
                     onClick={() => handleDelete(company.id)}
                     title={t('companies.delete', { defaultValue: 'Delete Company' })}
                   >
-                    <Trash2 size={18} />
+                    <Trash2 size={24} />
                   </button>
                 )}
               </div>
