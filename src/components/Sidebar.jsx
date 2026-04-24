@@ -8,7 +8,8 @@ import {
   CheckSquare, 
   Upload, 
   FileBox, 
-  GraduationCap 
+  GraduationCap,
+  Building
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import '../styles/sidebar.css';
@@ -23,6 +24,7 @@ const Sidebar = ({ role, onNavigate, id }) => {
     { to: '/teacher/agile', icon: CheckSquare, label: t('sidebar.agileTeams') },
     { to: '/teacher/pfe', icon: GraduationCap, label: t('sidebar.pfe') },
     { to: '/teacher/internships', icon: FileBox, label: t('sidebar.internships') },
+    { to: '/teacher/companies', icon: Building, label: t('sidebar.companies', { defaultValue: 'Companies' }) },
     { to: '/teacher/submissions', icon: Upload, label: t('sidebar.submissions') },
   ];
 
@@ -34,6 +36,7 @@ const Sidebar = ({ role, onNavigate, id }) => {
     { to: '/student/agile', icon: CheckSquare, label: t('sidebar.agileTeams') },
     { to: '/student/pfe', icon: GraduationCap, label: t('sidebar.pfe') },
     { to: '/student/internships', icon: FileBox, label: t('sidebar.internship') },
+    { to: '/student/companies', icon: Building, label: t('sidebar.companies', { defaultValue: 'Companies' }) },
     { to: '/student/submissions', icon: Upload, label: t('sidebar.mySubmissions') },
   ];
 

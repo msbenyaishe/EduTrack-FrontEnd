@@ -33,6 +33,9 @@ import StudentPFE from '../pages/student/PFE';
 import StudentInternships from '../pages/student/Internships';
 import StudentSubmissions from '../pages/student/Submissions';
 
+// Shared Pages
+import Companies from '../pages/shared/Companies';
+
 const AppRoutes = () => {
   return (
     <Routes>
@@ -55,6 +58,7 @@ const AppRoutes = () => {
           <Route path="/teacher/agile" element={<TeacherAgile />} />
           <Route path="/teacher/pfe" element={<TeacherPFE />} />
           <Route path="/teacher/internships" element={<TeacherInternships />} />
+          <Route path="/teacher/companies" element={<Companies />} />
           <Route path="/teacher/submissions" element={<TeacherSubmissions />} />
         </Route>
       </Route>
@@ -69,6 +73,7 @@ const AppRoutes = () => {
           <Route path="/student/agile" element={<StudentAgile />} />
           <Route path="/student/pfe" element={<StudentPFE />} />
           <Route path="/student/internships" element={<StudentInternships />} />
+          <Route path="/student/companies" element={<Companies />} />
           <Route path="/student/submissions" element={<StudentSubmissions />} />
         </Route>
       </Route>

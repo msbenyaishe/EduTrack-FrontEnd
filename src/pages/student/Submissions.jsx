@@ -23,6 +23,7 @@ const StudentSubmissions = () => {
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
+  const [filterType, setFilterType] = useState('all');
 
   useEffect(() => {
     fetchSubmissions();
@@ -105,19 +106,34 @@ const StudentSubmissions = () => {
           <h1 className="page-title">{t('student.submissions.title', { defaultValue: 'My Submissions' })}</h1>
           <p className="page-subtitle">{t('student.submissions.subtitle', { defaultValue: 'History of all your assignments, sprints, and tasks.' })}</p>
         </div>
+        <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
+          <select 
+            className="form-input" 
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value)}
+            style={{ minWidth: '150px' }}
+          >
+            <option value="all">{t('common.allTypes', { defaultValue: 'All Types' })}</option>
+            <option value="workshop">{t('student.submissions.workshop', { defaultValue: 'Workshop' })}</option>
+            <option value="sprint">{t('student.submissions.sprint', { defaultValue: 'Sprint' })}</option>
+            <option value="pfe">{t('student.submissions.pfe', { defaultValue: 'PFE' })}</option>
+          </select>
+        </div>
       </div>
 
       <div className="grid-cards my-submissions-grid">
         {loading ? (
           <div className="loading-state">{t('student.submissions.loading', { defaultValue: 'Loading submissions...' })}</div>
-        ) : submissions.length === 0 ? (
-          <div className="empty-state-card card">
-            <CheckCircle size={48} className="empty-state-card__icon" />
-            <h3 className="empty-state-card__title">{t('student.submissions.emptyTitle', { defaultValue: 'No Submissions Found' })}</h3>
-            <p>{t('student.submissions.emptyText', { defaultValue: "You haven't submitted any assignments yet." })}</p>
-          </div>
-        ) : (
-          submissions.map(sub => {
+        ) : (() => {
+          const filteredSubmissions = submissions.filter(s => filterType === 'all' || s.apiType === filterType);
+          return filteredSubmissions.length === 0 ? (
+            <div className="empty-state-card card">
+              <CheckCircle size={48} className="empty-state-card__icon" />
+              <h3 className="empty-state-card__title">{t('student.submissions.emptyTitle', { defaultValue: 'No Submissions Found' })}</h3>
+              <p>{t('student.submissions.emptyText', { defaultValue: "You haven't submitted any assignments yet." })}</p>
+            </div>
+          ) : (
+            filteredSubmissions.map(sub => {
             const reaction = sub.reaction;
             return (
             <div key={sub.id} className="card card--col my-submission-card">
@@ -195,7 +211,8 @@ const StudentSubmissions = () => {
             </div>
           );
           })
-        )}
+        )
+        })()}
       </div>
     </div>
   );
