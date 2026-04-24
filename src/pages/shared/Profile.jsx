@@ -16,6 +16,7 @@ const Profile = () => {
   // Profile Form State
   const [profileData, setProfileData] = useState({
     name: user?.name || '',
+    email: user?.email || '',
     portfolio_link: user?.portfolio_link || '',
     additional_profile_data: user?.additional_profile_data || '',
   });
@@ -33,6 +34,7 @@ const Profile = () => {
     if (user) {
       setProfileData({
         name: user.name || '',
+        email: user.email || '',
         portfolio_link: user.portfolio_link || '',
         additional_profile_data: user.additional_profile_data || '',
       });
@@ -60,6 +62,7 @@ const Profile = () => {
     try {
       const formData = new FormData();
       formData.append('name', profileData.name);
+      formData.append('email', profileData.email);
       if (user.role === 'student') {
         formData.append('portfolio_link', profileData.portfolio_link);
         formData.append('additional_profile_data', profileData.additional_profile_data);
@@ -184,6 +187,21 @@ const Profile = () => {
                     value={profileData.name}
                     onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
                     placeholder={t('profile.placeholders.fullName', { defaultValue: 'Enter your full name' })}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">{t('auth.email', { defaultValue: 'Email Address' })}</label>
+                <div className="input-with-icon">
+                  <Mail size={18} className="input-icon" />
+                  <input
+                    type="email"
+                    className="form-input"
+                    value={profileData.email}
+                    onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
+                    placeholder={t('profile.placeholders.email', { defaultValue: 'Enter your email address' })}
                     required
                   />
                 </div>
