@@ -237,8 +237,7 @@ const GroupDetails = () => {
                       <div>
                         <div className="member-name">{student.name}</div>
                         <div className="member-meta">
-                          <span className="member-meta__item"><Mail size={12} /> {student.email}</span>
-                          <span className="member-meta__item"><Clock size={12} /> {formatDate(student.joined_at, language)}</span>
+                          <span className="member-meta__item"><Mail size={12} /> <span className="member-meta__text">{student.email}</span></span>
                           {portfolioUrl ? (
                             <a
                               className="member-meta__item"
@@ -247,9 +246,10 @@ const GroupDetails = () => {
                               rel="noreferrer"
                               title={t('teacher.groupDetails.openPortfolio', { defaultValue: 'Open portfolio' })}
                             >
-                              <LinkIcon size={12} /> {t('teacher.groupDetails.portfolio', { defaultValue: 'Portfolio' })}
+                              <LinkIcon size={12} /> <span className="member-meta__text">{t('teacher.groupDetails.portfolio', { defaultValue: 'Portfolio' })}</span>
                             </a>
                           ) : null}
+                          <span className="member-meta__item"><Clock size={12} /> <span className="member-meta__text">{formatDate(student.joined_at, language)}</span></span>
                         </div>
                       </div>
                     </div>

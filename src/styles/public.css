@@ -523,7 +523,7 @@ body.public-nav-open {
   }
 
   .landing-hero {
-    padding-top: max(var(--space-lg), env(safe-area-inset-top));
+    padding-top: max(var(--space-xl), env(safe-area-inset-top));
   }
 
   .landing-hero__title {

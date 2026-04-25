@@ -58,6 +58,11 @@ export const AuthProvider = ({ children }) => {
       .get('/auth/me')
       .then((response) => {
         const me = response?.data || {};
+        if (me.portfolio_link) localStorage.setItem('portfolioLink', me.portfolio_link);
+        if (me.additional_profile_data) localStorage.setItem('additionalProfileData', me.additional_profile_data);
+        if (me.name) localStorage.setItem('userName', me.name);
+        if (me.personal_image) localStorage.setItem('personalImage', me.personal_image);
+        
         setUser((prev) => ({ ...(prev || {}), ...me, token, role: me.role || role }));
       })
       .catch((err) => {
