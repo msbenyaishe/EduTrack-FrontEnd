@@ -12,7 +12,7 @@ const StudentModules = () => {
 
   useEffect(() => {
     fetchModules();
-  }, []);
+  }, [t]);
 
   const fetchModules = async () => {
     try {

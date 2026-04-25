@@ -325,7 +325,7 @@ const StudentAgile = () => {
                       onClick={() => handleViewMembers(team)}
                     >
                       <Users size={14} />
-                      {team.members?.length || 0} Members
+                    {team.members?.length || 0} {t('student.agile.members', { defaultValue: 'Members' })}
                     </button>
                   </div>
                 </div>
@@ -430,7 +430,7 @@ const StudentAgile = () => {
           <div className="modal-content modal-content--narrow">
             <div className="modal-header">
               <h2 className="font-bold modal-title-row">
-                {viewingTeamName} Members
+                {t('student.agile.membersTitle', { defaultValue: '{{team}} Members', team: viewingTeamName })}
               </h2>
               <button type="button" className="modal-close" onClick={() => setShowMembersModal(false)} aria-label={t('common.close')}><X size={20} /></button>
             </div>
@@ -497,7 +497,7 @@ const StudentAgile = () => {
           <div className="modal-content modal-content--wide">
             <div className="modal-header">
               <h2 className="font-bold modal-title-row modal-title-row--muted">
-                Team Sprints: {selectedTeam?.name}
+                {t('student.agile.teamSprintsTitle', { defaultValue: 'Team Sprints: {{team}}', team: selectedTeam?.name })}
               </h2>
               <button type="button" className="modal-close" onClick={() => {
                 setShowSprintsModal(false);
@@ -639,7 +639,9 @@ const StudentAgile = () => {
 
                   <div className="sprint-form-panel">
                     <h3 className="sprint-form-panel__title">
-                      {submissionForm.sprintId ? 'Submit Sprint' : 'Select a sprint'}
+                      {submissionForm.sprintId
+                        ? t('student.agile.submitSprintTitle', { defaultValue: 'Submit Sprint' })
+                        : t('student.agile.selectSprintTitle', { defaultValue: 'Select a sprint' })}
                     </h3>
 
                       {submissionForm.sprintId ? (
@@ -653,7 +655,7 @@ const StudentAgile = () => {
                             id="sprint-repo"
                             type="url"
                             className="form-input"
-                            placeholder="https://github.com/..."
+                            placeholder={t('student.agile.repoPlaceholder', { defaultValue: 'https://github.com/...' })}
                             value={submissionForm.repo}
                             onChange={(e) => handleSubmissionChange('repo', e.target.value)}
                           />
@@ -664,7 +666,7 @@ const StudentAgile = () => {
                             id="sprint-demo"
                             type="url"
                             className="form-input"
-                            placeholder="https://app-demo.com"
+                            placeholder={t('student.agile.liveDemoPlaceholder', { defaultValue: 'https://app-demo.com' })}
                             value={submissionForm.web_page}
                             onChange={(e) => handleSubmissionChange('web_page', e.target.value)}
                           />
@@ -675,7 +677,7 @@ const StudentAgile = () => {
                             id="sprint-pdf"
                             type="text"
                             className="form-input"
-                            placeholder="Google Drive / Dropbox Link"
+                            placeholder={t('student.agile.pdfPlaceholder', { defaultValue: 'Google Drive / Dropbox Link' })}
                             required
                             value={submissionForm.pdf_report}
                             onChange={(e) => handleSubmissionChange('pdf_report', e.target.value)}
@@ -687,10 +689,12 @@ const StudentAgile = () => {
                             className="btn btn-secondary"
                             onClick={() => setSubmissionForm({ sprintId: null, repo: '', web_page: '', pdf_report: '' })}
                           >
-                            Cancel
+                            {t('student.agile.cancel', { defaultValue: 'Cancel' })}
                           </button>
                           <button type="submit" className="btn btn-primary">
-                            {teamSubmissions.some(sub => sub.sprint_id === submissionForm.sprintId) ? 'Save Changes' : 'Submit Work'}
+                            {teamSubmissions.some(sub => sub.sprint_id === submissionForm.sprintId)
+                              ? t('student.agile.saveChanges', { defaultValue: 'Save Changes' })
+                              : t('student.agile.submitWork', { defaultValue: 'Submit Work' })}
                           </button>
                         </div>
                       </form>

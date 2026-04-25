@@ -240,7 +240,11 @@ const TeacherWorkshops = () => {
 
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" onClick={() => { setShowModal(false); resetForm(); }}>{t('teacher.workshops.cancel', { defaultValue: 'Cancel' })}</button>
-                <button type="submit" className="btn btn-primary">{editingId ? 'Update Workshop' : 'Save Workshop'}</button>
+                <button type="submit" className="btn btn-primary">
+                  {editingId
+                    ? t('teacher.workshops.updateWorkshop', { defaultValue: 'Update Workshop' })
+                    : t('teacher.workshops.saveWorkshop', { defaultValue: 'Save Workshop' })}
+                </button>
               </div>
             </form>
           </div>

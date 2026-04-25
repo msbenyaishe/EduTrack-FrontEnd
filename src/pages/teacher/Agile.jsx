@@ -283,7 +283,7 @@ const TeacherAgile = () => {
                       type="text"
                       className="form-input"
                       required
-                      placeholder="e.g. Sprint 1: MVP"
+                      placeholder={t('teacher.agile.sprintTitlePlaceholder', { defaultValue: 'e.g. Sprint 1: MVP' })}
                       value={newSprint.title}
                       onChange={(e) => setNewSprint({...newSprint, title: e.target.value})}
                     />
@@ -319,7 +319,7 @@ const TeacherAgile = () => {
                       id="sprint-pdf"
                       type="url"
                       className="form-input"
-                      placeholder="https://..."
+                      placeholder={t('teacher.agile.urlPlaceholder', { defaultValue: 'https://...' })}
                       value={newSprint.pdf_report}
                       onChange={(e) => setNewSprint({ ...newSprint, pdf_report: e.target.value })}
                     />
@@ -330,7 +330,7 @@ const TeacherAgile = () => {
                       id="sprint-repo"
                       type="url"
                       className="form-input"
-                      placeholder="https://github.com/..."
+                      placeholder={t('teacher.agile.repoPlaceholder', { defaultValue: 'https://github.com/...' })}
                       value={newSprint.repo}
                       onChange={(e) => setNewSprint({ ...newSprint, repo: e.target.value })}
                     />
@@ -341,7 +341,7 @@ const TeacherAgile = () => {
                       id="sprint-web"
                       type="url"
                       className="form-input"
-                      placeholder="https://..."
+                      placeholder={t('teacher.agile.urlPlaceholder', { defaultValue: 'https://...' })}
                       value={newSprint.web_page}
                       onChange={(e) => setNewSprint({ ...newSprint, web_page: e.target.value })}
                     />
@@ -363,7 +363,7 @@ const TeacherAgile = () => {
                         <div key={s.id} className="sprint-row">
                           <div>
                             <div className="font-bold">{s.title}</div>
-                            <div className="card__muted">{s.module_title} • {new Date(s.created_at).toLocaleDateString()}</div>
+                            <div className="card__muted">{s.module_title} • {formatDate(s.created_at, language)}</div>
                           </div>
                           <div style={{ display: 'flex', gap: '0.5rem' }}>
                             <button
@@ -426,7 +426,7 @@ const TeacherAgile = () => {
                   id="edit-sprint-pdf"
                   type="url"
                   className="form-input"
-                  placeholder="https://..."
+                  placeholder={t('teacher.agile.urlPlaceholder', { defaultValue: 'https://...' })}
                   value={editSprintForm.pdf_report}
                   onChange={(e) => setEditSprintForm({ ...editSprintForm, pdf_report: e.target.value })}
                 />
@@ -437,7 +437,7 @@ const TeacherAgile = () => {
                   id="edit-sprint-repo"
                   type="url"
                   className="form-input"
-                  placeholder="https://github.com/..."
+                  placeholder={t('teacher.agile.repoPlaceholder', { defaultValue: 'https://github.com/...' })}
                   value={editSprintForm.repo}
                   onChange={(e) => setEditSprintForm({ ...editSprintForm, repo: e.target.value })}
                 />
@@ -448,7 +448,7 @@ const TeacherAgile = () => {
                   id="edit-sprint-web"
                   type="url"
                   className="form-input"
-                  placeholder="https://..."
+                  placeholder={t('teacher.agile.urlPlaceholder', { defaultValue: 'https://...' })}
                   value={editSprintForm.web_page}
                   onChange={(e) => setEditSprintForm({ ...editSprintForm, web_page: e.target.value })}
                 />
@@ -472,7 +472,10 @@ const TeacherAgile = () => {
           <div className="modal-content modal-content--narrow">
             <div className="modal-header">
               <h2 className="font-bold modal-title-row">
-                {membersModalTeam.name} Members
+                {t('teacher.agile.membersTitle', {
+                  defaultValue: '{{team}} Members',
+                  team: membersModalTeam.name,
+                })}
               </h2>
               <button
                 type="button"
@@ -502,8 +505,10 @@ const TeacherAgile = () => {
               ) : (
                 <div className="text-italic-muted padded-y-muted">
                   {Array.isArray(membersModalTeam.members) && membersModalTeam.members.length === 0
-                    ? 'No students in this team yet.'
-                    : 'Member names are not available for this team. The list will appear once the server returns a members array on each team.'}
+                    ? t('teacher.agile.noStudents', { defaultValue: 'No students in this team yet.' })
+                    : t('teacher.agile.memberNamesUnavailable', {
+                        defaultValue: 'Member names are not available for this team. The list will appear once the server returns a members array on each team.',
+                      })}
                 </div>
               )}
             </div>
@@ -514,7 +519,7 @@ const TeacherAgile = () => {
                 className="btn btn-secondary btn--block"
                 onClick={() => setShowMembersModal(false)}
               >
-                Close
+                {t('common.close', { defaultValue: 'Close' })}
               </button>
             </div>
           </div>

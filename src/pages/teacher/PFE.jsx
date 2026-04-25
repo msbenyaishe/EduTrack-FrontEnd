@@ -157,7 +157,7 @@ const TeacherPFE = () => {
           <div className="modal-content modal-content--narrow">
             <div className="modal-header">
               <h2 className="font-bold modal-title-row">
-                {membersModalTeam.name} {t('teacher.pfe.members', { defaultValue: 'Members' })}
+                {t('teacher.pfe.membersTitle', { defaultValue: '{{team}} Members', team: membersModalTeam.name })}
               </h2>
               <button
                 type="button"

@@ -359,7 +359,14 @@ const StudentInternships = () => {
               </div>
               <div className="form-group">
                 <label className="form-label" htmlFor="report-url">{t('student.internships.reportUrl', { defaultValue: 'Report URL (Optional Link)' })}</label>
-                <input id="report-url" type="url" className="form-input" placeholder="https://..." value={formData.report_pdf} onChange={e => setFormData({...formData, report_pdf: e.target.value})} />
+                <input
+                  id="report-url"
+                  type="url"
+                  className="form-input"
+                  placeholder={t('student.internships.urlPlaceholder', { defaultValue: 'https://...' })}
+                  value={formData.report_pdf}
+                  onChange={e => setFormData({...formData, report_pdf: e.target.value})}
+                />
               </div>
               </div>
               <div className="modal-footer">

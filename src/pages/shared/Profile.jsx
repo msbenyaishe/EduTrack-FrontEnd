@@ -462,7 +462,7 @@ const Profile = () => {
                 <div className="badge-preview-container">
                   {badgePreview ? (
                     <>
-                      <img src={badgePreview} alt="Badge Preview" className="badge-preview-img" />
+                      <img src={badgePreview} alt={t('profile.badgePreviewAlt', { defaultValue: 'Badge Preview' })} className="badge-preview-img" />
                       <p className="badge-note">{t('profile.badgeNote', { defaultValue: 'This preview is temporary. Please download it now.' })}</p>
                     </>
                   ) : (

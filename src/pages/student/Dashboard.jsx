@@ -20,9 +20,9 @@ const StudentDashboard = () => {
         threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
 
         const flattened = [
-          ...(submissions.workshopSubmissions || []).map(s => ({ ...s, title: s.workshop_title, status: 'Workshop', date: s.submitted_at, reaction: s.teacher_reaction || s.reaction || null })),
-          ...(submissions.sprintSubmissions || []).map(s => ({ ...s, title: s.sprint_title, status: 'Sprint', date: s.submitted_at, reaction: s.teacher_reaction || s.reaction || null })),
-          ...(submissions.pfeSubmissions || []).map(s => ({ ...s, title: s.project_title || t('student.dashboard.pfeFinal', { defaultValue: 'PFE Final' }), status: 'PFE', date: s.submitted_at, reaction: s.teacher_reaction || s.reaction || null }))
+          ...(submissions.workshopSubmissions || []).map(s => ({ ...s, title: s.workshop_title, statusType: 'workshop', date: s.submitted_at, reaction: s.teacher_reaction || s.reaction || null })),
+          ...(submissions.sprintSubmissions || []).map(s => ({ ...s, title: s.sprint_title, statusType: 'sprint', date: s.submitted_at, reaction: s.teacher_reaction || s.reaction || null })),
+          ...(submissions.pfeSubmissions || []).map(s => ({ ...s, title: s.project_title || t('student.dashboard.pfeFinal', { defaultValue: 'PFE Final' }), statusType: 'pfe', date: s.submitted_at, reaction: s.teacher_reaction || s.reaction || null }))
         ]
         .filter(sub => new Date(sub.date) >= threeDaysAgo)
         .sort((a, b) => new Date(b.date) - new Date(a.date))
@@ -40,7 +40,7 @@ const StudentDashboard = () => {
       }
     };
     fetchStats();
-  }, []);
+  }, [t]);
 
   return (
     <div className="dashboard-page">
@@ -101,7 +101,7 @@ const StudentDashboard = () => {
                   <div className="activity-item__body">
                     <div className="activity-item__top">
                       <p className="activity-text__title">
-                        {sub.title || t('student.dashboard.assignment', { defaultValue: 'Assignment' })} — {sub.status}
+                        {sub.title || t('student.dashboard.assignment', { defaultValue: 'Assignment' })} — {t(`student.dashboard.status.${sub.statusType}`, { defaultValue: sub.statusType })}
                       </p>
                       <span className="activity-inline-date">
                         <Clock size={14} aria-hidden />

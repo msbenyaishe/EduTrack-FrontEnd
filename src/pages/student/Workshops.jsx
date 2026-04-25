@@ -16,7 +16,7 @@ const StudentWorkshops = () => {
 
   useEffect(() => {
     fetchWorkshops();
-  }, []);
+  }, [t]);
 
   const fetchWorkshops = async () => {
     try {

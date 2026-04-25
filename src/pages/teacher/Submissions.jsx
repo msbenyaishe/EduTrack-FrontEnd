@@ -15,12 +15,20 @@ const SubmissionsDashboard = () => {
   const location = useLocation();
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedGroup, setSelectedGroup] = useState('All');
-  const [selectedYear, setSelectedYear] = useState('All');
-  const [selectedType, setSelectedType] = useState(location.state?.filterType || 'All');
+  const [selectedGroup, setSelectedGroup] = useState('all');
+  const [selectedYear, setSelectedYear] = useState('all');
+  const [selectedType, setSelectedType] = useState(
+    location.state?.filterType === 'Workshops'
+      ? 'workshop'
+      : location.state?.filterType === 'Agile Sprints'
+        ? 'sprint'
+        : location.state?.filterType === 'PFE'
+          ? 'pfe'
+          : 'all'
+  );
   useEffect(() => {
     fetchSubmissions();
-  }, []);
+  }, [t]);
 
   const fetchSubmissions = async () => {
     try {
@@ -37,8 +45,9 @@ const SubmissionsDashboard = () => {
         id: `ws-${s.id}`,
         submissionId: s.id,
         submissionType: 'workshop',
+        category: 'workshop',
         student: s.student_name,
-        type: `Workshop: ${s.workshop_title}`,
+        itemTitle: s.workshop_title,
         module: s.module_title,
         group: formatGroupTitle(s.group_name, year),
         groupYear: year ? formatAcademicYear(year) : null,
@@ -54,8 +63,9 @@ const SubmissionsDashboard = () => {
         id: `sp-${s.id}`,
         submissionId: s.id,
         submissionType: 'sprint',
+        category: 'sprint',
         student: s.team_name,
-        type: `Sprint: ${s.sprint_title}`,
+        itemTitle: s.sprint_title,
         module: s.module_title,
         group: formatGroupTitle(s.group_name, year),
         groupYear: year ? formatAcademicYear(year) : null,
@@ -71,8 +81,9 @@ const SubmissionsDashboard = () => {
         id: `pfe-${s.id}`,
         submissionId: s.id,
         submissionType: 'pfe',
+        category: 'pfe',
         student: s.team_name,
-        type: `PFE: ${s.project_title || 'Final Project'}`,
+        itemTitle: s.project_title || t('teacher.submissions.finalProject', { defaultValue: 'Final Project' }),
         group: formatGroupTitle(s.group_name, year),
         groupYear: year ? formatAcademicYear(year) : null,
         date: s.submitted_at,
@@ -99,16 +110,13 @@ const SubmissionsDashboard = () => {
     }
   };
 
-  const uniqueGroups = ['All', ...new Set(submissions.map(s => s.group).filter(Boolean))];
-  const uniqueYears = ['All', ...new Set(submissions.map(s => s.groupYear).filter(Boolean))];
+  const uniqueGroups = ['all', ...new Set(submissions.map(s => s.group).filter(Boolean))];
+  const uniqueYears = ['all', ...new Set(submissions.map(s => s.groupYear).filter(Boolean))];
 
   const filteredSubmissions = submissions.filter(sub => {
-    const matchGroup = selectedGroup === 'All' || sub.group === selectedGroup;
-    const matchYear = selectedYear === 'All' || sub.groupYear === selectedYear;
-    let matchType = true;
-    if (selectedType === 'Workshops') matchType = sub.type.startsWith('Workshop');
-    if (selectedType === 'Agile Sprints') matchType = sub.type.startsWith('Sprint');
-    if (selectedType === 'PFE') matchType = sub.type.startsWith('PFE');
+    const matchGroup = selectedGroup === 'all' || sub.group === selectedGroup;
+    const matchYear = selectedYear === 'all' || sub.groupYear === selectedYear;
+    const matchType = selectedType === 'all' || sub.category === selectedType;
     return matchGroup && matchYear && matchType;
   });
 
@@ -163,7 +171,7 @@ const SubmissionsDashboard = () => {
             aria-label={t('teacher.submissions.filterByGroup', { defaultValue: 'Filter by group' })}
           >
             {uniqueGroups.map(group => (
-              <option key={group} value={group}>{group === 'All' ? t('teacher.submissions.allGroups', { defaultValue: 'All Groups' }) : group}</option>
+              <option key={group} value={group}>{group === 'all' ? t('teacher.submissions.allGroups', { defaultValue: 'All Groups' }) : group}</option>
             ))}
           </select>
 
@@ -173,10 +181,10 @@ const SubmissionsDashboard = () => {
             onChange={(e) => setSelectedType(e.target.value)}
             aria-label={t('teacher.submissions.filterByType', { defaultValue: 'Filter by type' })}
           >
-            <option value="All">{t('teacher.submissions.allTypes', { defaultValue: 'All Types' })}</option>
-            <option value="Workshops">{t('teacher.submissions.workshops', { defaultValue: 'Workshops' })}</option>
-            <option value="Agile Sprints">{t('teacher.submissions.agileSprints', { defaultValue: 'Agile Sprints' })}</option>
-            <option value="PFE">{t('teacher.submissions.pfe', { defaultValue: 'PFE' })}</option>
+            <option value="all">{t('teacher.submissions.allTypes', { defaultValue: 'All Types' })}</option>
+            <option value="workshop">{t('teacher.submissions.workshops', { defaultValue: 'Workshops' })}</option>
+            <option value="sprint">{t('teacher.submissions.agileSprints', { defaultValue: 'Agile Sprints' })}</option>
+            <option value="pfe">{t('teacher.submissions.pfe', { defaultValue: 'PFE' })}</option>
           </select>
 
           <select
@@ -186,7 +194,7 @@ const SubmissionsDashboard = () => {
             aria-label={t('teacher.submissions.filterByYear', { defaultValue: 'Filter by year' })}
           >
             {uniqueYears.map(year => (
-              <option key={year} value={year}>{year === 'All' ? t('teacher.submissions.allYears', { defaultValue: 'All Years' }) : year}</option>
+              <option key={year} value={year}>{year === 'all' ? t('teacher.submissions.allYears', { defaultValue: 'All Years' }) : year}</option>
             ))}
           </select>
         </div>
@@ -220,7 +228,13 @@ const SubmissionsDashboard = () => {
 
                 <div className="submission-meta-stack">
                     <div className="submission-type-box">
-                        <div className="submission-type-box__title">{sub.type}</div>
+                        <div className="submission-type-box__title">
+                          {t(`teacher.submissions.typeLabel.${sub.category}`, {
+                            defaultValue: '{{type}}: {{title}}',
+                            type: sub.category,
+                            title: sub.itemTitle,
+                          })}
+                        </div>
                         <div className="submission-type-box__sub">{sub.module || t('teacher.submissions.general', { defaultValue: 'General' })}</div>
                     </div>
                     <div className="meta-inline">

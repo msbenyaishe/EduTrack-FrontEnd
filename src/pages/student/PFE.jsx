@@ -243,7 +243,7 @@ const StudentPFE = () => {
     if (!membersModalTeam) return;
     setIsAddingMember(true);
     try {
-      await pfeService.addMember({ team_id: membersModalTeam.id, student_id: studentId });
+      const response = await pfeService.addMember({ team_id: membersModalTeam.id, student_id: studentId });
       
       // Update local state
       const updatedTeams = await pfeService.getTeams(selectedGroupId);
@@ -265,7 +265,7 @@ const StudentPFE = () => {
   const handleRemoveMember = async (teamId, studentId) => {
     if (!window.confirm(t('student.pfe.removeMemberConfirm', { defaultValue: 'Are you sure you want to remove this member from the team?' }))) return;
     try {
-      await pfeService.removeMember(teamId, studentId);
+      const response = await pfeService.removeMember(teamId, studentId);
       // Refresh the specific team's data in local state
       const updatedTeams = await pfeService.getTeams(selectedGroupId);
       setTeams(updatedTeams);
@@ -353,7 +353,7 @@ const StudentPFE = () => {
                         onClick={() => handleViewMembers(team)}
                       >
                         <Users size={14} />
-                        {Array.isArray(team.members) ? team.members.length : (team.members || 0)} Students
+                        {Array.isArray(team.members) ? team.members.length : (team.members || 0)} {t('student.pfe.members', { defaultValue: 'Members' })}
                       </button>
                     </div>
                   </div>
@@ -450,11 +450,11 @@ const StudentPFE = () => {
               </div>
               <div className="form-group">
                 <label className="form-label form-label--inline-icon"><Video size={14}/>{t('student.pfe.explanationVideoLink', { defaultValue: 'Explanation Video Link' })}</label>
-                <input type="url" className="form-input" placeholder="YouTube, Loom, etc." value={formData.explanation_video} onChange={e => setFormData({...formData, explanation_video: e.target.value})} />
+                <input type="url" className="form-input" placeholder={t('student.pfe.videoPlaceholder', { defaultValue: 'YouTube, Loom, etc.' })} value={formData.explanation_video} onChange={e => setFormData({...formData, explanation_video: e.target.value})} />
               </div>
               <div className="form-group">
                 <label className="form-label form-label--inline-icon"><FileText size={14}/>{t('student.pfe.finalReportLink', { defaultValue: 'Final Report Link (URL)' })}</label>
-                <input type="url" className="form-input" placeholder="Google Drive, Dropbox, etc." value={formData.report_pdf} onChange={e => setFormData({...formData, report_pdf: e.target.value})} />
+                <input type="url" className="form-input" placeholder={t('student.pfe.reportPlaceholder', { defaultValue: 'Google Drive, Dropbox, etc.' })} value={formData.report_pdf} onChange={e => setFormData({...formData, report_pdf: e.target.value})} />
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" onClick={() => {
@@ -481,7 +481,7 @@ const StudentPFE = () => {
             <form onSubmit={handleCreateTeam}>
               <div className="form-group">
                 <label className="form-label" htmlFor="new-pfe-team">{t('student.pfe.teamName', { defaultValue: 'Team Name' })}</label>
-                <input id="new-pfe-team" type="text" className="form-input" required value={newTeamName} onChange={e => setNewTeamName(e.target.value)} placeholder="e.g. EduTrack Team" />
+                <input id="new-pfe-team" type="text" className="form-input" required value={newTeamName} onChange={e => setNewTeamName(e.target.value)} placeholder={t('student.pfe.teamNamePlaceholder', { defaultValue: 'e.g. EduTrack Team' })} />
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowCreateTeam(false)}>{t('student.pfe.cancel', { defaultValue: 'Cancel' })}</button>
@@ -496,7 +496,7 @@ const StudentPFE = () => {
           <div className="modal-content modal-content--narrow">
             <div className="modal-header">
               <h2 className="font-bold modal-title-row">
-                {membersModalTeam.name} Members
+                {t('student.pfe.membersTitle', { defaultValue: '{{team}} Members', team: membersModalTeam.name })}
               </h2>
               <button
                 type="button"
@@ -542,7 +542,7 @@ const StudentPFE = () => {
                         className="icon-action-btn icon-action-btn--danger"
                         onClick={() => handleRemoveMember(membersModalTeam.id, member.id)}
                         title={t('student.pfe.removeMember', { defaultValue: 'Remove Member' })}
-                        aria-label={`Remove ${member.name || 'member'}`}
+                        aria-label={t('student.pfe.removeMemberAria', { defaultValue: 'Remove {{name}}', name: member.name || t('student.pfe.memberFallback', { defaultValue: 'member' }) })}
                       >
                         <Trash2 size={16} />
                       </button>
@@ -551,7 +551,7 @@ const StudentPFE = () => {
                 ))
               ) : (
                 <div className="text-italic-muted padded-y-muted">
-                  No students in this team yet.
+                  {t('student.pfe.noStudents', { defaultValue: 'No students in this team yet.' })}
                 </div>
               )}
             </div>
@@ -582,7 +582,7 @@ const StudentPFE = () => {
                 className="btn btn-secondary btn--block"
                 onClick={() => setShowMembersModal(false)}
               >
-                Close
+                {t('common.close', { defaultValue: 'Close' })}
               </button>
             </div>
           </div>
@@ -606,7 +606,7 @@ const StudentPFE = () => {
                   className="form-input"
                   value={newRenameName}
                   onChange={(e) => setNewRenameName(e.target.value)}
-                  placeholder="Enter new team name"
+                  placeholder={t('student.pfe.newTeamNamePlaceholder', { defaultValue: 'Enter new team name' })}
                   autoFocus
                   required
                 />

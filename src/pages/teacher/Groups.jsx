@@ -57,7 +57,11 @@ const Groups = () => {
       fetchGroups();
     } catch (e) {
       console.error(e);
-      alert(t('teacher.groups.saveFailed', { defaultValue: `Failed to ${isEditing ? 'update' : 'save'} group. Please check your connection.` }));
+      alert(
+        isEditing
+          ? t('teacher.groups.updateFailed', { defaultValue: 'Failed to update group. Please check your connection.' })
+          : t('teacher.groups.saveFailed', { defaultValue: 'Failed to save group. Please check your connection.' })
+      );
     }
   };
 

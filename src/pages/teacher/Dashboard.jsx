@@ -26,20 +26,18 @@ const TeacherDashboard = () => {
         threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
 
         const flattened = [
-          ...(submissions.workshopSubmissions || []).map(s => ({ ...s, student: s.student_name, type: `WS: ${s.workshop_title}`, date: s.submitted_at })),
-          ...(submissions.sprintSubmissions || []).map(s => ({ ...s, student: s.team_name, type: `Sprint: ${s.sprint_title}`, date: s.submitted_at })),
-          ...(submissions.pfeSubmissions || []).map(s => ({ ...s, student: s.team_name, type: `PFE: ${s.project_title || t('teacher.dashboard.final', { defaultValue: 'Final' })}`, date: s.submitted_at }))
+          ...(submissions.workshopSubmissions || []).map(s => ({ ...s, student: s.student_name, submissionType: 'workshop', itemTitle: s.workshop_title, date: s.submitted_at })),
+          ...(submissions.sprintSubmissions || []).map(s => ({ ...s, student: s.team_name, submissionType: 'sprint', itemTitle: s.sprint_title, date: s.submitted_at })),
+          ...(submissions.pfeSubmissions || []).map(s => ({ ...s, student: s.team_name, submissionType: 'pfe', itemTitle: s.project_title || t('teacher.dashboard.final', { defaultValue: 'Final' }), date: s.submitted_at }))
         ]
         .filter(sub => new Date(sub.date) >= threeDaysAgo)
         .map(sub => {
           const year = sub.group_year || groupYearMap[sub.group_name];
           const groupTitle = formatGroupTitle(sub.group_name, year);
-          const group = groupTitle ? `Group: ${groupTitle}` : null;
-          const module = sub.module_title ? `Module: ${sub.module_title}` : null;
 
           return {
             ...sub,
-            activityMeta: [group, module].filter(Boolean).join(' | ') || t('teacher.dashboard.submissionReceived', { defaultValue: 'Submission received' })
+            groupTitle,
           };
         }).sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
 
@@ -55,7 +53,7 @@ const TeacherDashboard = () => {
       }
     };
     fetchStats();
-  }, []);
+  }, [t]);
 
   return (
     <div className="dashboard-page">
@@ -114,14 +112,30 @@ const TeacherDashboard = () => {
                   <div className="activity-item__body">
                     <div className="activity-item__top">
                       <p className="activity-text__title">
-                        {t('teacher.dashboard.studentSubmitted', { defaultValue: '{{student}} submitted {{type}}', student: sub.student || t('roles.student'), type: sub.type || t('teacher.dashboard.assignment', { defaultValue: 'assignment' }) })}
+                        {t('teacher.dashboard.studentSubmitted', {
+                          defaultValue: '{{student}} submitted {{type}}',
+                          student: sub.student || t('roles.student'),
+                          type: t(`teacher.dashboard.type.${sub.submissionType}`, {
+                            defaultValue: sub.submissionType || t('teacher.dashboard.assignment', { defaultValue: 'assignment' }),
+                            title: sub.itemTitle || t('teacher.dashboard.assignment', { defaultValue: 'assignment' }),
+                          }),
+                        })}
                       </p>
                       <span className="activity-inline-date">
                         <Clock size={14} aria-hidden />
                         {sub.date ? formatDate(sub.date, language) : t('teacher.dashboard.justNow', { defaultValue: 'Just now' })}
                       </span>
                     </div>
-                    <p className="activity-text__sub">{sub.activityMeta}</p>
+                    <p className="activity-text__sub">
+                      {[
+                        sub.groupTitle
+                          ? t('teacher.dashboard.metaGroup', { defaultValue: 'Group: {{group}}', group: sub.groupTitle })
+                          : null,
+                        sub.module_title
+                          ? t('teacher.dashboard.metaModule', { defaultValue: 'Module: {{module}}', module: sub.module_title })
+                          : null,
+                      ].filter(Boolean).join(' | ') || t('teacher.dashboard.submissionReceived', { defaultValue: 'Submission received' })}
+                    </p>
                   </div>
                 </div>
               </li>

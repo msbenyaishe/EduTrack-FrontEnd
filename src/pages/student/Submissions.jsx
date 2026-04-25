@@ -27,7 +27,7 @@ const StudentSubmissions = () => {
 
   useEffect(() => {
     fetchSubmissions();
-  }, []);
+  }, [t]);
 
   const fetchSubmissions = async () => {
     try {
@@ -113,7 +113,7 @@ const StudentSubmissions = () => {
             onChange={(e) => setFilterType(e.target.value)}
             style={{ minWidth: '150px' }}
           >
-            <option value="all">{t('common.allTypes', { defaultValue: 'All Types' })}</option>
+            <option value="all">{t('student.submissions.allTypes', { defaultValue: 'All Types' })}</option>
             <option value="workshop">{t('student.submissions.workshop', { defaultValue: 'Workshop' })}</option>
             <option value="sprint">{t('student.submissions.sprint', { defaultValue: 'Sprint' })}</option>
             <option value="pfe">{t('student.submissions.pfe', { defaultValue: 'PFE' })}</option>
