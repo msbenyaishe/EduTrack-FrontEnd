@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import { Mail, Calendar, User } from 'lucide-react';
+import { Mail, BookOpen, User } from 'lucide-react';
 
 const BadgeTemplate = forwardRef(({ student, group, qrCodeDataUrl }, ref) => {
   if (!student) return null;
@@ -102,15 +102,15 @@ const BadgeTemplate = forwardRef(({ student, group, qrCodeDataUrl }, ref) => {
           flexDirection: 'column',
           gap: '12px'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
-            <Mail size={16} color="#64748b" />
-            <span style={{ fontSize: '14px', fontWeight: 500, color: '#334155', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', width: '100%' }}>
+            <Mail size={16} color="#64748b" style={{ flexShrink: 0 }} />
+            <span style={{ fontSize: '15px', fontWeight: 500, color: '#334155', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {studentEmail}
             </span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
-            <Calendar size={16} color="#64748b" />
-            <span style={{ fontSize: '14px', fontWeight: 500, color: '#334155' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', width: '100%' }}>
+            <BookOpen size={16} color="#64748b" style={{ flexShrink: 0 }} />
+            <span style={{ fontSize: '15px', fontWeight: 500, color: '#334155', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {groupLabel}
             </span>
           </div>
@@ -133,8 +133,8 @@ const BadgeTemplate = forwardRef(({ student, group, qrCodeDataUrl }, ref) => {
                 src={qrCodeDataUrl} 
                 alt="QR" 
                 style={{ 
-                  width: '74px', 
-                  height: '74px', 
+                  width: '80px', 
+                  height: '80px', 
                   display: 'block' // Removes the bottom inline whitespace
                 }} 
               />
