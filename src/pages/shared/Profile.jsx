@@ -132,7 +132,7 @@ const Profile = () => {
       )}
 
       <div className="detail-layout profile-detail-layout">
-        <aside className="card sidebar-card profile-sidebar-card profile-sidebar-card--minimal" aria-label={t('profile.title', { defaultValue: 'My Profile' })}>
+        <aside className="sidebar-card profile-sidebar-card profile-sidebar-card--minimal profile-sidebar-card--transparent" aria-label={t('profile.title', { defaultValue: 'My Profile' })}>
           <div className="profile-minimal">
             <div className={`profile-avatar-minimal ${imagePreview ? 'profile-avatar-minimal--has-image' : 'profile-avatar-minimal--empty'}`}>
               {imagePreview ? (

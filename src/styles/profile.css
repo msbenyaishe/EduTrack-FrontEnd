@@ -183,26 +183,28 @@
 
 .profile-avatar-minimal {
   position: relative;
-  width: 144px;
-  height: 144px;
-  border-radius: var(--radius-lg);
-  background: var(--bg-main);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
-  overflow: hidden;
+  width: 200px;
+  height: 200px;
+  border-radius: 1.5rem;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  overflow: visible;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: var(--space-md);
 }
 
 .profile-avatar-minimal--empty {
   background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
-  border: none;
-  box-shadow: var(--shadow-md);
+  border-radius: 1.5rem;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
 }
 
 .profile-avatar-minimal--has-image {
-  background: var(--bg-card);
+  background: transparent;
 }
 
 .profile-avatar-minimal img {
@@ -210,18 +212,25 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  border-radius: inherit;
+  border-radius: 1.5rem;
+  box-shadow: var(--shadow-lg);
 }
 
 .avatar-upload-btn--minimal {
-  width: 36px;
-  height: 36px;
-  right: 8px;
-  bottom: 8px;
-  border-radius: 12px;
-  border-width: 1px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(6px);
+  width: 42px;
+  height: 42px;
+  right: 6px;
+  bottom: 6px;
+  border-radius: 50%;
+  border: 2px solid var(--bg-card);
+  background: var(--primary-color);
+  color: #fff;
+  box-shadow: var(--shadow-md);
+}
+
+.avatar-upload-btn--minimal:hover {
+  background: var(--primary-hover);
+  transform: scale(1.1);
 }
 
 .profile-minimal__name {
@@ -245,9 +254,15 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-xs);
-  padding-top: var(--space-sm);
+  padding-top: var(--space-md);
   border-top: 1px solid var(--border-color);
   color: var(--text-muted);
+}
+
+.profile-sidebar-card--transparent {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 /* ---------- Responsive (phones/tablets) ---------- */

@@ -110,11 +110,13 @@
   font-size: 1.125rem;
   box-shadow: var(--shadow-sm);
   overflow: hidden;
+  border: 1px solid var(--border-color);
 }
 
 .avatar--has-image {
-  background: var(--bg-card);
-  border: 2px solid #cbd5e1;
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 .avatar-img {

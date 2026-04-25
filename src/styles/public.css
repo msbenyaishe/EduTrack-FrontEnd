@@ -28,6 +28,12 @@
     radial-gradient(circle at 0% 100%, #e0e7ff, transparent 45%);
 }
 
+@media (max-width: 767px) {
+  .public-shell__main--auth {
+    padding-top: max(var(--space-lg), env(safe-area-inset-top));
+  }
+}
+
 body.public-nav-open {
   overflow: hidden;
 }
@@ -517,10 +523,7 @@ body.public-nav-open {
   }
 
   .landing-hero {
-    padding-top: max(
-      calc(var(--space-2xl) + var(--space-sm)),
-      env(safe-area-inset-top)
-    );
+    padding-top: max(var(--space-lg), env(safe-area-inset-top));
   }
 
   .landing-hero__title {

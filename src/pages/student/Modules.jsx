@@ -52,8 +52,12 @@ const StudentModules = () => {
               <div>
                 <div className="card__head">
                   <div className="card__title-group">
-                    <div className="media-icon media-icon--primary">
-                      <BookOpen size={20} />
+                    <div className={`media-icon media-icon--module ${!mod.logo_url ? 'media-icon--primary media-icon--bordered' : ''}`}>
+                      {mod.logo_url ? (
+                        <img src={mod.logo_url} alt="" className="media-icon__img" />
+                      ) : (
+                        <BookOpen size={20} />
+                      )}
                     </div>
                     {mod.title}
                   </div>

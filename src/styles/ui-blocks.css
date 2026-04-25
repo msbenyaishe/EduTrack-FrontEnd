@@ -144,6 +144,26 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  overflow: hidden;
+}
+
+.media-icon__img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: left center;
+  display: block;
+}
+
+.media-icon--module {
+  width: 3.75rem;
+  height: 3.75rem;
+  background: #fff;
+  border-radius: var(--radius-lg);
+}
+
+.media-icon--bordered {
+  border: 1px solid var(--border-color);
 }
 
 .media-icon--primary {
@@ -1837,6 +1857,11 @@
   }
 
   /* Headings & titles — larger on phones for readability */
+  .media-icon--module {
+    width: 3.75rem;
+    height: 3.75rem;
+  }
+
   .empty-state-card__title {
     font-size: 1.3125rem;
   }

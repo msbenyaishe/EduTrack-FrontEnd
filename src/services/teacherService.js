@@ -65,12 +65,14 @@ export const teacherService = {
     });
   },
   createModule: async (data) => {
-    const res = await api.post('/modules', data);
+    const config = data instanceof FormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : {};
+    const res = await api.post('/modules', data, config);
     cache.clear();
     return res.data;
   },
   updateModule: async (id, data) => {
-    const res = await api.put(`/modules/${id}`, data);
+    const config = data instanceof FormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : {};
+    const res = await api.put(`/modules/${id}`, data, config);
     cache.clear();
     return res.data;
   },

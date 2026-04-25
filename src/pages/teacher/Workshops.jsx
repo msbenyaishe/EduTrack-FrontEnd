@@ -157,8 +157,12 @@ const TeacherWorkshops = () => {
                 <div>
                   <div className="card__head">
                     <div className="card__title-group">
-                      <div className="media-icon media-icon--primary">
-                        <BookOpen size={20} />
+                      <div className={`media-icon media-icon--module ${!ws.logo_url ? 'media-icon--primary media-icon--bordered' : ''}`}>
+                        {ws.logo_url ? (
+                          <img src={ws.logo_url} alt="" className="media-icon__img" />
+                        ) : (
+                          <BookOpen size={20} />
+                        )}
                       </div>
                       {ws.title}
                     </div>
