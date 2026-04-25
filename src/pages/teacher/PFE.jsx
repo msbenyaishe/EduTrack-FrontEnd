@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { teacherService } from '../../services/teacherService';
 import { pfeService } from '../../services/pfeService';
 import { useTranslation } from 'react-i18next';
+import { formatGroupTitle } from '../../utils/groupFormatters';
 
 
 const TeacherPFE = () => {
@@ -17,6 +18,7 @@ const TeacherPFE = () => {
 
   const [showMembersModal, setShowMembersModal] = useState(false);
   const [membersModalTeam, setMembersModalTeam] = useState(null);
+  const formatGroupWithHyphenYear = (group) => formatGroupTitle(group?.name, group?.year).replace(/–/g, '-');
 
   useEffect(() => {
     fetchGroups();
@@ -92,7 +94,7 @@ const TeacherPFE = () => {
             onChange={(e) => setSelectedGroup(e.target.value)}
           >
             {groups.map(g => (
-              <option key={g.id} value={g.id}>{g.name}</option>
+              <option key={g.id} value={g.id}>{formatGroupWithHyphenYear(g)}</option>
             ))}
           </select>
         </div>

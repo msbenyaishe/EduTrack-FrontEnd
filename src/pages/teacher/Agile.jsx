@@ -4,6 +4,7 @@ import { teacherService } from '../../services/teacherService';
 import { agileService } from '../../services/agileService';
 import { useTranslation } from 'react-i18next';
 import { formatDate } from '../../utils/locale';
+import { formatGroupTitle } from '../../utils/groupFormatters';
 
 
 const TeacherAgile = () => {
@@ -45,6 +46,7 @@ const TeacherAgile = () => {
 
   const [showMembersModal, setShowMembersModal] = useState(false);
   const [membersModalTeam, setMembersModalTeam] = useState(null);
+  const formatGroupWithHyphenYear = (group) => formatGroupTitle(group?.name, group?.year).replace(/–/g, '-');
 
   useEffect(() => {
     fetchGroups();
@@ -209,7 +211,7 @@ const TeacherAgile = () => {
             onChange={(e) => setSelectedGroup(e.target.value)}
           >
             {groups.map(g => (
-              <option key={g.id} value={g.id}>{g.name}</option>
+              <option key={g.id} value={g.id}>{formatGroupWithHyphenYear(g)}</option>
             ))}
           </select>
         </div>

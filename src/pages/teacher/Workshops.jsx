@@ -4,7 +4,8 @@ import { Plus, BookOpen, Upload, ExternalLink, Trash2, X, Edit2 } from 'lucide-r
 import { teacherService } from '../../services/teacherService';
 import { workshopService } from '../../services/workshopService';
 import { useTranslation } from 'react-i18next';
-import { formatDate, formatAcademicYear } from '../../utils/locale';
+import { formatDate } from '../../utils/locale';
+import { formatGroupTitle } from '../../utils/groupFormatters';
 
 
 const TeacherWorkshops = () => {
@@ -22,6 +23,7 @@ const TeacherWorkshops = () => {
   const navigate = useNavigate();
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({ module_id: '', title: '', description: '', repo: '', pdf_report: '', web_page: '' });
+  const formatGroupOptionLabel = (group) => formatGroupTitle(group?.name, group?.year).replace(/–/g, '-');
 
   useEffect(() => {
     fetchInitialData();
@@ -135,7 +137,7 @@ const TeacherWorkshops = () => {
             onChange={(e) => setSelectedGroup(e.target.value)}
           >
             {groups.map(g => (
-              <option key={g.id} value={g.id}>{g.name} - {formatAcademicYear(g.year)}</option>
+              <option key={g.id} value={g.id}>{formatGroupOptionLabel(g)}</option>
             ))}
           </select>
         </div>
