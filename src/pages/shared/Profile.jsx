@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Link as LinkIcon, FileText, Lock, Save, Camera, Loader } from 'lucide-react';
+import { User, Mail, Link as LinkIcon, FileText, Lock, Save, Camera, Loader, GraduationCap } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { authService } from '../../services/authService';
 import { useTranslation } from 'react-i18next';
 import '../../styles/profile.css';
+import html2canvas from 'html2canvas';
+import QRCode from 'qrcode';
+import BadgeTemplate from '../../components/BadgeTemplate';
+import { studentService } from '../../services/studentService';
 
 const Profile = () => {
   const { user, login } = useAuth();
@@ -29,6 +33,19 @@ const Profile = () => {
     newPassword: '',
     confirmPassword: '',
   });
+
+  // Badge State
+  const [isGeneratingBadge, setIsGeneratingBadge] = useState(false);
+  const [badgePreview, setBadgePreview] = useState(null);
+  const [showBadgeModal, setShowBadgeModal] = useState(false);
+  const [studentGroups, setStudentGroups] = useState([]);
+  const [selectedGroup, setSelectedGroup] = useState(null);
+  const [qrCodeUrl, setQrCodeUrl] = useState('');
+  const badgeRef = React.useRef(null);
+  const waitForBadgeRender = () =>
+    new Promise((resolve) => {
+      requestAnimationFrame(() => requestAnimationFrame(resolve));
+    });
 
   useEffect(() => {
     if (user) {
@@ -110,6 +127,92 @@ const Profile = () => {
     }
   };
 
+  const prepareBadge = async () => {
+    if (user.role !== 'student') return;
+    
+    setIsGeneratingBadge(true);
+    try {
+      const groups = await studentService.getMyGroups();
+      setStudentGroups(groups);
+      
+      if (groups.length === 1) {
+        setSelectedGroup(groups[0]);
+        generateBadgeImage(groups[0]);
+      } else if (groups.length > 1) {
+        setShowBadgeModal(true);
+        // User will select a group in the modal
+      } else {
+        // No groups, but can still generate a general badge
+        generateBadgeImage(null);
+      }
+    } catch (err) {
+      console.error("Failed to fetch groups for badge:", err);
+      setMessage({ type: 'error', text: t('profile.badgeError', { defaultValue: 'Failed to prepare badge data.' }) });
+    } finally {
+      setIsGeneratingBadge(false);
+    }
+  };
+
+  const generateBadgeImage = async (group) => {
+    setIsGeneratingBadge(true);
+    try {
+      let generatedQrCode = '';
+
+      // Generate QR code if portfolio exists
+      if (user.portfolio_link) {
+        generatedQrCode = await QRCode.toDataURL(user.portfolio_link, {
+          width: 200,
+          margin: 0,
+          color: {
+            dark: '#0f172a',
+            light: '#ffffff'
+          }
+        });
+      }
+      setQrCodeUrl(generatedQrCode);
+
+      // Wait for React state to paint before snapshot.
+      await waitForBadgeRender();
+
+      if (!badgeRef.current) {
+        throw new Error('Badge template is not ready for capture.');
+      }
+
+      const canvas = await html2canvas(badgeRef.current, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: null
+      });
+      const image = canvas.toDataURL('image/png');
+      setBadgePreview(image);
+      setShowBadgeModal(true);
+    } catch (err) {
+      console.error("Badge generation error:", err);
+      setMessage({ type: 'error', text: t('profile.badgeGenError', { defaultValue: 'Failed to generate badge image.' }) });
+    } finally {
+      setIsGeneratingBadge(false);
+    }
+  };
+
+  const downloadBadge = () => {
+    if (!badgePreview) return;
+    const link = document.createElement('a');
+    link.download = `${user.name.replace(/\s+/g, '_')}_Badge.png`;
+    link.href = badgePreview;
+    link.click();
+    
+    // Requirements: disappear after download
+    closeBadgeModal();
+  };
+
+  const closeBadgeModal = () => {
+    setShowBadgeModal(false);
+    setBadgePreview(null);
+    setSelectedGroup(null);
+    setQrCodeUrl('');
+  };
+
   return (
     <div className="profile-page">
       <div className="page-header">
@@ -167,6 +270,18 @@ const Profile = () => {
               <Mail size={18} className="info-icon" />
               <span className="profile-email">{user?.email}</span>
             </div>
+
+            {user?.role === 'student' && (
+              <button 
+                type="button" 
+                className="btn btn-primary badge-gen-btn"
+                onClick={prepareBadge}
+                disabled={isGeneratingBadge}
+              >
+                {isGeneratingBadge ? <Loader size={18} className="spin" /> : <GraduationCap size={18} />}
+                {t('profile.generateBadge', { defaultValue: 'Generate Badge' })}
+              </button>
+            )}
           </div>
         </aside>
 
@@ -303,6 +418,77 @@ const Profile = () => {
           </div>
         </div>
       </div>
+
+      {/* Badge Generation UI (Hidden until capture) */}
+      <div style={{ position: 'absolute', left: '-9999px', top: '0' }}>
+        <BadgeTemplate 
+          ref={badgeRef} 
+          student={user} 
+          group={selectedGroup} 
+          qrCodeDataUrl={qrCodeUrl} 
+        />
+      </div>
+
+      {/* Badge Modal */}
+      {showBadgeModal && (
+        <div className="modal-overlay" onClick={closeBadgeModal}>
+          <div className="modal-content badge-modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3 className="modal-title">
+                {badgePreview ? t('profile.badgePreview', { defaultValue: 'Your Student Badge' }) : t('profile.selectGroup', { defaultValue: 'Select Group' })}
+              </h3>
+              <button className="modal-close" onClick={closeBadgeModal}>&times;</button>
+            </div>
+            
+            <div className="modal-body">
+              {!badgePreview && studentGroups.length > 1 ? (
+                <div className="group-selection-list">
+                  <p className="modal-subtitle">{t('profile.badgeGroupPrompt', { defaultValue: 'Which group should be displayed on your badge?' })}</p>
+                  {studentGroups.map(group => (
+                    <button 
+                      key={group.id} 
+                      className="group-select-item"
+                      onClick={() => {
+                        setSelectedGroup(group);
+                        generateBadgeImage(group);
+                      }}
+                    >
+                      <span className="group-select-name">{group.name}</span>
+                      <span className="group-select-year">{group.academic_year}</span>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="badge-preview-container">
+                  {badgePreview ? (
+                    <>
+                      <img src={badgePreview} alt="Badge Preview" className="badge-preview-img" />
+                      <p className="badge-note">{t('profile.badgeNote', { defaultValue: 'This preview is temporary. Please download it now.' })}</p>
+                    </>
+                  ) : (
+                    <div className="badge-loading">
+                      <Loader size={48} className="spin" />
+                      <p>{t('profile.generating', { defaultValue: 'Generating your badge...' })}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="modal-footer">
+              <button className="btn btn-secondary" onClick={closeBadgeModal}>
+                {t('common.cancel', { defaultValue: 'Cancel' })}
+              </button>
+              {badgePreview && (
+                <button className="btn btn-primary" onClick={downloadBadge}>
+                  <Save size={18} />
+                  {t('common.download', { defaultValue: 'Download' })}
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

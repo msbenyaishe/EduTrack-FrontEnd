@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, Plus, Layout, CheckCircle, Edit2, Trash2, X } from 'lucide-react';
+import { Users, Plus, Layout, CheckCircle, Edit2, Trash2, X, FileText, Link as LinkIcon, Globe } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { agileService } from '../../services/agileService';
 import { studentService } from '../../services/studentService';
@@ -549,6 +549,89 @@ const StudentAgile = () => {
                               <span className="badge badge-primary badge--tiny">{t('student.agile.pending', { defaultValue: 'Pending' })}</span>
                             )}
                           </div>
+
+                          {(sprint.pdf_report || sprint.repo || sprint.web_page) ? (
+                            <div
+                              style={{
+                                marginTop: '0.75rem',
+                                paddingTop: '0.75rem',
+                                borderTop: '1px solid var(--border-color)',
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                gap: '0.5rem',
+                              }}
+                            >
+                              <span className="card__muted" style={{ width: '100%', marginBottom: '0.25rem' }}>
+                                {t('student.agile.teacherResources', { defaultValue: 'Teacher Resources' })}
+                              </span>
+
+                              {sprint.pdf_report ? (
+                                <a
+                                  href={sprint.pdf_report}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="badge-btn"
+                                  style={{
+                                    padding: '0.25rem 0.5rem',
+                                    fontSize: '0.78rem',
+                                    fontWeight: 600,
+                                    borderRadius: '0.5rem',
+                                    minHeight: 'auto',
+                                    lineHeight: 1.2,
+                                  }}
+                                  onClick={(event) => event.stopPropagation()}
+                                  title={t('student.agile.teacherPdf', { defaultValue: 'Open teacher PDF' })}
+                                >
+                                  <FileText size={12} />
+                                  {t('student.agile.pdf', { defaultValue: 'PDF' })}
+                                </a>
+                              ) : null}
+
+                              {sprint.repo ? (
+                                <a
+                                  href={sprint.repo}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="badge-btn"
+                                  style={{
+                                    padding: '0.25rem 0.5rem',
+                                    fontSize: '0.78rem',
+                                    fontWeight: 600,
+                                    borderRadius: '0.5rem',
+                                    minHeight: 'auto',
+                                    lineHeight: 1.2,
+                                  }}
+                                  onClick={(event) => event.stopPropagation()}
+                                  title={t('student.agile.teacherRepository', { defaultValue: 'Open teacher repository' })}
+                                >
+                                  <LinkIcon size={12} />
+                                  {t('student.agile.repository', { defaultValue: 'Repository' })}
+                                </a>
+                              ) : null}
+
+                              {sprint.web_page ? (
+                                <a
+                                  href={sprint.web_page}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="badge-btn"
+                                  style={{
+                                    padding: '0.25rem 0.5rem',
+                                    fontSize: '0.78rem',
+                                    fontWeight: 600,
+                                    borderRadius: '0.5rem',
+                                    minHeight: 'auto',
+                                    lineHeight: 1.2,
+                                  }}
+                                  onClick={(event) => event.stopPropagation()}
+                                  title={t('student.agile.teacherWebsite', { defaultValue: 'Open teacher website' })}
+                                >
+                                  <Globe size={12} />
+                                  {t('student.agile.website', { defaultValue: 'Website' })}
+                                </a>
+                              ) : null}
+                            </div>
+                          ) : null}
                         </div>
                       );
                     })}

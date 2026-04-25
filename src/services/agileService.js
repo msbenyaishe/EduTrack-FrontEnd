@@ -44,6 +44,10 @@ export const agileService = {
     const res = await api.get(`/sprints/group/${groupId}`);
     return res.data;
   },
+  updateSprint: async (id, data) => {
+    const res = await api.put(`/sprints/${id}`, data);
+    return res.data;
+  },
   deleteSprint: async (id) => {
     const res = await api.delete(`/sprints/${id}`);
     return res.data;

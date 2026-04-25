@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, Layout, Trash2, Plus, ExternalLink, FileText, Link, X } from 'lucide-react';
+import { Users, Layout, Trash2, Plus, ExternalLink, FileText, Link, X, Pencil } from 'lucide-react';
 import { teacherService } from '../../services/teacherService';
 import { agileService } from '../../services/agileService';
 import { useTranslation } from 'react-i18next';
@@ -19,7 +19,22 @@ const TeacherAgile = () => {
   // Sprint Management State
   const [sprints, setSprints] = useState([]);
   const [showSprintManager, setShowSprintManager] = useState(false);
-  const [newSprint, setNewSprint] = useState({ title: '', module_id: '', description: '' });
+  const [newSprint, setNewSprint] = useState({
+    title: '',
+    module_id: '',
+    description: '',
+    pdf_report: '',
+    repo: '',
+    web_page: '',
+  });
+  const [editingSprint, setEditingSprint] = useState(null);
+  const [editSprintForm, setEditSprintForm] = useState({
+    title: '',
+    description: '',
+    pdf_report: '',
+    repo: '',
+    web_page: '',
+  });
   const [modules, setModules] = useState([]);
 
   // Team Submissions State
@@ -68,11 +83,42 @@ const TeacherAgile = () => {
     e.preventDefault();
     try {
       await agileService.createSprint({ group_id: selectedGroup, ...newSprint });
-      setNewSprint({ title: '', module_id: '', description: '' });
+      setNewSprint({
+        title: '',
+        module_id: '',
+        description: '',
+        pdf_report: '',
+        repo: '',
+        web_page: '',
+      });
       fetchSprints(selectedGroup);
     } catch (e) {
       console.error(e);
       alert(t('teacher.agile.createSprintFailed', { defaultValue: 'Failed to create sprint.' }));
+    }
+  };
+
+  const handleOpenEditSprint = (sprint) => {
+    setEditingSprint(sprint);
+    setEditSprintForm({
+      title: sprint.title || '',
+      description: sprint.description || '',
+      pdf_report: sprint.pdf_report || '',
+      repo: sprint.repo || '',
+      web_page: sprint.web_page || '',
+    });
+  };
+
+  const handleUpdateSprint = async (e) => {
+    e.preventDefault();
+    if (!editingSprint) return;
+    try {
+      await agileService.updateSprint(editingSprint.id, editSprintForm);
+      setEditingSprint(null);
+      fetchSprints(selectedGroup);
+    } catch (error) {
+      console.error(error);
+      alert(t('teacher.agile.updateSprintFailed', { defaultValue: 'Failed to update sprint.' }));
     }
   };
 
@@ -265,6 +311,39 @@ const TeacherAgile = () => {
                       onChange={(e) => setNewSprint({...newSprint, description: e.target.value})}
                     ></textarea>
                   </div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="sprint-pdf">{t('teacher.agile.pdfOptional', { defaultValue: 'PDF Link (Optional)' })}</label>
+                    <input
+                      id="sprint-pdf"
+                      type="url"
+                      className="form-input"
+                      placeholder="https://..."
+                      value={newSprint.pdf_report}
+                      onChange={(e) => setNewSprint({ ...newSprint, pdf_report: e.target.value })}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="sprint-repo">{t('teacher.agile.repoOptional', { defaultValue: 'Repository Link (Optional)' })}</label>
+                    <input
+                      id="sprint-repo"
+                      type="url"
+                      className="form-input"
+                      placeholder="https://github.com/..."
+                      value={newSprint.repo}
+                      onChange={(e) => setNewSprint({ ...newSprint, repo: e.target.value })}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="sprint-web">{t('teacher.agile.websiteOptional', { defaultValue: 'Website Link (Optional)' })}</label>
+                    <input
+                      id="sprint-web"
+                      type="url"
+                      className="form-input"
+                      placeholder="https://..."
+                      value={newSprint.web_page}
+                      onChange={(e) => setNewSprint({ ...newSprint, web_page: e.target.value })}
+                    />
+                  </div>
                   <button type="submit" className="btn btn-primary btn--block btn--with-icon">
                     <Plus size={18} /> {t('teacher.agile.createSprint', { defaultValue: 'Create Sprint' })}
                   </button>
@@ -284,9 +363,19 @@ const TeacherAgile = () => {
                             <div className="font-bold">{s.title}</div>
                             <div className="card__muted">{s.module_title} • {new Date(s.created_at).toLocaleDateString()}</div>
                           </div>
-                          <button type="button" className="action-btn action-btn--danger action-btn--sm" onClick={() => handleDeleteSprint(s.id)} title={t('teacher.agile.deleteSprint', { defaultValue: 'Delete sprint' })}>
-                            <Trash2 size={14} />
-                          </button>
+                          <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            <button
+                              type="button"
+                              className="action-btn action-btn--sm"
+                              onClick={() => handleOpenEditSprint(s)}
+                              title={t('teacher.agile.editSprint', { defaultValue: 'Edit sprint' })}
+                            >
+                              <Pencil size={14} />
+                            </button>
+                            <button type="button" className="action-btn action-btn--danger action-btn--sm" onClick={() => handleDeleteSprint(s.id)} title={t('teacher.agile.deleteSprint', { defaultValue: 'Delete sprint' })}>
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -294,6 +383,84 @@ const TeacherAgile = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {editingSprint && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h2 className="font-bold">{t('teacher.agile.editSprint', { defaultValue: 'Edit Sprint' })}</h2>
+              <button type="button" className="modal-close" onClick={() => setEditingSprint(null)} aria-label={t('common.close')}>
+                <X size={24} />
+              </button>
+            </div>
+            <form onSubmit={handleUpdateSprint}>
+              <div className="form-group">
+                <label className="form-label" htmlFor="edit-sprint-title">{t('teacher.agile.sprintTitle', { defaultValue: 'Sprint Title' })}</label>
+                <input
+                  id="edit-sprint-title"
+                  type="text"
+                  className="form-input"
+                  value={editSprintForm.title}
+                  onChange={(e) => setEditSprintForm({ ...editSprintForm, title: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label" htmlFor="edit-sprint-desc">{t('teacher.agile.descriptionOptional', { defaultValue: 'Description (Optional)' })}</label>
+                <textarea
+                  id="edit-sprint-desc"
+                  className="form-input"
+                  rows={3}
+                  value={editSprintForm.description}
+                  onChange={(e) => setEditSprintForm({ ...editSprintForm, description: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label" htmlFor="edit-sprint-pdf">{t('teacher.agile.pdfOptional', { defaultValue: 'PDF Link (Optional)' })}</label>
+                <input
+                  id="edit-sprint-pdf"
+                  type="url"
+                  className="form-input"
+                  placeholder="https://..."
+                  value={editSprintForm.pdf_report}
+                  onChange={(e) => setEditSprintForm({ ...editSprintForm, pdf_report: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label" htmlFor="edit-sprint-repo">{t('teacher.agile.repoOptional', { defaultValue: 'Repository Link (Optional)' })}</label>
+                <input
+                  id="edit-sprint-repo"
+                  type="url"
+                  className="form-input"
+                  placeholder="https://github.com/..."
+                  value={editSprintForm.repo}
+                  onChange={(e) => setEditSprintForm({ ...editSprintForm, repo: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label" htmlFor="edit-sprint-web">{t('teacher.agile.websiteOptional', { defaultValue: 'Website Link (Optional)' })}</label>
+                <input
+                  id="edit-sprint-web"
+                  type="url"
+                  className="form-input"
+                  placeholder="https://..."
+                  value={editSprintForm.web_page}
+                  onChange={(e) => setEditSprintForm({ ...editSprintForm, web_page: e.target.value })}
+                />
+              </div>
+
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={() => setEditingSprint(null)}>
+                  {t('common.cancel', { defaultValue: 'Cancel' })}
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  {t('common.save', { defaultValue: 'Save' })}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
