@@ -52,8 +52,8 @@ const BadgeTemplate = forwardRef(({ student, group, qrCodeDataUrl }, ref) => {
         {/* Top Section: Photo & Identity */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
           <div style={{ 
-            width: '130px', 
-            height: '130px', 
+            width: '150px', 
+            height: '150px', 
             borderRadius: '24px', 
             overflow: 'hidden',
             border: '1px solid #e2e8f0',
@@ -65,7 +65,13 @@ const BadgeTemplate = forwardRef(({ student, group, qrCodeDataUrl }, ref) => {
               <img 
                 src={student.personal_image} 
                 alt={studentName} 
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                style={{ 
+                  width: '100%', 
+                  height: '100%', 
+                  objectFit: 'contain',
+                  objectPosition: 'center',
+                  background: '#f1f5f9'
+                }} 
               />
             ) : (
               <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f1f5f9' }}>
