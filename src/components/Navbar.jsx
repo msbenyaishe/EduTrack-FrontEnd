@@ -49,7 +49,7 @@ const Navbar = ({ onMenuClick, navOpen = false }) => {
       </div>
       
       <div className="navbar-right">
-        <LanguageSwitcher compact />
+        <LanguageSwitcher compact /> 
         
         <div 
           className="user-profile" 

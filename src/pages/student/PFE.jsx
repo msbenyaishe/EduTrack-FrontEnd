@@ -508,8 +508,7 @@ const StudentPFE = () => {
               </button>
             </div>
 
-            <div className="modal-body scroll-region--sm">
-              <div className="member-list-stack">
+            <div className="member-list-stack scroll-region--sm">
               {Array.isArray(membersModalTeam.member_details) && membersModalTeam.member_details.length > 0 ? (
                 membersModalTeam.member_details.map((member, idx) => (
                   <div key={member.id ?? idx} className="member-line">
@@ -556,30 +555,31 @@ const StudentPFE = () => {
               )}
             </div>
 
-              {isTeamMember(membersModalTeam) && availableStudents.length > 0 && (
-                <div className="member-invite-section">
-                  <h4 className="card__overline">{t('student.pfe.addMember', { defaultValue: 'ADD MEMBER' })}</h4>
-                  <div className="flex-row gap-xs">
-                    <select
-                      className="form-input form-input--compact-select"
-                      onChange={(e) => handleAddMember(e.target.value)}
-                      defaultValue=""
-                      disabled={isAddingMember}
-                    >
-                      <option value="" disabled>{t('student.pfe.searchClassmates', { defaultValue: 'Search classmates...' })}</option>
-                      {availableStudents.map(student => (
-                        <option key={student.id} value={student.id}>{student.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              )}
-          </div>
-
-          <div className="modal-footer modal-footer--stack modal-footer--mt">
+            {isTeamMember(membersModalTeam) && availableStudents.length > 0 && (
+              <div className="add-member-block" style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
+                <label className="label-caps" htmlFor="add-member-select" style={{ marginBottom: '0.75rem', display: 'block' }}>{t('student.pfe.addMember', { defaultValue: 'ADD MEMBER' })}</label>
+                <select
+                  id="add-member-select"
+                  className="form-input form-input--compact-select"
+                  style={{ width: '100%' }}
+                  onChange={(e) => {
+                    if (e.target.value) handleAddMember(e.target.value);
+                    e.target.value = "";
+                  }}
+                  defaultValue=""
+                  disabled={isAddingMember}
+                >
+                  <option value="" disabled>{t('student.pfe.searchClassmates', { defaultValue: 'Select a classmate...' })}</option>
+                  {availableStudents.map(student => (
+                    <option key={student.id} value={student.id}>{student.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+            <div className="modal-footer modal-footer--mt">
               <button
                 type="button"
-                className="btn btn-secondary btn--block"
+                className="btn btn-secondary"
                 onClick={() => setShowMembersModal(false)}
               >
                 {t('common.close', { defaultValue: 'Close' })}

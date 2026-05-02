@@ -466,11 +466,12 @@ const StudentAgile = () => {
             </div>
 
             {isUserTeamMember && availableStudents.length > 0 && (
-              <div className="add-member-block">
-                <label className="label-caps" htmlFor="add-member-select">{t('student.agile.addMember', { defaultValue: 'Add Member' })}</label>
+              <div className="add-member-block" style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
+                <label className="label-caps" htmlFor="add-member-select" style={{ marginBottom: '0.75rem', display: 'block' }}>{t('student.agile.addMember', { defaultValue: 'ADD MEMBER' })}</label>
                 <select
                   id="add-member-select"
                   className="form-input form-input--compact-select"
+                  style={{ width: '100%' }}
                   onChange={(e) => {
                     if (e.target.value) handleAddMember(e.target.value);
                     e.target.value = "";
@@ -485,8 +486,8 @@ const StudentAgile = () => {
               </div>
             )}
 
-            <div className="modal-footer modal-footer--stack modal-footer--mt">
-              <button type="button" className="btn btn-secondary btn--block" onClick={() => setShowMembersModal(false)}>{t('common.close')}</button>
+            <div className="modal-footer modal-footer--mt">
+              <button type="button" className="btn btn-secondary" onClick={() => setShowMembersModal(false)}>{t('common.close')}</button>
             </div>
           </div>
         </div>
@@ -709,8 +710,8 @@ const StudentAgile = () => {
               )}
             </div>
 
-            <div className="modal-footer modal-footer--stack modal-footer--mt">
-              <button type="button" className="btn btn-secondary btn--block" onClick={() => setShowSprintsModal(false)}>{t('student.agile.closeWindow', { defaultValue: 'Close Window' })}</button>
+            <div className="modal-footer modal-footer--mt">
+              <button type="button" className="btn btn-secondary" onClick={() => setShowSprintsModal(false)}>{t('student.agile.closeWindow', { defaultValue: 'Close Window' })}</button>
             </div>
           </div>
         </div>
