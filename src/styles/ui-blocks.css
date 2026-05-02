@@ -454,14 +454,42 @@
   line-height: 1;
 }
 
-.scroll-region {
-  max-height: 400px;
+.scroll-region,
+.scroll-region--sm {
   overflow-y: auto;
   padding-right: var(--space-xs);
+  /* Custom scrollbar for better look */
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) transparent;
+}
+
+.scroll-region::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scroll-region::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
+  border-radius: 10px;
+}
+
+.scroll-region {
+  max-height: 400px;
 }
 
 .scroll-region--sm {
-  max-height: 300px;
+  max-height: 320px; /* Fits 3 taller cards with gaps */
+}
+
+@media (max-height: 800px) {
+  .scroll-region--sm {
+    max-height: 240px;
+  }
+}
+
+@media (max-height: 600px) {
+  .scroll-region--sm {
+    max-height: 180px;
+  }
 }
 
 .scroll-region--mt {
@@ -1512,6 +1540,7 @@
   flex-direction: column;
   gap: var(--space-sm);
   margin-top: var(--space-xs);
+  padding-bottom: var(--space-xs); /* Space for bottom shadows */
 }
 
 .member-line {
@@ -1519,7 +1548,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-md);
-  padding: 1rem 1.25rem;
+  padding: 1.25rem 1.5rem;
   border-radius: var(--radius-lg);
   background: var(--bg-main);
   border: 1px solid var(--border-color);

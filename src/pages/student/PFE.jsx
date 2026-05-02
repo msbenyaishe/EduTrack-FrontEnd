@@ -504,7 +504,7 @@ const StudentPFE = () => {
                 onClick={() => setShowMembersModal(false)}
                 aria-label={t('common.close')}
               >
-                <X size={24} />
+                <X size={20} />
               </button>
             </div>
 
@@ -538,7 +538,7 @@ const StudentPFE = () => {
                     {isTeamCreator(membersModalTeam) && Number(member.id) !== Number(user?.id) && (
                       <button
                         type="button"
-                        className="icon-action-btn icon-action-btn--danger"
+                        className="btn-icon-danger"
                         onClick={() => handleRemoveMember(membersModalTeam.id, member.id)}
                         title={t('student.pfe.removeMember', { defaultValue: 'Remove Member' })}
                         aria-label={t('student.pfe.removeMemberAria', { defaultValue: 'Remove {{name}}', name: member.name || t('student.pfe.memberFallback', { defaultValue: 'member' }) })}
