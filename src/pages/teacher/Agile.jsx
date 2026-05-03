@@ -180,6 +180,7 @@ const TeacherAgile = () => {
   };
 
   const handleDelete = async (id) => {
+    if (!window.confirm(t('teacher.agile.deleteTeamConfirm', { defaultValue: 'Are you sure you want to delete this agile team? This action cannot be undone.' }))) return;
     try {
       await agileService.deleteTeam(id);
       fetchTeams(selectedGroup);
