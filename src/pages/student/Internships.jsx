@@ -251,7 +251,7 @@ const StudentInternships = () => {
 
             <form onSubmit={handleSubmit}>
               <div className="form-section">
-                <h3 style={{ fontSize: '1.1rem', fontWeight: '600', color: 'var(--primary-color)', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', marginBottom: '1.5rem' }}>{t('student.internships.companyDetails', { defaultValue: 'Company Details' })}</h3>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: '600', color: 'var(--primary-color)', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', marginBottom: '1rem' }}>{t('student.internships.companyDetails', { defaultValue: 'Company Details' })}</h3>
                 <div className="form-group">
                   <label className="form-label">{t('student.internships.chooseCompanyMethod', { defaultValue: 'Company Source' })}</label>
                   <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
@@ -342,12 +342,12 @@ const StudentInternships = () => {
                 ) : null}
               </div>
               <div className="form-section">
-                <h3 style={{ fontSize: '1.1rem', fontWeight: '600', color: 'var(--primary-color)', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', marginBottom: '1.5rem', marginTop: '2rem' }}>{t('student.internships.internshipDetails', { defaultValue: 'Internship Details' })}</h3>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: '600', color: 'var(--primary-color)', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', marginBottom: '1rem' }}>{t('student.internships.internshipDetails', { defaultValue: 'Internship Details' })}</h3>
               <div className="form-group">
                 <label className="form-label" htmlFor="supervisor">{t('student.internships.supervisorName', { defaultValue: 'Supervisor Name' })}</label>
                 <input id="supervisor" type="text" className="form-input" required value={formData.supervisor_name} onChange={e => setFormData({...formData, supervisor_name: e.target.value})} />
               </div>
-              <div className="form-row-split" style={{ marginBottom: '1.5rem' }}>
+              <div className="form-row-split" style={{ marginBottom: '1rem' }}>
                 <div className="form-group">
                   <label className="form-label" htmlFor="start-d">{t('student.internships.startDate', { defaultValue: 'Start Date' })}</label>
                   <input id="start-d" type="date" className="form-input" required value={formData.start_date} onChange={e => setFormData({...formData, start_date: e.target.value})} />
@@ -357,7 +357,7 @@ const StudentInternships = () => {
                   <input id="end-d" type="date" className="form-input" required value={formData.end_date} onChange={e => setFormData({...formData, end_date: e.target.value})} />
                 </div>
               </div>
-              <div className="form-group">
+              <div className="form-group" style={{ marginBottom: '0.5rem' }}>
                 <label className="form-label" htmlFor="report-url">{t('student.internships.reportUrl', { defaultValue: 'Report URL (Optional Link)' })}</label>
                 <input
                   id="report-url"
@@ -369,7 +369,7 @@ const StudentInternships = () => {
                 />
               </div>
               </div>
-              <div className="modal-footer">
+              <div className="modal-footer" style={{ marginTop: '0.5rem' }}>
                 <button type="button" className="btn btn-secondary" onClick={handleCloseModal} disabled={submitting}>{t('student.internships.cancel', { defaultValue: 'Cancel' })}</button>
                 <button type="submit" className="btn btn-primary" disabled={submitting}>{submitting ? t('student.internships.saving', { defaultValue: 'Saving...' }) : t('student.internships.saveInternship', { defaultValue: 'Save Internship' })}</button>
               </div>
