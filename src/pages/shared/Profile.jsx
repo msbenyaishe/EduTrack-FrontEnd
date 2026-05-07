@@ -23,6 +23,7 @@ const Profile = () => {
     email: user?.email || '',
     portfolio_link: user?.portfolio_link || '',
     additional_profile_data: user?.additional_profile_data || '',
+    telegram_chat_id: user?.telegram_chat_id || '',
   });
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(user?.personal_image || null);
@@ -54,6 +55,7 @@ const Profile = () => {
         email: user.email || '',
         portfolio_link: user.portfolio_link || '',
         additional_profile_data: user.additional_profile_data || '',
+        telegram_chat_id: user.telegram_chat_id || '',
       });
       setImagePreview(user.personal_image || null);
     }
@@ -84,6 +86,7 @@ const Profile = () => {
         formData.append('portfolio_link', profileData.portfolio_link);
         formData.append('additional_profile_data', profileData.additional_profile_data);
       }
+      formData.append('telegram_chat_id', profileData.telegram_chat_id);
       if (selectedImage) {
         formData.append('personal_image', selectedImage);
       }
@@ -353,6 +356,23 @@ const Profile = () => {
                   </div>
                 </>
               )}
+
+              <div className="form-group">
+                <label className="form-label">{t('profile.telegramChatId', { defaultValue: 'Telegram Chat ID' })}</label>
+                <div className="input-with-icon">
+                  <Save size={18} className="input-icon" style={{ transform: 'rotate(-45deg)' }} />
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={profileData.telegram_chat_id}
+                    onChange={(e) => setProfileData({ ...profileData, telegram_chat_id: e.target.value })}
+                    placeholder={t('profile.placeholders.telegramChatId', { defaultValue: 'e.g. 123456789' })}
+                  />
+                </div>
+                <p className="form-help-text" style={{ fontSize: '0.75rem', marginTop: '0.25rem', opacity: 0.7 }}>
+                  {t('profile.telegramHelp', { defaultValue: 'Used for real-time notifications on Telegram.' })}
+                </p>
+              </div>
 
               <div className="modal-footer modal-footer--mt">
                 <button type="submit" className="btn btn-primary" disabled={isSaving}>

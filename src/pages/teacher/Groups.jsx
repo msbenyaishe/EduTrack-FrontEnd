@@ -13,7 +13,7 @@ const Groups = () => {
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
-  const [formData, setFormData] = useState({ name: '', year: formatAcademicYear(new Date().getFullYear().toString()) });
+  const [formData, setFormData] = useState({ name: '', year: formatAcademicYear(new Date().getFullYear().toString()), telegram_chat_id: '' });
   const [generatingCode, setGeneratingCode] = useState(false);
   const [copiedCode, setCopiedCode] = useState(null);
   const [selectedYear, setSelectedYear] = useState('All');
@@ -53,7 +53,7 @@ const Groups = () => {
       setShowModal(false);
       setIsEditing(false);
       setEditId(null);
-      setFormData({ name: '', year: formatAcademicYear(new Date().getFullYear().toString()) });
+      setFormData({ name: '', year: formatAcademicYear(new Date().getFullYear().toString()), telegram_chat_id: '' });
       fetchGroups();
     } catch (e) {
       console.error(e);
@@ -66,7 +66,7 @@ const Groups = () => {
   };
 
   const handleEdit = (group) => {
-    setFormData({ name: group.name, year: formatAcademicYear(group.year) });
+    setFormData({ name: group.name, year: formatAcademicYear(group.year), telegram_chat_id: group.telegram_chat_id || '' });
     setEditId(group.id);
     setIsEditing(true);
     setShowModal(true);
@@ -84,7 +84,7 @@ const Groups = () => {
   };
 
   const handleOpenCreateModal = () => {
-    setFormData({ name: '', year: formatAcademicYear(new Date().getFullYear().toString()) });
+    setFormData({ name: '', year: formatAcademicYear(new Date().getFullYear().toString()), telegram_chat_id: '' });
     setIsEditing(false);
     setEditId(null);
     setShowModal(true);
@@ -248,6 +248,20 @@ const Groups = () => {
                   value={formData.year}
                   onChange={(e) => setFormData({...formData, year: e.target.value})}
                 />
+              </div>
+              <div className="form-group">
+                <label className="form-label" htmlFor="group-telegram">{t('teacher.groups.telegramChatId', { defaultValue: 'Telegram Chat ID (Optional)' })}</label>
+                <input
+                  id="group-telegram"
+                  type="text"
+                  className="form-input"
+                  placeholder="e.g. -100123456789"
+                  value={formData.telegram_chat_id}
+                  onChange={(e) => setFormData({...formData, telegram_chat_id: e.target.value})}
+                />
+                <p className="form-help-text" style={{ fontSize: '0.75rem', marginTop: '0.25rem', opacity: 0.7 }}>
+                  {t('teacher.groups.telegramHelp', { defaultValue: 'Add the bot to your group as admin to enable notifications.' })}
+                </p>
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>{t('teacher.groups.cancel', { defaultValue: 'Cancel' })}</button>

@@ -105,6 +105,9 @@ const TeacherWorkshops = () => {
   };
 
   const handleDelete = async (id) => {
+    if (!window.confirm(t('teacher.workshops.deleteConfirm', { defaultValue: 'Are you sure you want to delete this workshop?' }))) {
+      return;
+    }
     try {
       await workshopService.deleteWorkshop(id);
       fetchWorkshops(selectedGroup);

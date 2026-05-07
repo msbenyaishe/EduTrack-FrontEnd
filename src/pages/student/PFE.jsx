@@ -504,7 +504,7 @@ const StudentPFE = () => {
                 onClick={() => setShowMembersModal(false)}
                 aria-label={t('common.close')}
               >
-                <X size={20} />
+                <X size={24} />
               </button>
             </div>
 

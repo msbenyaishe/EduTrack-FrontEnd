@@ -512,6 +512,7 @@ export const resources = {
           workshopLink: "Workshop Link (Resource/Demo URL)",
           saveFailed: "Failed to save workshop to database.",
           deleteFailed: "Failed to delete workshop.",
+          deleteConfirm: "Are you sure you want to delete this workshop?",
         },
         agile: {
           title: "Agile Teams",
@@ -1175,6 +1176,7 @@ export const resources = {
           workshopLink: "Lien de l'atelier (ressource/demo URL)",
           saveFailed: "Echec de l'enregistrement de l'atelier en base de donnees.",
           deleteFailed: "Echec de suppression de l'atelier.",
+          deleteConfirm: "Voulez-vous vraiment supprimer cet atelier ?",
         },
         agile: {
           title: "Equipes Agile",
@@ -1838,6 +1840,7 @@ export const resources = {
           workshopLink: "رابط الورشة (مورد/عرض تجريبي)",
           saveFailed: "فشل حفظ الورشة في قاعدة البيانات.",
           deleteFailed: "فشل حذف الورشة.",
+          deleteConfirm: "هل أنت متأكد من حذف هذه الورشة؟",
         },
         agile: {
           title: "فرق أجايل",
