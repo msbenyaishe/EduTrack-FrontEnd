@@ -341,7 +341,7 @@ const StudentInternships = () => {
                   </>
                 ) : null}
               </div>
-              <div className="form-section">
+              <div className="form-section" style={{ marginTop: '2.5rem' }}>
                 <h3 style={{ fontSize: '1.1rem', fontWeight: '600', color: 'var(--primary-color)', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', marginBottom: '1rem' }}>{t('student.internships.internshipDetails', { defaultValue: 'Internship Details' })}</h3>
               <div className="form-group">
                 <label className="form-label" htmlFor="supervisor">{t('student.internships.supervisorName', { defaultValue: 'Supervisor Name' })}</label>
