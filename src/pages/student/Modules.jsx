@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, ExternalLink } from 'lucide-react';
 import { studentService } from '../../services/studentService';
 import { useTranslation } from 'react-i18next';
-
 
 
 const StudentModules = () => {
@@ -71,7 +70,41 @@ const StudentModules = () => {
               </div>
 
               <div className="card__footer">
-                <div className="card__stamp">{t('student.modules.registered', { defaultValue: 'Registered Module' })}</div>
+                {mod.lesson_link ? (
+                  <a 
+                    href={mod.lesson_link} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="card__stamp card__stamp--primary"
+                    style={{ 
+                      textDecoration: 'none', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center',
+                      gap: '8px',
+                      minHeight: '52px',
+                      transition: 'filter 0.2s'
+                    }}
+                  >
+                    <ExternalLink size={18} />
+                    <span style={{ fontSize: '1.0625rem' }}>
+                      {t('student.modules.viewLesson', { defaultValue: 'View Lesson' })}
+                    </span>
+                  </a>
+                ) : (
+                  <div 
+                    className="card__stamp" 
+                    style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      minHeight: '52px',
+                      fontSize: '1.0625rem'
+                    }}
+                  >
+                    {t('student.modules.noLink', { defaultValue: 'No lesson link' })}
+                  </div>
+                )}
               </div>
             </div>
           ))
