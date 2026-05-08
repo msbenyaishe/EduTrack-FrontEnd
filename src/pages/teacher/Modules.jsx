@@ -9,15 +9,26 @@ const Modules = () => {
   const { t, i18n } = useTranslation();
   const language = i18n.resolvedLanguage || 'en';
   const [modules, setModules] = useState([]);
+  const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({ title: '', description: '' });
+  const [formData, setFormData] = useState({ title: '', description: '', group_id: '' });
   const [logoFile, setLogoFile] = useState(null);
   const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
     fetchModules();
+    fetchGroups();
   }, []);
+
+  const fetchGroups = async () => {
+    try {
+      const data = await teacherService.getGroups();
+      setGroups(data);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const fetchModules = async () => {
     try {
@@ -39,6 +50,9 @@ const Modules = () => {
       const data = new FormData();
       data.append('title', formData.title);
       data.append('description', formData.description);
+      if (formData.group_id) {
+        data.append('group_id', formData.group_id);
+      }
       if (logoFile) {
         data.append('logo', logoFile);
       }
@@ -49,7 +63,7 @@ const Modules = () => {
         await teacherService.createModule(data);
       }
       setShowModal(false);
-      setFormData({ title: '', description: '' });
+      setFormData({ title: '', description: '', group_id: '' });
       setLogoFile(null);
       setEditingId(null);
       fetchModules();
@@ -60,7 +74,7 @@ const Modules = () => {
   };
 
   const handleEdit = (mod) => {
-    setFormData({ title: mod.title, description: mod.description || '' });
+    setFormData({ title: mod.title, description: mod.description || '', group_id: '' });
     setLogoFile(null);
     setEditingId(mod.id);
     setShowModal(true);
@@ -85,7 +99,7 @@ const Modules = () => {
           <h1 className="page-title">{t('teacher.modules.title', { defaultValue: 'Modules' })}</h1>
           <p className="page-subtitle">{t('teacher.modules.subtitle', { defaultValue: 'Manage your teaching modules.' })}</p>
         </div>
-        <button className="btn btn-primary" onClick={() => { setEditingId(null); setFormData({title: '', description: ''}); setLogoFile(null); setShowModal(true); }}>
+        <button className="btn btn-primary" onClick={() => { setEditingId(null); setFormData({title: '', description: '', group_id: ''}); setLogoFile(null); setShowModal(true); }}>
           <Plus size={18} /> {t('teacher.modules.newModule', { defaultValue: 'New Module' })}
         </button>
       </div>
@@ -136,7 +150,7 @@ const Modules = () => {
               </div>
             ))}
 
-            <div className="card-action" onClick={() => { setEditingId(null); setFormData({title: '', description: ''}); setLogoFile(null); setShowModal(true); }}>
+            <div className="card-action" onClick={() => { setEditingId(null); setFormData({title: '', description: '', group_id: ''}); setLogoFile(null); setShowModal(true); }}>
               <Plus size={24} className="card-action__plus" />
               <span className="font-medium">{t('teacher.modules.addAnother', { defaultValue: 'Add Another Module' })}</span>
             </div>
@@ -149,7 +163,7 @@ const Modules = () => {
           <div className="modal-content">
             <div className="modal-header">
               <h2 className="font-bold">{editingId ? t('teacher.modules.editModule', { defaultValue: 'Edit Module' }) : t('teacher.modules.createModule', { defaultValue: 'Create Module' })}</h2>
-              <button type="button" className="modal-close" onClick={() => { setShowModal(false); setEditingId(null); setFormData({title: '', description: ''}); setLogoFile(null); }}><X size={20}/></button>
+              <button type="button" className="modal-close" onClick={() => { setShowModal(false); setEditingId(null); setFormData({title: '', description: '', group_id: ''}); setLogoFile(null); }}><X size={20}/></button>
             </div>
 
             <form onSubmit={handleSubmit}>
@@ -186,8 +200,26 @@ const Modules = () => {
                   onChange={(e) => setLogoFile(e.target.files[0])}
                 />
               </div>
+
+              {!editingId && (
+                <div className="form-group">
+                  <label className="form-label" htmlFor="group_id">{t('teacher.modules.assignToGroup', { defaultValue: 'Assign to Group (Optional)' })}</label>
+                  <select
+                    id="group_id"
+                    className="form-input"
+                    value={formData.group_id}
+                    onChange={(e) => setFormData({...formData, group_id: e.target.value})}
+                  >
+                    <option value="">{t('teacher.modules.noGroup', { defaultValue: 'No group' })}</option>
+                    {groups.map(g => (
+                      <option key={g.id} value={g.id}>{g.name} ({g.year})</option>
+                    ))}
+                  </select>
+                  <p className="field-hint">{t('teacher.modules.assignHint', { defaultValue: 'This will notify the students in the selected group via Telegram.' })}</p>
+                </div>
+              )}
               <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => { setShowModal(false); setEditingId(null); setFormData({title: '', description: ''}); setLogoFile(null); }}>{t('teacher.modules.cancel', { defaultValue: 'Cancel' })}</button>
+                <button type="button" className="btn btn-secondary" onClick={() => { setShowModal(false); setEditingId(null); setFormData({title: '', description: '', group_id: ''}); setLogoFile(null); }}>{t('teacher.modules.cancel', { defaultValue: 'Cancel' })}</button>
                 <button type="submit" className="btn btn-primary">{editingId ? t('teacher.modules.updateModule', { defaultValue: 'Update Module' }) : t('teacher.modules.saveModule', { defaultValue: 'Save Module' })}</button>
               </div>
             </form>
