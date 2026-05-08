@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Link as LinkIcon, FileText, Lock, Save, Camera, Loader, GraduationCap } from 'lucide-react';
+import { User, Mail, Link as LinkIcon, FileText, Lock, Save, Camera, Loader, GraduationCap, Send } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { authService } from '../../services/authService';
 import { useTranslation } from 'react-i18next';
@@ -357,22 +357,46 @@ const Profile = () => {
                 </>
               )}
 
-              <div className="form-group">
-                <label className="form-label">{t('profile.telegramChatId', { defaultValue: 'Telegram Chat ID' })}</label>
-                <div className="input-with-icon">
-                  <Save size={18} className="input-icon" style={{ transform: 'rotate(-45deg)' }} />
-                  <input
-                    type="text"
-                    className="form-input"
-                    value={profileData.telegram_chat_id}
-                    onChange={(e) => setProfileData({ ...profileData, telegram_chat_id: e.target.value })}
-                    placeholder={t('profile.placeholders.telegramChatId', { defaultValue: 'e.g. 123456789' })}
-                  />
+              {user?.role === 'teacher' && (
+                <div className="form-group">
+                  <label className="form-label">{t('profile.telegramChatId', { defaultValue: 'Telegram Chat ID' })}</label>
+                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                    <div className="input-with-icon" style={{ flex: 1 }}>
+                      <Send size={18} className="input-icon" style={{ color: '#0088cc' }} />
+                      <input
+                        type="text"
+                        className="form-input"
+                        value={profileData.telegram_chat_id}
+                        onChange={(e) => setProfileData({ ...profileData, telegram_chat_id: e.target.value })}
+                        placeholder={t('profile.placeholders.telegramChatId', { defaultValue: 'e.g. 123456789' })}
+                      />
+                    </div>
+                    <button 
+                      type="button" 
+                      className="btn btn-secondary" 
+                      style={{ padding: '0 1rem', height: '42px', minWidth: 'auto' }}
+                      onClick={async () => {
+                        if (!profileData.telegram_chat_id) {
+                          setMessage({ type: 'error', text: 'Please enter a Chat ID first.' });
+                          return;
+                        }
+                        try {
+                          setIsSaving(true);
+                          const res = await authService.testTelegram(profileData.telegram_chat_id);
+                          setMessage({ type: 'success', text: res.message });
+                        } catch (err) {
+                          setMessage({ type: 'error', text: err.response?.data?.message || 'Failed to send test notification.' });
+                        } finally {
+                          setIsSaving(false);
+                        }
+                      }}
+                      disabled={isSaving}
+                    >
+                      {t('common.test', { defaultValue: 'Test' })}
+                    </button>
+                  </div>
                 </div>
-                <p className="form-help-text" style={{ fontSize: '0.75rem', marginTop: '0.25rem', opacity: 0.7 }}>
-                  {t('profile.telegramHelp', { defaultValue: 'Used for real-time notifications on Telegram.' })}
-                </p>
-              </div>
+              )}
 
               <div className="modal-footer modal-footer--mt">
                 <button type="submit" className="btn btn-primary" disabled={isSaving}>

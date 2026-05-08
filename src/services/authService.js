@@ -39,5 +39,10 @@ export const authService = {
   updatePassword: async (data) => {
     const response = await api.put('/auth/password', data);
     return response.data;
+  },
+  
+  testTelegram: async (telegramChatId) => {
+    const response = await api.post('/auth/test-telegram', { telegram_chat_id: telegramChatId });
+    return response.data;
   }
 };
