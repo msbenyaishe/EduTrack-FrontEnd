@@ -82,12 +82,12 @@ const StudentModules = () => {
                       alignItems: 'center', 
                       justifyContent: 'center',
                       gap: '8px',
-                      minHeight: '52px',
+                      minHeight: '42px',
                       transition: 'filter 0.2s'
                     }}
                   >
-                    <ExternalLink size={18} />
-                    <span style={{ fontSize: '1.0625rem' }}>
+                    <ExternalLink size={16} />
+                    <span style={{ fontSize: '0.9375rem' }}>
                       {t('student.modules.viewLesson', { defaultValue: 'View Lesson' })}
                     </span>
                   </a>
@@ -98,8 +98,8 @@ const StudentModules = () => {
                       display: 'flex', 
                       alignItems: 'center', 
                       justifyContent: 'center', 
-                      minHeight: '52px',
-                      fontSize: '1.0625rem'
+                      minHeight: '42px',
+                      fontSize: '0.9375rem'
                     }}
                   >
                     {t('student.modules.noLink', { defaultValue: 'No lesson link' })}
